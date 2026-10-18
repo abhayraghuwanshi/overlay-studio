@@ -2,7 +2,7 @@
 
 **A free, browser-based stream overlay editor for OBS.** Design your overlay on a live canvas, then add it to OBS with one link. Nothing to install.
 
-**[▶ Open the studio](https://streamoverlay.kazekit.com/?studio)** · [Website](https://streamoverlay.kazekit.com) · [Request a component](https://github.com/abhayraghuwanshi/cool-stream-overlay/issues/new?template=component_request.yml) · [Report a bug](https://github.com/abhayraghuwanshi/cool-stream-overlay/issues/new?template=bug_report.yml)
+**[▶ Open the studio](https://streamoverlay.kazekit.com/?studio)** · [Website](https://streamoverlay.kazekit.com) · [Request a component](https://github.com/abhayraghuwanshi/overlay-studio/issues/new?template=component_request.yml) · [Report a bug](https://github.com/abhayraghuwanshi/overlay-studio/issues/new?template=bug_report.yml)
 
 **Works with** YouTube, Twitch, Kick, Facebook Live, X, TikTok LIVE (with a stream key) and any RTMP platform, from OBS Studio, Streamlabs Desktop, XSplit, Meld Studio or any app with a browser source. Multistreaming works too.
 
@@ -48,7 +48,7 @@ Your webcam must be a **Video Capture Device** source in the same OBS scene as t
 
 ## Request a component
 
-Missing a widget, theme or layout? [Open a request](https://github.com/abhayraghuwanshi/cool-stream-overlay/issues/new/choose). There's a short form for each:
+Missing a widget, theme or layout? [Open a request](https://github.com/abhayraghuwanshi/overlay-studio/issues/new/choose). There's a short form for each:
 
 - 🧩 **Component:** a new widget or element (a poll, chat box, now-playing card…)
 - 🎨 **Theme or layout:** a look, starter layout or scene pack

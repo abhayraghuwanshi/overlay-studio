@@ -6,7 +6,7 @@ import { useState } from 'react';
 // edit mode, and how to get the overlay into OBS. Opened from the "?" in the
 // dock / edit header, and once automatically on a first visit (see OverlayLayout).
 
-const REQUEST_URL = 'https://github.com/abhayraghuwanshi/cool-stream-overlay/issues/new/choose';
+const REQUEST_URL = 'https://github.com/abhayraghuwanshi/overlay-studio/issues/new/choose';
 
 // Lookalike of the real dock / header button, so the guide reads "this one".
 const Key = ({ children, accent }) => (

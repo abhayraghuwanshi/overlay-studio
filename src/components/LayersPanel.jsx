@@ -336,7 +336,7 @@ const LayersPanel = ({
                             })()}
                             <div style={{ height: 8 }} />
                             <a
-                                href="https://github.com/abhayraghuwanshi/cool-stream-overlay/issues/new?template=component_request.yml"
+                                href="https://github.com/abhayraghuwanshi/overlay-studio/issues/new?template=component_request.yml"
                                 target="_blank" rel="noreferrer"
                                 onClick={() => track('request_click', { location: 'studio_add_panel', template: 'component' })}
                                 style={{

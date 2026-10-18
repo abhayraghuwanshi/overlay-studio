@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { scoresUrl, usageUrl } from '../config';
 import { track } from '../analytics';
 
-const REPO = 'abhayraghuwanshi/cool-stream-overlay';
+const REPO = 'abhayraghuwanshi/overlay-studio';
 const REPO_URL = `https://github.com/${REPO}`;
 const REQUEST_URL = `${REPO_URL}/issues/new/choose`;
 

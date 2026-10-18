@@ -1,105 +1,86 @@
-# AI Stream Overlay
+# Overlay Studio
 
-Streamed while building it:  https://www.youtube.com/watch?v=EYx6zFFJDyE 
+**A free, browser-based stream overlay editor for OBS.** Design your overlay on a live canvas, then add it to OBS with one link. Nothing to install.
 
-![alt text](image-1.png)
+**[▶ Open the studio](https://streamoverlay.kazekit.com/?studio)** · [Website](https://streamoverlay.kazekit.com) · [Request a component](https://github.com/abhayraghuwanshi/cool-stream-overlay/issues/new?template=component_request.yml) · [Report a bug](https://github.com/abhayraghuwanshi/cool-stream-overlay/issues/new?template=bug_report.yml)
 
+If it's useful to you, a ⭐ helps other streamers find it.
 
-A high-tech, responsive, and data-driven OBS overlay built with React, Vite, TailwindCSS, and a dedicated Node.js backend. This overlay acts as an interactive dashboard for tech streams and includes an integrated, local **AI Co-host Chat Companion** powered by `node-llama-cpp`.
+<!-- TODO: add a current screenshot or GIF of the studio here -->
 
 ## Features
 
-- **Interactive Layout Architecture**: Seamlessly scales and adapts to your streaming layout (16:9 1080p optimized).
-- **OBS Socket Integration**: Listens for OBS recording/connection states and provides visual indicators.
-- **Dynamic Camera Hub**: Easily toggle Face, Hand, and Room cameras natively through the overlay UI. Preferences are saved automatically via the local backend across reloads.
-- **Local AI Companion**: A built-in chat box widget that interacts with the audience or stream events in real time.
-- **On-Device LLM Backend**: A standalone Node.js server that manages HTTP requests and WebSockets. It downloads and executes real local Large Language Models (LLMs) via `node-llama-cpp` directly on your GPU/CPU natively; no external API keys needed!
-- **Settings Modal Panel**: A slick, glassmorphic UI overlay containing:
-  - **Layout & Cameras**: Toggles for turning camera placeholders on and off.
-  - **Local AI Config**: Direct model management. Easily download, load, and switch between models (e.g., Llama 3.2 1B, Qwen2.5) without touching the terminal.
-- **Browser Extension Integration**: A tandem extension that lets you highlight code or text in your browser, beaming it instantly via WebSocket to the Node.js backend. The Local AI will read it and provide real-time commentary directly onto your stream overlay!
+- **Drag-and-drop editor:** place cameras, text and widgets on a 16:9 canvas. No code.
+- **One-link OBS setup:** hit **Go Live**, paste the link into an OBS Browser Source, and your edits sync to OBS as you make them.
+- **Live match scoreboard:** search a fixture and the score updates itself on stream.
+- **Widgets:** follower and sub goals, countdowns, clock, pomodoro, tickers, lower thirds, socials, sticky notes, a spin wheel and shapes.
+- **Pets and mood ring:** little mascots that roam the canvas and react to the mood of the room.
+- **Layouts and scenes:** group scenes (Intro, Gameplay, BRB, Outro) into a layout and switch between them.
+- **Themes:** re-skin the whole overlay in one click.
+- **Recording:** record the stream right in the browser.
+- **Camera auto-placement (optional):** with OBS WebSocket turned on, your real camera snaps into the overlay's camera frame on every scene switch.
 
-## Architecture
+## Quick start (no install)
 
-The project is split into two main sections:
+1. Open **[the studio](https://streamoverlay.kazekit.com/?studio)** and design your overlay.
+2. Click **Go Live**. This creates a private room and copies your OBS link.
+3. In OBS: **Sources → + → Browser**, then set:
+   - **URL:** paste the link
+   - **Width / Height:** `1920` × `1080`
+   - **Custom CSS:** leave it empty
+4. Click **OK**. Keep editing in the browser and OBS picks up your changes within a couple of seconds.
 
-1. **Frontend (Vite + React)**: 
-   - Located in `/src/`.
-   - Handles the entire visual presentation for OBS as a Browser Source.
-   - Built with `framer-motion` for buttery smooth toggle animations and UI state transitions.
-2. **Backend (Node.js)**: 
-   - Located in `/backend/`.
-   - Runs `server.js` and manages `locaLLM.js`.
-   - Maintains a concurrent HTTP Server (for downloading/managing models) and a WebSocket Server (for pushing real-time LLM chat inference directly to the overlay).
-   - Automatically detects downloaded `.gguf` local AI models and auto-loads them into RAM/VRAM on boot.
-3. **Browser Extension**: 
-   - Interacts seamlessly with the backend.
-   - Captures user highlighting or commands and pushes the payload over websockets to the `server.js`. The LLM engine reads this payload and streams a witty response back to the OBS overlay!
-![alt text](image-2.png)
-## Getting Started
+![OBS Browser Source settings](image.png)
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v18+ recommended)
-- [OBS Studio](https://obsproject.com/)
+> Your room link is private but not password-protected: anyone with the exact link can view or edit that overlay. Don't share it publicly.
 
-### Installation
+> Webcams and screen captures can't render inside an OBS browser source. Add them as normal OBS sources (Video Capture Device / Display Capture) behind the overlay. Camera auto-placement, below, can position them for you.
 
-1. Install all dependencies for the React app and Node server:
-```bash
-npm install
-```
-
-### Running the Application
-
-To start both the Frontend overlay and the Backend local LLM server:
-
-1. Double-click the `start_overlay.bat` script on Windows.
-   *(This script boots the Vite dev server and Node.js backend concurrently)*
-
-## Adding to OBS Studio
-
-Follow these exact steps to add the layout to OBS Studio:
-
-1. Open OBS Studio and navigate to the **Sources** dock at the bottom.
-2. Click the **+** (Add) button and select **Browser**.
-3. Name the source something descriptive, like "AI Stream Overlay", and click **OK**.
-4. In the Properties window that appears:
-   - **URL**: Set this to `http://localhost:3377`.
-   - **Width**: Set this to `1920`.
-   - **Height**: Set this to `1080`.
-   - **Use custom frame rate**: Check this box.
-   - **FPS**: Set this to `60` (for smoother animations).
-![alt text](image.png)
-
-Empty the custom css box.
-
-5. Click **OK** to save the source.
-6. The overlay will immediately load. It is designed to be fully transparent and perfectly match a 1920x1080 canvas. Do not resize the bounds manually.
-7. To interact with the Settings or cameras, right-click the Browser source in OBS and select **Interact**. A secondary window will appear allowing you to click the Settings gear icon and manage the AI.
-
-## Camera Auto-Placement (OBS WebSocket)
-
-The overlay can move your real OBS camera source into the camera frame for you — every time you switch a scene or layout, the camera snaps into the frame (circle or rectangle) automatically, and is hidden on scenes that don't use a cam. No more manual repositioning.
-
-To enable it, turn on the WebSocket server inside OBS (one-time setup):
+### Camera auto-placement (OBS WebSocket)
 
 1. In OBS, open **Tools → WebSocket Server Settings**.
-2. Check **Enable WebSocket server**.
-3. Keep the port at **4455** and **uncheck Enable Authentication**.
-4. Click **OK**. The overlay connects automatically within a few seconds — the camera panel in the editor shows a green "OBS connected" badge once it does.
+2. Check **Enable WebSocket server**, keep port **4455**, and uncheck **Enable Authentication**.
+3. Click **OK**. The camera panel in the studio shows a green **OBS connected** badge within a few seconds.
 
-Notes:
-- Your webcam must be a native **Video Capture Device** source placed in the same OBS scene as the overlay (behind it).
-- With multiple cameras, name your OBS sources with "face", "hand", or "room" to control which frame each one fills; otherwise they're assigned in that order.
+Your webcam must be a **Video Capture Device** source in the same OBS scene as the overlay. With several cameras, put `face`, `hand` or `room` in their OBS source names to choose which frame each one fills.
 
-## Managing AI Models
+## Request a component
 
-Instead of dealing with massive terminal scripts, the **Settings Widget** (click the gear icon in the top right of the overlay via OBS "Interact") provides a visual GUI to manage your LLMs:
-- **Download**: Pull new models directly from HuggingFace to your local disk (`~/.cooldesk/models`).
-- **Progress Tracking**: See live WS-streaming loading bars as the heavy `.gguf` weights download.
-- **Hardware Acceleration**: Enable or Disable GPU limits natively to route AI calculations to your GPU for massive generation speeds.
-- **Auto-Booting**: Once downloaded, the Node server will automatically prioritize loading your installed model smoothly the next time you turn your stream on.
+Missing a widget, theme or layout? [Open a request](https://github.com/abhayraghuwanshi/cool-stream-overlay/issues/new/choose). There's a short form for each:
 
----
+- 🧩 **Component:** a new widget or element (a poll, chat box, now-playing card…)
+- 🎨 **Theme or layout:** a look, starter layout or scene pack
+- ✨ **Feature:** anything else in the studio
+- 🐞 **Bug:** something broke
 
-*Designed and engineered natively for modern tech streamers.*
+You can also click **Missing something? Request a component** in the studio's **Add Layer** panel.
+
+## Running it locally
+
+**Prerequisites:** [Node.js](https://nodejs.org/) 20+ and [OBS Studio](https://obsproject.com/).
+
+```bash
+npm install
+npm run dev        # studio at http://localhost:3377
+```
+
+| Path | What it is |
+| --- | --- |
+| `src/` | React + Vite app: landing page, studio and the overlay OBS renders |
+| `api/` | Vercel serverless functions: `layout.js` (room storage), `scores.js` (match feed), `usage.js` (stats) |
+| `backend/` | Optional local Node server for the local AI companion (port `3388`) |
+| `extension/` | Optional browser extension that sends highlighted text to the AI companion |
+
+Ports are set in `ports.config.js`. On Windows, `start_overlay.bat` starts the dev server and the local backend together.
+
+To deploy your own copy to Vercel with Upstash Redis for layout storage, see **[DEPLOY.md](DEPLOY.md)**.
+
+### Local AI companion (optional)
+
+The `backend/` server runs a small LLM on your own machine via [`node-llama-cpp`](https://github.com/withcatai/node-llama-cpp). No API keys are needed. It powers a chat widget that comments on your stream. Start it with `cd backend && node server.js`, then download and load a model (e.g. Llama 3.2 1B or Qwen2.5) from the overlay's **Settings** panel. Models are stored in `~/.cooldesk/models`.
+
+## Contributing
+
+Issues and pull requests are welcome. For anything big, open an issue first so we can talk it through.
+
+Built live on stream: [watch the build](https://www.youtube.com/watch?v=EYx6zFFJDyE).

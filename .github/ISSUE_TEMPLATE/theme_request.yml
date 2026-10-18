@@ -1,0 +1,32 @@
+name: 🎨 Request a theme or layout
+description: Suggest a theme, starter layout or scene pack.
+title: "[Theme]: "
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind?
+      options:
+        - Theme (colours / fonts / style)
+        - Starter layout
+        - Scene pack (starting soon, BRB, ending...)
+    validations:
+      required: true
+  - type: textarea
+    id: describe
+    attributes:
+      label: Describe it
+      placeholder: A cozy lo-fi look, warm browns, rounded corners, a cat pet in the corner.
+    validations:
+      required: true
+  - type: input
+    id: stream
+    attributes:
+      label: What do you stream?
+      placeholder: e.g. Valorant, art, just chatting, coding
+  - type: textarea
+    id: reference
+    attributes:
+      label: Inspiration
+      description: Screenshots or links. You can drag images in here.

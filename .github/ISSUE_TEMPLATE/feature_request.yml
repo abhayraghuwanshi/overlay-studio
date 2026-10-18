@@ -1,0 +1,22 @@
+name: ✨ Feature request
+description: Suggest an improvement to the studio, OBS link, recording or anything else.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the problem or what feels missing.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: What would help?
+      description: How you imagine it working.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Screenshots, links or context.

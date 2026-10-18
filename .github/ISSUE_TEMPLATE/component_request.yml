@@ -1,0 +1,51 @@
+name: 🧩 Request a component
+description: Suggest a new widget or element for the overlay (e.g. a poll, a chat box, a now-playing card).
+title: "[Component]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea! The more concrete you are, the faster it can get built.
+        Existing elements include text, clock, countdown, pomodoro, goals, ticker, sticky notes, spin wheel, socials, lower thirds, pets, mood ring, live match scoreboard and shapes.
+  - type: input
+    id: name
+    attributes:
+      label: Component name
+      placeholder: e.g. Viewer poll
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What should it do?
+      description: What it shows on stream and how it behaves.
+      placeholder: Shows a question with 2–4 options and live vote bars that animate as votes come in.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: How would you use it on your stream?
+      placeholder: I run a "choose the next game" segment every Friday.
+  - type: dropdown
+    id: data
+    attributes:
+      label: Does it need live data?
+      options:
+        - No, it's set up in the editor
+        - Yes, from Twitch / YouTube / Kick
+        - Yes, from another service (describe below)
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Settings you'd want to tweak
+      placeholder: Colours, font, number of options, timer length...
+  - type: textarea
+    id: reference
+    attributes:
+      label: Examples or mockups
+      description: Screenshots, sketches, or links to a stream or tool that has something similar. You can drag images in here.

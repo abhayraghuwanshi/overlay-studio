@@ -1,0 +1,43 @@
+name: 🐞 Bug report
+description: Something broke or doesn't look right.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: And what you expected to happen instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the studio
+        2. Add a countdown
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it happen?
+      options:
+        - In the studio (editor)
+        - In OBS (browser source)
+        - Both
+        - On the home page
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser / OBS version
+      placeholder: e.g. Chrome 130 on Windows, OBS 31
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or console errors
+      description: You can drag images in here.

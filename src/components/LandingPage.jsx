@@ -1,5 +1,25 @@
 import { useEffect, useState } from 'react';
 import { scoresUrl, usageUrl } from '../config';
+import { track } from '../analytics';
+
+const REPO = 'abhayraghuwanshi/cool-stream-overlay';
+const REPO_URL = `https://github.com/${REPO}`;
+const REQUEST_URL = `${REPO_URL}/issues/new/choose`;
+
+// Star count from the public GitHub API — unauthenticated is 60 req/hr per IP,
+// so cache it for an hour. Storage can throw (private mode), so it's best-effort.
+const STARS_KEY = 'gh_stars';
+const fetchStars = async () => {
+    try {
+        const c = JSON.parse(localStorage.getItem(STARS_KEY) || 'null');
+        if (c && Date.now() - c.t < 3600e3) return c.n;
+    } catch { /* ignore */ }
+    const r = await fetch(`https://api.github.com/repos/${REPO}`);
+    if (!r.ok) return null;
+    const n = (await r.json()).stargazers_count;
+    try { localStorage.setItem(STARS_KEY, JSON.stringify({ n, t: Date.now() })); } catch { /* ignore */ }
+    return n;
+};
 
 // Flag value → image: a feed crest URL passes through; a 2-letter code → flagcdn.
 const flagSrc = (v) => {
@@ -83,6 +103,7 @@ const MatchRow = ({ m }) => {
 export default function LandingPage() {
     const [matches, setMatches] = useState(null);
     const [stats, setStats] = useState(null);
+    const [stars, setStars] = useState(null);
 
     useEffect(() => {
         document.title = 'Overlay Studio — free stream overlay editor for OBS';
@@ -93,6 +114,7 @@ export default function LandingPage() {
             fetch(scoresUrl()).then(r => r.ok ? r.json() : null).then(d => { if (alive) setMatches(d?.matches || []); }).catch(() => { if (alive) setMatches([]); });
         }
         fetch(`${usageUrl()}?summary=1&days=14`).then(r => r.ok ? r.json() : null).then(d => { if (alive && d) setStats(d); }).catch(() => {});
+        fetchStars().then(n => { if (alive && n != null) setStars(n); }).catch(() => {});
         return () => { alive = false; document.body.style.overflow = prev; };
     }, []);
 
@@ -112,7 +134,16 @@ export default function LandingPage() {
             {/* top bar */}
             <div style={{ ...wrap, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
                 <span style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16, letterSpacing: -0.2 }}>Overlay Studio</span>
-                <a href="/?studio" style={{ fontFamily: DISPLAY, fontSize: 14, fontWeight: 500, color: C.ink, textDecoration: 'none', borderBottom: `1px solid ${C.accent}`, paddingBottom: 2 }}>Open the studio →</a>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+                    <a href={REPO_URL} target="_blank" rel="noreferrer" aria-label="Star Overlay Studio on GitHub"
+                        onClick={() => track('github_star_click', { location: 'header' })}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none', border: `1px solid ${C.line}`, borderRadius: 6, padding: '5px 10px' }}>
+                        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" /></svg>
+                        <span>★ Star</span>
+                        {stars != null && <span style={{ color: C.ink, fontVariantNumeric: 'tabular-nums', borderLeft: `1px solid ${C.line}`, paddingLeft: 7 }}>{num(stars)}</span>}
+                    </a>
+                    <a href="/?studio" style={{ fontFamily: DISPLAY, fontSize: 14, fontWeight: 500, color: C.ink, textDecoration: 'none', borderBottom: `1px solid ${C.accent}`, paddingBottom: 2 }}>Open the studio →</a>
+                </div>
             </div>
 
             {/* hero — left aligned, type led */}
@@ -172,6 +203,14 @@ export default function LandingPage() {
                         </div>
                     ))}
                 </div>
+                <p style={{ fontFamily: BODY, fontSize: 14, color: C.dim, margin: '22px 0 0' }}>
+                    Missing something?{' '}
+                    <a href={`${REPO_URL}/issues/new?template=component_request.yml`} target="_blank" rel="noreferrer"
+                        onClick={() => track('request_click', { location: 'features', template: 'component' })}
+                        style={{ color: C.ink, textDecoration: 'none', borderBottom: `1px solid ${C.accent}`, paddingBottom: 1 }}>
+                        Request a component ↗
+                    </a>
+                </p>
             </div>
 
             {/* close */}
@@ -186,9 +225,15 @@ export default function LandingPage() {
                     <span style={{ fontFamily: BODY, fontSize: 12, color: C.faint }}>Overlay Studio — free, browser-based, runs as an OBS browser source.</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
                         <a href="/?studio" style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>Studio</a>
-                        <a href="https://github.com/abhayraghuwanshi/cool-stream-overlay" target="_blank" rel="noreferrer"
+                        <a href={REQUEST_URL} target="_blank" rel="noreferrer"
+                            onClick={() => track('request_click', { location: 'footer' })}
+                            style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>
+                            Request a feature ↗
+                        </a>
+                        <a href={REPO_URL} target="_blank" rel="noreferrer"
+                            onClick={() => track('github_star_click', { location: 'footer' })}
                             style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none', borderBottom: `1px solid ${C.line}`, paddingBottom: 2 }}>
-                            GitHub ↗
+                            ★ Star on GitHub ↗
                         </a>
                     </div>
                 </div>

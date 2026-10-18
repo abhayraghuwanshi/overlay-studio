@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bot, Camera, ChevronDown, ChevronUp, Layers, ListChecks, Monitor, Plus, RotateCw, Video, X } from 'lucide-react';
 import { useState } from 'react';
+import { track } from '../analytics';
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
@@ -546,6 +547,18 @@ const LayersPanel = ({
                                     />
                                 ))}
                             </div>
+                            <a
+                                href="https://github.com/abhayraghuwanshi/cool-stream-overlay/issues/new?template=component_request.yml"
+                                target="_blank" rel="noreferrer"
+                                onClick={() => track('request_click', { location: 'studio_add_panel', template: 'component' })}
+                                style={{
+                                    display: 'block', textAlign: 'center', margin: '2px 2px 8px', padding: '6px 8px', borderRadius: 7,
+                                    border: '1px dashed rgba(165,180,252,0.35)', color: '#a5b4fc', textDecoration: 'none',
+                                    fontSize: 9, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1,
+                                }}
+                            >
+                                Missing something? Request a component ↗
+                            </a>
                             <Divider />
                         </motion.div>
                     )}

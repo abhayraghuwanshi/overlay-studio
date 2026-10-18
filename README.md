@@ -4,6 +4,8 @@
 
 **[▶ Open the studio](https://streamoverlay.kazekit.com/?studio)** · [Website](https://streamoverlay.kazekit.com) · [Request a component](https://github.com/abhayraghuwanshi/cool-stream-overlay/issues/new?template=component_request.yml) · [Report a bug](https://github.com/abhayraghuwanshi/cool-stream-overlay/issues/new?template=bug_report.yml)
 
+**Works with** YouTube, Twitch, Kick, Facebook Live, X, TikTok LIVE (with a stream key) and any RTMP platform, from OBS Studio, Streamlabs Desktop, XSplit, Meld Studio or any app with a browser source. Multistreaming works too.
+
 If it's useful to you, a ⭐ helps other streamers find it.
 
 <!-- TODO: add a current screenshot or GIF of the studio here -->

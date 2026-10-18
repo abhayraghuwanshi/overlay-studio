@@ -4,16 +4,22 @@ const MIN_W_PCT = 4;
 const MIN_H_PCT = 3;
 const DRAG_THRESHOLD = 5; // Minimum px of movement before a mousedown counts as a drag
 
+// Hit areas straddle the box edge; the visible part is a small dot/pill drawn
+// inside (see render). Edges are full-length strips so they're easy to grab.
 const RESIZE_HANDLES = [
-    { id: 'n',  style: { top: 0,    left: '50%', transform: 'translateX(-50%)', cursor: 'n-resize', width: 40, height: 8  } },
-    { id: 's',  style: { bottom: 0, left: '50%', transform: 'translateX(-50%)', cursor: 's-resize', width: 40, height: 8  } },
-    { id: 'e',  style: { right: 0,  top: '50%',  transform: 'translateY(-50%)', cursor: 'e-resize', width: 8,  height: 40 } },
-    { id: 'w',  style: { left: 0,   top: '50%',  transform: 'translateY(-50%)', cursor: 'w-resize', width: 8,  height: 40 } },
-    { id: 'ne', style: { top: 0,    right: 0,    cursor: 'ne-resize', width: 14, height: 14 } },
-    { id: 'nw', style: { top: 0,    left: 0,     cursor: 'nw-resize', width: 14, height: 14 } },
-    { id: 'se', style: { bottom: 0, right: 0,    cursor: 'se-resize', width: 14, height: 14 } },
-    { id: 'sw', style: { bottom: 0, left: 0,     cursor: 'sw-resize', width: 14, height: 14 } },
+    { id: 'n',  style: { top: -5,    left: 12, right: 12, height: 10, cursor: 'n-resize' } },
+    { id: 's',  style: { bottom: -5, left: 12, right: 12, height: 10, cursor: 's-resize' } },
+    { id: 'e',  style: { right: -5,  top: 12, bottom: 12, width: 10,  cursor: 'e-resize' } },
+    { id: 'w',  style: { left: -5,   top: 12, bottom: 12, width: 10,  cursor: 'w-resize' } },
+    { id: 'ne', style: { top: -7,    right: -7,  width: 14, height: 14, cursor: 'ne-resize' } },
+    { id: 'nw', style: { top: -7,    left: -7,   width: 14, height: 14, cursor: 'nw-resize' } },
+    { id: 'se', style: { bottom: -7, right: -7,  width: 14, height: 14, cursor: 'se-resize' } },
+    { id: 'sw', style: { bottom: -7, left: -7,   width: 14, height: 14, cursor: 'sw-resize' } },
 ];
+
+// Presses on real controls inside a box (task list inputs, buttons…) should
+// act on the control, not start a drag.
+const isInteractive = (el) => !!el?.closest?.('input, textarea, select, button, a, [contenteditable="true"]');
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
@@ -39,8 +45,11 @@ const DraggableBox = ({
     const [hovered, setHovered] = useState(false);
 
     // ── Root click — select only on plain clicks, not after drag/resize ──────
-    const onRootPointerDown = () => {
+    // In edit mode the whole box is the drag handle (a plain click still selects,
+    // thanks to the drag threshold).
+    const onRootPointerDown = (e) => {
         didDrag.current = false; // reset on every new press
+        if (editMode && e.button === 0 && !isInteractive(e.target)) onDragPointerDown(e);
     };
 
     const onRootClick = () => {
@@ -167,13 +176,17 @@ const DraggableBox = ({
     // null = no outline at all. In live/OBS mode we must emit `outline: none`,
     // not `1px solid none` (a malformed value that renders a phantom 1px border
     // around things like camera frames).
-    const outlineColor = editMode
+    // Quiet at rest (a faint dashed guide), clearer on hover, crisp when selected.
+    const outline = editMode
         ? selected
-            ? 'rgba(99,102,241,0.9)'
+            ? '1.5px solid #a5b4fc'
             : hovered
-                ? 'rgba(99,102,241,0.4)'
-                : 'rgba(99,102,241,0.2)'
-        : null;
+                ? '1px solid rgba(165,180,252,0.55)'
+                : '1px dashed rgba(255,255,255,0.12)'
+        : 'none';
+    const showChrome = editMode && (hovered || selected);
+    // Tag sits just above the box; boxes hugging the canvas top get it inside.
+    const tagInside = box.y < 4;
 
     return (
         <div
@@ -189,42 +202,35 @@ const DraggableBox = ({
                 top:      `${box.y}%`,
                 width:    `${box.w}%`,
                 height:   `${box.h}%`,
-                overflow:     'hidden',
+                // Visible in edit mode so the tag and handles can sit on/over the edge;
+                // the content wrapper below still clips the element itself.
+                overflow:     editMode ? 'visible' : 'hidden',
                 boxSizing:    'border-box',
-                outline:      outlineColor ? `1px solid ${outlineColor}` : 'none',
+                outline,
+                outlineOffset: selected ? 1 : 0,
                 borderRadius: 4,
                 zIndex,
+                cursor:       editMode ? 'move' : undefined,
+                touchAction:  editMode ? 'none' : undefined,
                 transition:   'outline-color 0.12s, opacity 0.15s',
                 ...extraStyle,
             }}
         >
-            {/* ── Drag handle — overlays top of content, never shifts it ── */}
-            {editMode && (
+            {/* ── Name tag — floats above the box on hover / selection, never covers content ── */}
+            {showChrome && (
                 <div
-                    onPointerDown={onDragPointerDown}
                     style={{
-                        position: 'absolute',
-                        top: 0, left: 0, right: 0,
-                        height: 20,
-                        zIndex: 31,
-                        cursor: 'move',
-                        touchAction: 'none',
-                        background: selected ? 'rgba(24,22,64,0.92)' : 'rgba(6,6,18,0.76)',
-                        borderBottom: '1px solid rgba(99,102,241,0.2)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '0 5px 0 6px',
-                        userSelect: 'none',
-                        backdropFilter: 'blur(8px)',
+                        position: 'absolute', left: 0, zIndex: 33,
+                        ...(tagInside ? { top: 4, left: 4 } : { bottom: 'calc(100% + 5px)' }),
+                        display: 'flex', alignItems: 'center', gap: 4,
+                        padding: selected ? '2px 3px 2px 8px' : '2px 8px', borderRadius: 6,
+                        background: selected ? '#4f46e5' : 'rgba(17,17,30,0.92)',
+                        border: `1px solid ${selected ? 'rgba(165,180,252,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                        boxShadow: '0 4px 14px rgba(0,0,0,0.4)',
+                        whiteSpace: 'nowrap', userSelect: 'none', pointerEvents: selected ? 'auto' : 'none',
                     }}
                 >
-                    <span style={{
-                        fontSize: 8, fontFamily: 'monospace',
-                        textTransform: 'uppercase', letterSpacing: 2,
-                        color: selected ? '#a5b4fc' : 'rgba(165,180,252,0.42)',
-                        lineHeight: 1,
-                    }}>
+                    <span style={{ fontSize: 10, fontWeight: 500, fontFamily: 'inter, system-ui, sans-serif', color: selected ? '#fff' : 'rgba(255,255,255,0.75)', lineHeight: '16px' }}>
                         {title}
                     </span>
                     {selected && (
@@ -256,27 +262,33 @@ const DraggableBox = ({
             )}
 
             {/* ── Content — always full height ── */}
-            <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: '100%', overflow: 'hidden', borderRadius: 4 }}>
                 {children}
             </div>
 
             {/* ── Resize handles (edit mode only) ── */}
-            {editMode && RESIZE_HANDLES.map(h => (
-                <div
-                    key={h.id}
-                    onPointerDown={(e) => onResizePointerDown(e, h.id)}
-                    style={{
-                        position: 'absolute',
-                        ...h.style,
-                        zIndex: 32,
-                        touchAction: 'none',
-                        background: h.id.length === 2
-                            ? selected ? 'rgba(99,102,241,0.85)' : 'rgba(99,102,241,0.45)'
-                            : selected ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.1)',
-                        borderRadius: h.id.length === 2 ? 2 : 0,
-                    }}
-                />
-            ))}
+            {/* Hit areas are always live in edit mode; the dots only show when selected. */}
+            {editMode && RESIZE_HANDLES.map(h => {
+                const corner = h.id.length === 2;
+                const vertical = h.id === 'e' || h.id === 'w';
+                return (
+                    <div
+                        key={h.id}
+                        onPointerDown={(e) => onResizePointerDown(e, h.id)}
+                        style={{ position: 'absolute', ...h.style, zIndex: 32, touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                        {selected && (
+                            <span style={{
+                                display: 'block', background: '#fff', border: '1.5px solid #6366f1',
+                                boxShadow: '0 1px 4px rgba(0,0,0,0.5)', boxSizing: 'border-box',
+                                ...(corner
+                                    ? { width: 9, height: 9, borderRadius: 2 }
+                                    : vertical ? { width: 5, height: 16, borderRadius: 3 } : { width: 16, height: 5, borderRadius: 3 }),
+                            }} />
+                        )}
+                    </div>
+                );
+            })}
         </div>
     );
 };
@@ -286,10 +298,10 @@ const LayerBtn = ({ onClick, title, children }) => (
         onClick={onClick}
         title={title}
         style={{
-            background:   'rgba(99,102,241,0.2)',
-            border:       '1px solid rgba(99,102,241,0.3)',
-            borderRadius: 3,
-            color:        '#a5b4fc',
+            background:   'rgba(255,255,255,0.16)',
+            border:       'none',
+            borderRadius: 4,
+            color:        '#fff',
             fontSize:     9,
             lineHeight:   1,
             padding:      '2px 4px',

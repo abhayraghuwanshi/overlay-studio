@@ -45,6 +45,19 @@ const matchWhen = (m) => {
     catch { return 'Soon'; }
 };
 
+// The overlay is just a browser source, so it rides along with whatever the
+// streaming app sends — names only (no logos), dot = platform colour.
+const PLATFORMS = [
+    { name: 'YouTube', dot: '#ff0033' },
+    { name: 'Twitch', dot: '#9146ff' },
+    { name: 'Kick', dot: '#53fc18' },
+    { name: 'Facebook Live', dot: '#1877f2' },
+    { name: 'X', dot: '#e7e7e7' },
+    { name: 'TikTok LIVE', dot: '#25f4ee', note: 'with a stream key' },
+    { name: 'Any RTMP platform', dot: 'rgba(241,239,233,0.4)' },
+];
+const APPS = ['OBS Studio', 'Streamlabs Desktop', 'XSplit', 'Meld Studio'];
+
 const FEATURES = [
     { title: 'Drag-and-drop editor', desc: 'Place cameras, text and widgets on a live 16:9 canvas. No code, nothing to install.' },
     { title: 'OBS browser source', desc: 'One link drops the overlay straight into OBS — and your edits sync to it as you make them.' },
@@ -100,6 +113,49 @@ const MatchRow = ({ m }) => {
     );
 };
 
+// How-it-works row: number + copy on one side, visual on the other; stacks on mobile.
+// `wide` stacks the visual under the copy at full width, for screenshots with small UI.
+const Step = ({ n, title, desc, wide, children }) => (
+    <div style={{ display: 'grid', gridTemplateColumns: wide ? '1fr' : 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: wide ? 22 : 'clamp(20px, 4vw, 48px)', padding: '30px 0', borderTop: `1px solid ${C.line}`, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 16 }}>
+            <span style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 600, color: C.accent, paddingTop: 5, fontVariantNumeric: 'tabular-nums' }}>{n}</span>
+            <div>
+                <div style={{ fontFamily: DISPLAY, fontSize: 22, fontWeight: 600, letterSpacing: -0.4 }}>{title}</div>
+                <div style={{ fontFamily: BODY, fontSize: 14, color: C.dim, lineHeight: 1.6, marginTop: 10 }}>{desc}</div>
+            </div>
+        </div>
+        <div style={{ minWidth: 0 }}>{children}</div>
+    </div>
+);
+
+const Shot = ({ src, alt, w, h }) => (
+    <img src={src} alt={alt} width={w} height={h} loading="lazy" decoding="async"
+        style={{ display: 'block', width: '100%', height: 'auto', borderRadius: 8, border: `1px solid ${C.line}`, boxShadow: '0 12px 40px rgba(0,0,0,0.45)' }} />
+);
+
+// Drawn, not a screenshot, so the URL shows the real link format and no one's
+// personal OBS setup ends up on the homepage.
+const ObsMock = () => {
+    const label = { fontFamily: BODY, fontSize: 12, color: 'rgba(255,255,255,0.6)', textAlign: 'right' };
+    const field = { fontFamily: 'ui-monospace, Menlo, monospace', fontSize: 12, color: '#fff', background: '#1d1f26', border: '1px solid #3a3d48', borderRadius: 4, padding: '6px 9px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
+    return (
+        <div aria-label="OBS Browser Source properties: URL set to your OBS link, width 1920, height 1080" role="img"
+            style={{ background: '#272a33', border: '1px solid #3a3d48', borderRadius: 8, overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.45)' }}>
+            <div style={{ fontFamily: BODY, fontSize: 12, color: 'rgba(255,255,255,0.8)', padding: '8px 12px', background: '#1d1f26', borderBottom: '1px solid #3a3d48' }}>Properties for 'Overlay'</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr)', gap: '10px 12px', alignItems: 'center', padding: '16px 16px 12px' }}>
+                <span style={label}>URL</span>
+                <span style={{ ...field, borderColor: C.accent }}>https://streamoverlay.kazekit.com/?obs&amp;room=…</span>
+                <span style={label}>Width</span><span style={field}>1920</span>
+                <span style={label}>Height</span><span style={field}>1080</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '4px 16px 16px' }}>
+                <span style={{ fontFamily: BODY, fontSize: 12, color: '#fff', background: '#3c404d', borderRadius: 4, padding: '5px 16px' }}>OK</span>
+                <span style={{ fontFamily: BODY, fontSize: 12, color: 'rgba(255,255,255,0.7)', background: '#31343e', borderRadius: 4, padding: '5px 12px' }}>Cancel</span>
+            </div>
+        </div>
+    );
+};
+
 export default function LandingPage() {
     const [matches, setMatches] = useState(null);
     const [stats, setStats] = useState(null);
@@ -122,6 +178,7 @@ export default function LandingPage() {
     const num = (n) => n == null ? '—' : Intl.NumberFormat().format(n);
 
     const wrap = { maxWidth: 940, margin: '0 auto', padding: '0 28px', boxSizing: 'border-box' };
+    const chip = { display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: DISPLAY, fontSize: 14, fontWeight: 500, color: C.ink, padding: '8px 14px', borderRadius: 999, border: `1px solid ${C.line}`, background: 'rgba(241,239,233,0.03)' };
     const btn = { fontFamily: DISPLAY, fontSize: 15, fontWeight: 600, color: C.bg, background: C.ink, padding: '12px 22px', borderRadius: 6, textDecoration: 'none', display: 'inline-block' };
     const STATS = [
         { v: num(stats?.rooms), l: 'overlays created' },
@@ -153,11 +210,11 @@ export default function LandingPage() {
                     Design your overlay,<br />then drop one link<br />into OBS<span style={{ color: C.accent }}>.</span>
                 </h1>
                 <p style={{ fontFamily: BODY, fontSize: 'clamp(15px, 2vw, 18px)', color: C.dim, maxWidth: 540, lineHeight: 1.6, margin: '26px 0 0' }}>
-                    Cameras, live scores, goals, pets, timers and themes — arranged on a real canvas and recorded in the browser. Nothing to install.
+                    Cameras, live scores, goals, pets, timers and themes — arranged on a real canvas. Stream it to YouTube, Twitch, Kick and more. Nothing to install.
                 </p>
                 <div style={{ display: 'flex', gap: 22, alignItems: 'center', flexWrap: 'wrap', marginTop: 34 }}>
                     <a href="/?studio" style={btn}>Open the studio →</a>
-                    <a href="#features" style={{ fontFamily: DISPLAY, fontSize: 15, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>See what's inside ↓</a>
+                    <a href="#how" style={{ fontFamily: DISPLAY, fontSize: 15, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>See how it works ↓</a>
                 </div>
             </div>
 
@@ -174,6 +231,57 @@ export default function LandingPage() {
                         </div>
                     ))}
                 </div>
+            </div>
+
+            {/* works with — platforms + streaming apps */}
+            <div style={{ ...wrap, paddingBottom: 'clamp(48px, 8vw, 80px)' }}>
+                <div style={{ ...kicker, marginBottom: 18 }}>Works with</div>
+                <div style={{ display: 'grid', gap: 18 }}>
+                    <div>
+                        <div style={{ fontFamily: BODY, fontSize: 12, color: C.faint, marginBottom: 10 }}>Stream to</div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                            {PLATFORMS.map(p => (
+                                <span key={p.name} style={chip}>
+                                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: p.dot, flexShrink: 0 }} />
+                                    {p.name}
+                                    {p.note && <span style={{ color: C.faint, fontSize: 12 }}>· {p.note}</span>}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                    <div>
+                        <div style={{ fontFamily: BODY, fontSize: 12, color: C.faint, marginBottom: 10 }}>From any app with a browser source</div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                            {APPS.map(a => <span key={a} style={chip}>{a}</span>)}
+                        </div>
+                    </div>
+                    <p style={{ fontFamily: BODY, fontSize: 13, color: C.dim, lineHeight: 1.6, margin: 0, maxWidth: 620 }}>
+                        Your streaming app sends the video; the overlay is a browser source on top of it. So wherever your app can stream, the overlay goes too — including multistreaming to several platforms at once.
+                    </p>
+                </div>
+            </div>
+
+            {/* how it works — real studio screenshots (public/screens), then OBS in 3 steps */}
+            <div id="how" style={{ ...wrap, paddingBottom: 'clamp(48px, 8vw, 80px)' }}>
+                <div style={{ ...kicker, marginBottom: 18 }}>How it works</div>
+
+                <Step n="01" title="Pick a template" desc="Open the studio, hit Layouts and browse the Templates tab. Click one to preview it, then hit Use template. Each one comes with scenes: Starting soon, Just chatting, BRB and Ending. Or start from a blank layout.">
+                    <Shot src="/screens/templates.jpg" alt="Templates gallery: a grid of starter layouts with a large preview of the selected one and its scenes" w={1318} h={896} />
+                </Step>
+
+                <Step n="02" wide title="Edit the layout" desc={<>Click <b style={{ color: C.ink, fontWeight: 600 }}>Edit layout</b>. Pick anything from the toolbox on the left (text, lower thirds, clocks, countdowns, goals, socials, pets, a spin wheel, scoreboards, shapes), then click or drag on the canvas to place it. Drag and resize to arrange. Every layer in the scene is listed under the canvas, where you can hide, reorder or remove it.</>}>
+                    <Shot src="/screens/editor.jpg" alt="Studio in edit mode: the toolbox on the left, a gameplay scene on the canvas, and the scene's layers listed under it" w={1384} h={868} />
+                </Step>
+
+                <Step n="03" title="Add it to OBS" desc={
+                    <ol style={{ margin: 0, paddingLeft: 18, display: 'grid', gap: 10, listStyle: 'decimal' }}>
+                        <li>In the studio, click <b style={{ color: C.ink, fontWeight: 600 }}>Go Live</b>. Your private OBS link is copied.</li>
+                        <li>In OBS, go to <b style={{ color: C.ink, fontWeight: 600 }}>Sources → + → Browser</b> and click OK.</li>
+                        <li>Paste the link as the URL, set <b style={{ color: C.ink, fontWeight: 600 }}>1920 × 1080</b>, and click OK. Edits you make in the studio show up in OBS within seconds.</li>
+                    </ol>
+                }>
+                    <ObsMock />
+                </Step>
             </div>
 
             {/* live world cup — hidden via SHOW_LIVE_SCORES, see above */}

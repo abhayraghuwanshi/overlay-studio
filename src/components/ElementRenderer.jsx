@@ -96,7 +96,7 @@ export const defaultElement = (type, theme = DEFAULT_THEME) => {
             bgColor: '@accent',        // token: re-skins with the theme
             bgOpacity: 0,
             borderRadius: '@radius',
-            borderWidth: 4,
+            borderWidth: 3,
             frameStyle: T.frameStyle,  // none | solid | glow | gradient
             box: { x: 49, y: 6, w: 22, h: 32 },
         },
@@ -831,12 +831,16 @@ const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, the
                 </div>
             );
         }
+        // "glow" is a soft halo, not a neon tube: a slightly translucent stroke, a
+        // low-alpha bloom and a drop shadow for depth.
+        const isHex = /^#[0-9a-f]{6}$/i.test(color ?? '');
+        const tint = (a) => (isHex ? hexToRgba(color, a) : color);
         return (
             <div style={{
                 width: '100%', height: '100%', borderRadius, boxSizing: 'border-box', opacity,
                 background: 'transparent',
-                border: `${w}px solid ${color}`,
-                boxShadow: fs === 'glow' ? `0 0 ${w * 4}px ${color}, inset 0 0 ${w * 2}px ${color}55` : 'none',
+                border: `${w}px solid ${fs === 'glow' ? tint(0.9) : color}`,
+                boxShadow: fs === 'glow' ? `0 0 ${w * 4}px ${tint(0.22)}, 0 10px 30px rgba(0,0,0,0.45)` : 'none',
             }} />
         );
     }

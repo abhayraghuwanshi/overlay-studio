@@ -64,7 +64,7 @@ const divider = (box, extra = {}) => ({
 });
 const frame = (box, extra = {}) => ({
     type: 'frame', box, bgColor: '@accent', bgOpacity: 0, borderRadius: '@radius',
-    borderWidth: 4, frameStyle: 'glow', ...extra,
+    borderWidth: 3, frameStyle: 'glow', ...extra,
 });
 const goal = (label, current, target, box, extra = {}) => ({
     type: 'goal', content: label, current, target, box,

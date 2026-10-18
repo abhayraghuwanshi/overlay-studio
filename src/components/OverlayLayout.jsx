@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, ChevronUp, Circle, Film, GripHorizontal, Layers, LayoutGrid, Pencil, Play, RotateCcw, Save, X } from 'lucide-react';
+import { Check, ChevronUp, Circle, Film, GripHorizontal, HelpCircle, Home, Layers, LayoutGrid, Pencil, Play, RotateCcw, Save, X } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getRoom, isDefaultRoom, layoutUrl, newRoomId, setRoomInUrl, shareLinks } from '../config.js';
 import { track } from '../analytics';
@@ -10,7 +10,9 @@ import CameraEditor from './CameraEditor';
 import CurrentTask from './CurrentTask';
 import DraggableBox from './DraggableBox';
 import ElementEditor from './ElementEditor';
+import HelpPanel from './HelpPanel';
 import ElementRenderer, { defaultElement } from './ElementRenderer';
+import LayerStrip from './LayerStrip';
 import LayersPanel from './LayersPanel';
 import ThemePanel from './ThemePanel';
 import CameraFrame, { DEFAULT_CAM_STYLE } from './CameraFrame';
@@ -172,6 +174,17 @@ const OverlayLayout = () => {
     const [showBgPanel, setShowBgPanel] = useState(false);
     const [showThemePanel, setShowThemePanel] = useState(false);
     const [showGallery, setShowGallery] = useState(false);
+    // Studio guide (dock / edit mode / OBS). Opens once by itself on a first
+    // visit; storage can throw (private mode, blocked site data), so best-effort.
+    const [helpTab, setHelpTab] = useState(() => {
+        if (CLEAN_MODE) return null;
+        try { return localStorage.getItem('help_seen') ? null : 'dock'; } catch { return null; }
+    });
+    const openHelp = useCallback((tab, source) => { setHelpTab(tab); track('help_open', { source }); }, []);
+    const closeHelp = useCallback(() => {
+        setHelpTab(null);
+        try { localStorage.setItem('help_seen', '1'); } catch { /* ignore */ }
+    }, []);
     const [dockScenesOpen, setDockScenesOpen] = useState(false);
     // Live dock can collapse to a tiny handle for a clean view.
     const [dockCollapsed, setDockCollapsed] = useState(false);
@@ -987,6 +1000,7 @@ const OverlayLayout = () => {
                             <HdrBtn onClick={() => { setSceneNameDraft(''); setNamingScene(true); }}><Save size={12} style={{ marginRight: 4 }} />Save Scene</HdrBtn>
                         )}
                         <HdrBtn onClick={resetLayout}><RotateCcw size={12} style={{ marginRight: 4 }} />Reset</HdrBtn>
+                        <HdrBtn icon onClick={() => openHelp('edit', 'edit_header')}><HelpCircle size={12} /></HdrBtn>
                         <HdrSep />
                         <button
                             onClick={() => { setEditMode(false); setSelectedBox(null); setSelectedElementId(null); setShowBgPanel(false); }}
@@ -1018,16 +1032,6 @@ const OverlayLayout = () => {
                     <LayersPanel
                         boxVisibility={boxVisibility}
                         onAddBuiltin={addBuiltin}
-                        onRemoveBuiltin={removeBuiltin}
-                        elements={elements}
-                        selectedElementId={selectedElementId}
-                        selectedBox={selectedBox}
-                        onToggleElement={toggleElementVisibility}
-                        onDeleteElement={deleteElement}
-                        onElementUp={elementUp}
-                        onElementDown={elementDown}
-                        onSelectElement={selectElement}
-                        onSelectBox={selectBox}
                         onAddElement={addElement}
                         onPlaceElement={armPlace}
                         layoutName={activeLayout?.name ?? null}
@@ -1042,9 +1046,6 @@ const OverlayLayout = () => {
                         onOpenBackground={() => { setShowBgPanel(v => !v); setShowThemePanel(false); }}
                         onOpenTheme={() => { setShowThemePanel(v => !v); setShowBgPanel(false); }}
                         onResetLayout={resetLayout}
-                        zOrder={zOrder}
-                        onLayerUp={layerUp}
-                        onLayerDown={layerDown}
                     />
                 </div>
 
@@ -1220,6 +1221,29 @@ const OverlayLayout = () => {
                         </div>
                     )}
                 </div>
+
+                {/* ── Current layers — fills the free space under the 16:9 canvas ── */}
+                {inEditor && (
+                    <div style={{ position: 'relative' }}>
+                        <LayerStrip
+                            narrow={isNarrow}
+                            boxVisibility={boxVisibility}
+                            zOrder={zOrder}
+                            elements={elements}
+                            selectedBox={selectedBox}
+                            selectedElementId={selectedElementId}
+                            onSelectBox={selectBox}
+                            onLayerUp={layerUp}
+                            onLayerDown={layerDown}
+                            onRemoveBuiltin={removeBuiltin}
+                            onSelectElement={selectElement}
+                            onToggleElement={toggleElementVisibility}
+                            onElementUp={elementUp}
+                            onElementDown={elementDown}
+                            onDeleteElement={deleteElement}
+                        />
+                    </div>
+                )}
             </div>
 
             {/* ── LIVE MODE DOCK — minimal pill; hidden while recording or in ?obs clean mode ── */}
@@ -1237,6 +1261,26 @@ const OverlayLayout = () => {
                         </button>
                     ) : (
                     <div style={{ display: 'flex', alignItems: 'center', gap: isNarrow ? 3 : 2, background: 'rgba(6,6,16,0.88)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: isNarrow ? '6px 8px' : '5px 7px', boxShadow: '0 8px 40px rgba(0,0,0,0.72)', whiteSpace: 'nowrap', maxWidth: 'calc(100vw - 24px)' }}>
+                        {/* Tools (icon-only, Go Live keeps its label) ┃ content: layouts + current scene */}
+                        <DockBtn icon onClick={() => { window.location.href = '/'; }} title="Home">
+                            <Home size={13} />
+                        </DockBtn>
+                        <DockBtn icon onClick={() => setEditMode(true)} title="Edit layout">
+                            <Pencil size={13} />
+                        </DockBtn>
+                        <DockBtn onClick={goLive} active={!isDefaultRoom()} title={isDefaultRoom() ? 'Go Live — create a private room & copy the OBS link' : `Live in room ${getRoom()} — copy the OBS link again`}>
+                            <Play size={12} style={{ marginRight: 4 }} />{isDefaultRoom() ? 'Go Live' : 'Copy Link'}
+                        </DockBtn>
+                        <DockBtn icon onClick={() => openHelp('dock', 'dock')} title="How the studio works">
+                            <HelpCircle size={13} />
+                        </DockBtn>
+                        <DockBtn icon onClick={() => setDockCollapsed(true)} title="Hide controls for a clean view">
+                            <ChevronUp size={13} style={{ transform: 'rotate(180deg)' }} />
+                        </DockBtn>
+                        <div style={{ width: 1, height: 18, margin: '0 4px', background: 'rgba(255,255,255,0.14)', flexShrink: 0 }} />
+                        <DockBtn icon onClick={() => setShowGallery(true)} title={activeLayout ? `Layouts — current: ${activeLayout.name}` : 'Layouts & templates'}>
+                            <LayoutGrid size={13} />
+                        </DockBtn>
                         {/* Scene switcher — change scene without entering edit mode */}
                         {activeLayout && activeLayout.scenes.length > 0 && (
                             <div style={{ position: 'relative' }}>
@@ -1253,7 +1297,7 @@ const OverlayLayout = () => {
                                             exit={{ opacity: 0, y: 6 }}
                                             transition={{ duration: 0.14 }}
                                             style={{
-                                                position: 'absolute', bottom: 'calc(100% + 8px)', left: 0, minWidth: 168,
+                                                position: 'absolute', bottom: 'calc(100% + 8px)', right: 0, minWidth: 168,
                                                 background: 'rgba(6,6,16,0.96)', backdropFilter: 'blur(24px)',
                                                 border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: 5,
                                                 boxShadow: '0 8px 40px rgba(0,0,0,0.72)', display: 'flex', flexDirection: 'column', gap: 1,
@@ -1285,21 +1329,6 @@ const OverlayLayout = () => {
                                 </AnimatePresence>
                             </div>
                         )}
-                        {activeLayout && activeLayout.scenes.length > 0 && <HdrSep />}
-                        <DockBtn onClick={() => setShowGallery(true)} title="Browse & switch saved layouts">
-                            <LayoutGrid size={12} style={{ marginRight: isNarrow ? 0 : 4 }} />{!isNarrow && 'Layouts'}
-                        </DockBtn>
-                        <HdrSep />
-                        <DockBtn onClick={() => setEditMode(true)} title="Edit layout">
-                            {isNarrow ? <Pencil size={12} /> : 'Edit Layout'}
-                        </DockBtn>
-                        <HdrSep />
-                        <DockBtn onClick={goLive} active={!isDefaultRoom()} title={isDefaultRoom() ? 'Go Live — create a private room & copy the OBS link' : `Live in room ${getRoom()} — copy the OBS link again`}>
-                            <Play size={12} style={{ marginRight: 4 }} />{isDefaultRoom() ? 'Go Live' : 'Copy Link'}
-                        </DockBtn>
-                        <DockBtn onClick={() => setDockCollapsed(true)} title="Hide controls for a clean view">
-                            <ChevronUp size={12} style={{ transform: 'rotate(180deg)' }} />
-                        </DockBtn>
                     </div>
                     )}
                 </div>
@@ -1327,6 +1356,8 @@ const OverlayLayout = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {helpTab && <HelpPanel key={helpTab} initialTab={helpTab} onClose={closeHelp} />}
 
             {/* Layouts gallery (the show/collection switcher) — both modes */}
             {showGallery && (
@@ -1359,6 +1390,7 @@ const DockBtn = ({ children, active, icon, disabled, onClick, title }) => (
         onClick={onClick}
         disabled={disabled}
         title={title}
+        aria-label={icon ? title : undefined}
         style={{
             padding: icon ? '4px 7px' : '4px 10px',
             borderRadius: 8,

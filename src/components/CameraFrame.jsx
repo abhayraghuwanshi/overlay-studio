@@ -36,7 +36,7 @@ const buildFrame = (frame, accent, accent2, radius) => {
             return {
                 outer: {
                     borderRadius: r, ...clip, border: `2px solid ${accent}`,
-                    boxShadow: `0 0 16px ${accent}aa, 0 0 38px ${accent}55, inset 0 0 14px ${accent}33`,
+                    boxShadow: `0 0 14px ${accent}66, 0 0 34px ${accent}26`,
                 },
                 inner: { borderRadius: Math.max(r - 2, 0), ...clip },
             };
@@ -62,7 +62,7 @@ const buildFrame = (frame, accent, accent2, radius) => {
             return {
                 outer: {
                     borderRadius: '50%', ...clip, border: `3px solid ${accent}`,
-                    boxShadow: `0 0 22px ${accent}66, 0 8px 30px rgba(0,0,0,0.5)`,
+                    boxShadow: `0 0 18px ${accent}33, 0 8px 30px rgba(0,0,0,0.5)`,
                 },
                 inner: { borderRadius: '50%', ...clip },
             };

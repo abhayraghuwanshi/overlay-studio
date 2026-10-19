@@ -1,6 +1,7 @@
 import OverlayLayout from './components/OverlayLayout';
 import LandingPage from './components/LandingPage';
 import { OBSProvider } from './context/OBSContext';
+import Showcase from './components/Showcase';
 
 function App() {
   // The marketing home page owns the bare `/` so search engines index it;
@@ -8,6 +9,8 @@ function App() {
   // every existing ?room/?obs link is unaffected. `/?home` still lands here
   // too for old links.
   const params = new URLSearchParams(window.location.search);
+  // Promo player for recording template videos (scripts/record-showcase.mjs).
+  if (params.has('showcase')) return <Showcase />;
   if (!params.has('room') && !params.has('obs') && !params.has('studio')) {
     return <LandingPage />;
   }

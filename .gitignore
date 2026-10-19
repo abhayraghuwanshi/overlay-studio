@@ -30,3 +30,6 @@ dist-ssr
 .vercel
 .env*.local
 .env*
+
+# Recorded promo videos (scripts/record-showcase.mjs)
+promo-videos/

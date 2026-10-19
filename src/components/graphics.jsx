@@ -385,8 +385,9 @@ const NightSky = ({ a, b }) => (
 const BAT = 'M0 6 C4 2 8 2 10 5 C11 2 13 1 14 3 C15 1 17 2 18 5 C20 2 24 2 28 6 C24 5 22 7 21 10 C19 8 17 8 14 11 C11 8 9 8 7 10 C6 7 4 5 0 6 Z';
 const Spooky = ({ a, b }) => (
     <div style={{ ...fill, overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', left: '50%', top: '10%', marginLeft: -170 }}>
-            <Moon size={340} color="#f6e7b0" glow={rgba(a, 0.55)} />
+        {/* off-centre so headline text never sits on the bright disc */}
+        <div style={{ position: 'absolute', left: '76%', top: '7%' }}>
+            <Moon size={300} color="#f6e7b0" glow={rgba(a, 0.55)} />
         </div>
         {/* bats crossing the moon */}
         {Array.from({ length: 9 }, (_, i) => (

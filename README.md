@@ -81,6 +81,18 @@ Ports are set in `ports.config.js`. On Windows, `start_overlay.bat` starts the d
 
 To deploy your own copy to Vercel with Upstash Redis for layout storage, see **[DEPLOY.md](DEPLOY.md)**.
 
+### Promo videos (template showcase)
+
+Template showcase videos are generated automatically from the app itself:
+
+```bash
+npm run dev                 # keep this running
+npm run promo               # every preset, 16:9 + 9:16
+npm run promo -- montage    # just one preset
+```
+
+The script (`scripts/record-showcase.mjs`) opens the `?showcase` player in your installed Google Chrome, records it at 30 fps and encodes MP4s with ffmpeg (`brew install ffmpeg`) into `promo-videos/`. Presets live at the top of the script. You can also open `/?showcase&packs=kit-samurai&autostart` in a browser to preview a video before recording it.
+
 ### Local AI companion (optional)
 
 The `backend/` server runs a small LLM on your own machine via [`node-llama-cpp`](https://github.com/withcatai/node-llama-cpp). No API keys are needed. It powers a chat widget that comments on your stream. Start it with `cd backend && node server.js`, then download and load a model (e.g. Llama 3.2 1B or Qwen2.5) from the overlay's **Settings** panel. Models are stored in `~/.cooldesk/models`.

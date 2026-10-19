@@ -32,7 +32,8 @@ const DEFAULT_BOXES = {
 };
 
 const CAMERA_IDS = ['faceCam', 'handCam', 'roomCam'];
-const NO_CAM_STYLES = {};   // stable fallback so memoised cut-outs don't churn
+const NO_CAM_STYLES = {};
+const RIGHT_PANEL_W = 300;  // element / camera editor sidebar width (desktop)   // stable fallback so memoised cut-outs don't churn
 
 const elementTitle = (type) => type.charAt(0).toUpperCase() + type.slice(1);
 
@@ -128,7 +129,7 @@ const useFitScale = () => {
 };
 
 // True on phone-width / narrow viewports, where the editor's fixed side panels
-// (240 + 260 px) can't sit alongside the canvas. In that case the panels become
+// (240 + 300 px) can't sit alongside the canvas. In that case the panels become
 // overlays (a slide-in drawer + a bottom sheet) instead of eating canvas width.
 const useIsNarrow = (bp = 760) => {
     const [narrow, setNarrow] = useState(
@@ -613,6 +614,26 @@ const OverlayLayout = () => {
         setSelectedElementId(null);
     }, []);
 
+    // Copy an element just above the original, nudged so both stay visible.
+    const duplicateElement = useCallback((id) => {
+        const copyId = `el_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+        setLayoutSettings(s => {
+            const els = s.elements ?? [];
+            const i = els.findIndex(el => el.id === id);
+            if (i === -1) return s;
+            const src = els[i];
+            const box = src.box ? { ...src.box, x: Math.min(100 - src.box.w, src.box.x + 2), y: Math.min(100 - src.box.h, src.box.y + 2) } : src.box;
+            const newElements = [...els.slice(0, i), { ...src, id: copyId, box }, ...els.slice(i)];
+            fetch(layoutUrl(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ elements: newElements, _clientId: SESSION_ID }),
+            }).catch(console.error);
+            return { ...s, elements: newElements };
+        });
+        setSelectedElementId(copyId);
+    }, []);
+
     const toggleElementVisibility = useCallback((id) => {
         setLayoutSettings(s => {
             const el = (s.elements ?? []).find(e => e.id === id);
@@ -1078,7 +1099,7 @@ const OverlayLayout = () => {
                             borderTopLeftRadius: 14, borderTopRightRadius: 14,
                             boxShadow: '0 -8px 40px rgba(0,0,0,0.6)',
                         } : {
-                            top: 40, right: 0, bottom: 0, width: 260,
+                            top: 40, right: 0, bottom: 0, width: RIGHT_PANEL_W,
                             borderLeft: '1px solid rgba(255,255,255,0.07)',
                         }),
                     }}>
@@ -1102,6 +1123,7 @@ const OverlayLayout = () => {
                                 element={selectedElement}
                                 onChange={(changes) => updateElement(selectedElement.id, changes)}
                                 onDelete={() => deleteElement(selectedElement.id)}
+                                onDuplicate={() => duplicateElement(selectedElement.id)}
                                 twitchChannel={twitchChannel}
                                 onTwitchChannelChange={(v) => updateLayout({ twitchChannel: v })}
                             />
@@ -1144,7 +1166,7 @@ const OverlayLayout = () => {
                 top:    inEditor ? 40 : 0,
                 // On phones the panels float over the canvas, so it spans full width.
                 left:   inEditor && !isNarrow ? 240 : 0,
-                right:  inEditor && !isNarrow ? (rightPanelOpen ? 260 : 0) : 0,
+                right:  inEditor && !isNarrow ? (rightPanelOpen ? RIGHT_PANEL_W : 0) : 0,
                 bottom: 0,
                 overflow: inEditor ? 'auto' : undefined,
                 padding: inEditor ? (isNarrow ? 8 : 16) : 0,

@@ -36,7 +36,7 @@ const elementTitle = (type) => type.charAt(0).toUpperCase() + type.slice(1);
 
 const ElementBox = memo(
     ({
-        element, zIndex, selected, editMode, canvasRef, extraStyle, theme, mood,
+        element, zIndex, selected, editMode, canvasRef, extraStyle, theme, mood, channel,
         onSelect, onBoxChange, onUploadLogo, onElementUpdate,
     }) => {
         const handleUploadLogo = useCallback(() => onUploadLogo(element.id), [element.id, onUploadLogo]);
@@ -55,7 +55,7 @@ const ElementBox = memo(
                 canvasRef={canvasRef}
                 extraStyle={extraStyle}
             >
-                <ElementRenderer element={element} editMode={editMode} onUploadLogo={handleUploadLogo} onElementUpdate={handleUpdate} theme={theme} mood={mood} />
+                <ElementRenderer element={element} editMode={editMode} onUploadLogo={handleUploadLogo} onElementUpdate={handleUpdate} theme={theme} mood={mood} channel={channel} />
             </DraggableBox>
         );
     },
@@ -68,6 +68,7 @@ const ElementBox = memo(
         prev.extraStyle === next.extraStyle &&
         prev.theme === next.theme &&
         prev.mood === next.mood &&
+        prev.channel === next.channel &&
         prev.onSelect === next.onSelect &&
         prev.onBoxChange === next.onBoxChange &&
         prev.onUploadLogo === next.onUploadLogo &&
@@ -818,6 +819,7 @@ const OverlayLayout = () => {
         useGPU, tasks = [], elements = [],
         background, boxVisibility = DEFAULT_VISIBILITY,
         theme = DEFAULT_THEME,
+        twitchChannel = '',
     } = layoutSettings;
 
     const selectedElement = elements.find(el => el.id === selectedElementId) ?? null;
@@ -1084,6 +1086,8 @@ const OverlayLayout = () => {
                                 element={selectedElement}
                                 onChange={(changes) => updateElement(selectedElement.id, changes)}
                                 onDelete={() => deleteElement(selectedElement.id)}
+                                twitchChannel={twitchChannel}
+                                onTwitchChannelChange={(v) => updateLayout({ twitchChannel: v })}
                             />
                         ) : (
                             <CameraEditor
@@ -1189,6 +1193,7 @@ const OverlayLayout = () => {
                                 canvasRef={canvasRef}
                                 theme={theme}
                                 mood={currentMood}
+                                channel={twitchChannel}
                             />
                         );
                     })}

@@ -7,7 +7,15 @@
 // A "theme pack" (see src/scenes/packs.js) bundles one theme with a set of
 // scenes built on it — the cohesive, one-click unit a streamer installs.
 
-// frameStyle drives the cam-frame element: none | solid | glow | gradient
+// frameStyle drives the cam-frame element: none | solid | glow | gradient, plus
+// the graphic styles hud | neon | tape | brutal | window | pixel | ornate | rec.
+//
+// "Style kit" fields (optional) give a theme its graphic identity, not just its
+// palette. Elements opt in with tokens, so switching theme swaps the graphics:
+//   backdrop    — animated full-canvas backdrop (see BACKDROPS in graphics.jsx)
+//   textFx      — headline treatment for text elements (see TEXT_FX)
+//   lowerThird  — lower-third plate style (see LOWER_THIRDS)
+//   displayFont — headline font; falls back to fontFamily
 
 export const THEMES = [
     {
@@ -20,6 +28,7 @@ export const THEMES = [
         fontFamily: 'inter, system-ui, sans-serif',
         cornerRadius: 8,
         frameStyle: 'glow',
+        backdrop: 'bokeh',
     },
     {
         id: 'neon',
@@ -31,6 +40,7 @@ export const THEMES = [
         fontFamily: "'JetBrains Mono', ui-monospace, monospace",
         cornerRadius: 3,
         frameStyle: 'solid',
+        backdrop: 'synthgrid',
     },
     {
         id: 'minimal',
@@ -42,6 +52,7 @@ export const THEMES = [
         fontFamily: 'inter, system-ui, sans-serif',
         cornerRadius: 2,
         frameStyle: 'solid',
+        backdrop: 'scanlines',
     },
     {
         id: 'warm',
@@ -53,6 +64,7 @@ export const THEMES = [
         fontFamily: 'inter, system-ui, sans-serif',
         cornerRadius: 14,
         frameStyle: 'gradient',
+        backdrop: 'bokeh',
     },
     {
         id: 'aurora',
@@ -64,6 +76,7 @@ export const THEMES = [
         fontFamily: 'inter, system-ui, sans-serif',
         cornerRadius: 12,
         frameStyle: 'glow',
+        backdrop: 'waves',
     },
     {
         id: 'sunset',
@@ -75,6 +88,7 @@ export const THEMES = [
         fontFamily: 'inter, system-ui, sans-serif',
         cornerRadius: 16,
         frameStyle: 'gradient',
+        backdrop: 'bokeh',
     },
     {
         id: 'vapor',
@@ -86,6 +100,7 @@ export const THEMES = [
         fontFamily: "'JetBrains Mono', ui-monospace, monospace",
         cornerRadius: 6,
         frameStyle: 'glow',
+        backdrop: 'synthgrid',
     },
     {
         id: 'crimson',
@@ -97,6 +112,7 @@ export const THEMES = [
         fontFamily: "'JetBrains Mono', ui-monospace, monospace",
         cornerRadius: 4,
         frameStyle: 'glow',
+        backdrop: 'scanlines',
     },
     {
         id: 'ocean',
@@ -108,6 +124,7 @@ export const THEMES = [
         fontFamily: 'inter, system-ui, sans-serif',
         cornerRadius: 12,
         frameStyle: 'glow',
+        backdrop: 'waves',
     },
     {
         id: 'gold',
@@ -119,6 +136,7 @@ export const THEMES = [
         fontFamily: 'Georgia, "Times New Roman", serif',
         cornerRadius: 6,
         frameStyle: 'gradient',
+        backdrop: 'sunburst',
     },
     {
         id: 'emerald',
@@ -130,6 +148,7 @@ export const THEMES = [
         fontFamily: 'inter, system-ui, sans-serif',
         cornerRadius: 14,
         frameStyle: 'glow',
+        backdrop: 'petals',
     },
     {
         id: 'royale',
@@ -141,6 +160,7 @@ export const THEMES = [
         fontFamily: 'Georgia, "Times New Roman", serif',
         cornerRadius: 10,
         frameStyle: 'gradient',
+        backdrop: 'sunburst',
     },
     {
         id: 'frost',
@@ -152,6 +172,7 @@ export const THEMES = [
         fontFamily: 'inter, system-ui, sans-serif',
         cornerRadius: 18,
         frameStyle: 'glow',
+        backdrop: 'starfield',
     },
     {
         id: 'matrix',
@@ -163,6 +184,7 @@ export const THEMES = [
         fontFamily: "'JetBrains Mono', ui-monospace, monospace",
         cornerRadius: 0,
         frameStyle: 'solid',
+        backdrop: 'code',
     },
     {
         id: 'bubblegum',
@@ -174,6 +196,7 @@ export const THEMES = [
         fontFamily: 'inter, system-ui, sans-serif',
         cornerRadius: 20,
         frameStyle: 'gradient',
+        backdrop: 'bokeh',
     },
     {
         id: 'inferno',
@@ -185,6 +208,7 @@ export const THEMES = [
         fontFamily: "'JetBrains Mono', ui-monospace, monospace",
         cornerRadius: 4,
         frameStyle: 'glow',
+        backdrop: 'halftone',
     },
     {
         id: 'cosmic',
@@ -196,6 +220,7 @@ export const THEMES = [
         fontFamily: 'inter, system-ui, sans-serif',
         cornerRadius: 14,
         frameStyle: 'glow',
+        backdrop: 'starfield',
     },
     {
         id: 'worldcup',
@@ -207,6 +232,119 @@ export const THEMES = [
         fontFamily: 'inter, system-ui, sans-serif',
         cornerRadius: 8,
         frameStyle: 'gradient',
+        backdrop: 'halftone',
+    },
+    // ── Style-kit themes ── each carries a full graphic identity (backdrop,
+    // headline effect, lower-third plate, cam frame, display font) modelled on
+    // the looks that lead the overlay marketplaces: tactical HUD, synthwave,
+    // lo-fi, scrapbook, brutalist, pixel, Y2K, lava-lamp, nouveau, VHS…
+    {
+        id: 'cyberhud', name: 'Cyber HUD',
+        accent: '#00e5ff', accent2: '#ff2a6d',
+        textColor: '#e6fbff', panelColor: '#03121a',
+        fontFamily: "'Rajdhani', 'Inter', system-ui, sans-serif",
+        displayFont: "'Orbitron', 'Rajdhani', sans-serif",
+        cornerRadius: 0, frameStyle: 'hud',
+        backdrop: 'hudgrid', textFx: 'glitch', lowerThird: 'slant',
+    },
+    {
+        id: 'synthwave', name: 'Synthwave',
+        accent: '#ff2a9d', accent2: '#ffb300',
+        textColor: '#fff0fb', panelColor: '#12002a',
+        fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+        displayFont: "'Monoton', 'Space Grotesk', sans-serif",
+        cornerRadius: 4, frameStyle: 'neon',
+        backdrop: 'synthgrid', textFx: 'retro', lowerThird: 'neon',
+    },
+    {
+        id: 'lofi', name: 'Lo-fi Café',
+        accent: '#e8b48a', accent2: '#8fb8a8',
+        textColor: '#fbf3ea', panelColor: '#2a1d17',
+        fontFamily: "'Fredoka', 'Inter', system-ui, sans-serif",
+        displayFont: "'Fredoka', 'Inter', sans-serif",
+        cornerRadius: 18, frameStyle: 'tape',
+        backdrop: 'rain', textFx: 'marker', lowerThird: 'glass',
+    },
+    {
+        id: 'sketchbook', name: 'Sketchbook',
+        accent: '#ff6b6b', accent2: '#4d96ff',
+        textColor: '#2b2620', panelColor: '#f6efdf',
+        fontFamily: "'Caveat', 'Segoe Print', cursive",
+        displayFont: "'Caveat', 'Segoe Print', cursive",
+        cornerRadius: 6, frameStyle: 'tape',
+        backdrop: 'paper', textFx: 'marker', lowerThird: 'tape',
+    },
+    {
+        id: 'brutalist', name: 'Brutalist',
+        accent: '#ffe600', accent2: '#ff3d00',
+        textColor: '#ffffff', panelColor: '#0a0a0a',
+        fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+        displayFont: "'Anton', 'Impact', sans-serif",
+        cornerRadius: 0, frameStyle: 'brutal',
+        backdrop: 'halftone', textFx: 'block', lowerThird: 'brutal',
+    },
+    {
+        id: 'pixel', name: 'Pixel Quest',
+        accent: '#7cff4f', accent2: '#ff4fd8',
+        textColor: '#ffffff', panelColor: '#0d0b1f',
+        fontFamily: "'VT323', ui-monospace, monospace",
+        displayFont: "'Press Start 2P', 'VT323', monospace",
+        cornerRadius: 0, frameStyle: 'pixel',
+        backdrop: 'starfield', textFx: 'pixel', lowerThird: 'pixel',
+    },
+    {
+        id: 'y2k', name: 'Y2K Chrome',
+        accent: '#9fb4ff', accent2: '#ff7ae0',
+        textColor: '#ffffff', panelColor: '#141633',
+        fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+        displayFont: "'Space Grotesk', 'Inter', sans-serif",
+        cornerRadius: 10, frameStyle: 'window',
+        backdrop: 'blobs', textFx: 'chrome', lowerThird: 'window',
+    },
+    {
+        id: 'lavalamp', name: 'Lava Lamp',
+        accent: '#b4ff39', accent2: '#ff6ad5',
+        textColor: '#ffffff', panelColor: '#120b1a',
+        fontFamily: "'Fredoka', 'Inter', system-ui, sans-serif",
+        displayFont: "'Fredoka', 'Inter', sans-serif",
+        cornerRadius: 28, frameStyle: 'gradient',
+        backdrop: 'blobs', textFx: 'outline', lowerThird: 'glass',
+    },
+    {
+        id: 'sakura', name: 'Sakura',
+        accent: '#ffb7c5', accent2: '#c9a7ff',
+        textColor: '#fff5f8', panelColor: '#1f1020',
+        fontFamily: "'Fredoka', 'Inter', system-ui, sans-serif",
+        displayFont: "'Fredoka', 'Inter', sans-serif",
+        cornerRadius: 22, frameStyle: 'glow',
+        backdrop: 'petals', textFx: 'neon', lowerThird: 'glass',
+    },
+    {
+        id: 'nouveau', name: 'Nouveau',
+        accent: '#e0b354', accent2: '#2a9d8f',
+        textColor: '#fbf4e4', panelColor: '#0f1a1a',
+        fontFamily: "'Playfair Display', Georgia, serif",
+        displayFont: "'Playfair Display', Georgia, serif",
+        cornerRadius: 2, frameStyle: 'ornate',
+        backdrop: 'sunburst', textFx: 'plain', lowerThird: 'bar',
+    },
+    {
+        id: 'vhs', name: 'VHS Rewind',
+        accent: '#ff3b3b', accent2: '#3bd6ff',
+        textColor: '#f4f4f4', panelColor: '#0b0b0f',
+        fontFamily: "'VT323', ui-monospace, monospace",
+        displayFont: "'VT323', ui-monospace, monospace",
+        cornerRadius: 0, frameStyle: 'rec',
+        backdrop: 'scanlines', textFx: 'glitch', lowerThird: 'bar',
+    },
+    {
+        id: 'rewild', name: 'Rewild',
+        accent: '#9bc53d', accent2: '#e9c46a',
+        textColor: '#f4f1e8', panelColor: '#132017',
+        fontFamily: "'Fredoka', 'Inter', system-ui, sans-serif",
+        displayFont: "'Playfair Display', Georgia, serif",
+        cornerRadius: 16, frameStyle: 'tape',
+        backdrop: 'waves', textFx: 'plain', lowerThird: 'glass',
     },
 ];
 
@@ -226,10 +364,16 @@ const TOKEN_MAP = {
     '@panel': 'panelColor',
     '@radius': 'cornerRadius',
     '@font': 'fontFamily',
+    '@frame': 'frameStyle',
+    '@backdrop': 'backdrop',
+    '@fx': 'textFx',
+    '@lt': 'lowerThird',
 };
 
 export const resolveToken = (value, theme = DEFAULT_THEME) => {
     if (typeof value === 'string' && value.startsWith('@')) {
+        // Headline font falls back to the body font on themes without one.
+        if (value === '@display') return theme.displayFont ?? theme.fontFamily;
         const key = TOKEN_MAP[value];
         if (key) return theme[key];
     }
@@ -246,4 +390,8 @@ export const resolveElement = (element, theme = DEFAULT_THEME) => ({
     bgColor: resolveToken(element.bgColor, theme),
     fillColor: resolveToken(element.fillColor, theme),
     borderRadius: resolveToken(element.borderRadius, theme),
+    fontFamily: resolveToken(element.fontFamily, theme),
+    frameStyle: resolveToken(element.frameStyle, theme),
+    variant: resolveToken(element.variant, theme),
+    fx: resolveToken(element.fx, theme),
 });

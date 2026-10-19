@@ -14,11 +14,14 @@ If it's useful to you, a ⭐ helps other streamers find it.
 
 - **Drag-and-drop editor:** place cameras, text and widgets on a 16:9 canvas. No code.
 - **One-link OBS setup:** hit **Go Live**, paste the link into an OBS Browser Source, and your edits sync to OBS as you make them.
+- **Twitch alerts and event list:** pop-up alerts (with a chime) for subs, re-subs, gift subs, gift bombs, raids and cheers, plus a recent-events list. Test alerts from the editor and they play in OBS too. Read-only, no login needed.
+- **Live Twitch chat on stream:** type your channel name and your chat appears in the overlay, styled to match your theme. It shows subs, gift subs and raids, removes deleted messages, and hides bots and !commands. Read-only, no login needed.
 - **Live match scoreboard:** search a fixture and the score updates itself on stream.
 - **Widgets:** follower and sub goals, countdowns, clock, pomodoro, tickers, lower thirds, socials, sticky notes, a spin wheel and shapes.
 - **Pets and mood ring:** little mascots that roam the canvas and react to the mood of the room.
 - **Layouts and scenes:** group scenes (Intro, Gameplay, BRB, Outro) into a layout and switch between them.
-- **Themes:** re-skin the whole overlay in one click.
+- **Themes and style kits:** re-skin the whole overlay in one click. Style-kit themes (Cyber HUD, Synthwave, Lo-fi, Sketchbook, Brutalist, Pixel, Y2K, Lava Lamp, Sakura, Nouveau, VHS, Rewild) also swap the graphics: animated backdrops, headline effects, lower-third plates and cam frames.
+- **Template library:** 30+ ready-made shows (Starting Soon, Gameplay, Just Chatting, BRB, Ending, Offline), filterable by Gaming, Cozy, Retro, Creative and Talk.
 - **Recording:** record the stream right in the browser.
 - **Camera auto-placement (optional):** with OBS WebSocket turned on, your real camera snaps into the overlay's camera frame on every scene switch.
 

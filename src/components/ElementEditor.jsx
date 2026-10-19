@@ -3,6 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import { scoresUrl } from '../config';
 import { MOODS, DEFAULT_MOOD } from '../theme/moods';
 import { PETS, DEFAULT_PET, PetMascot } from './pets';
+import { BACKDROPS, FRAME_STYLES, LOWER_THIRDS, TEXT_FX, isGraphicFrame } from './graphics';
+import { normalizeChannel } from '../live/twitchChat';
+
+// "Theme" entries store the token, so the element follows theme switches.
+const withThemeOption = (list, token) => [{ value: token, label: 'Theme default' }, ...list.map(o => ({ value: o.id, label: o.label }))];
 
 // Quick sticky-note swatches — each pairs a paper colour with readable dark ink.
 const NOTE_PAPERS = [
@@ -22,8 +27,9 @@ const Label = ({ children }) => (
     </span>
 );
 
-const TextInput = ({ value, onChange, placeholder, style = {} }) => (
+const TextInput = ({ value, onChange, placeholder, style = {}, ...rest }) => (
     <input
+        {...rest}
         value={value || ''}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
@@ -220,7 +226,31 @@ const fmtDay = (iso) => {
     } catch { return ''; }
 };
 
-const ElementEditor = ({ element, onChange, onDelete }) => {
+// Channel field that commits on Enter / blur, so typing a name doesn't open a
+// Twitch connection for every partial name on the way.
+const ChannelInput = ({ value, onCommit }) => {
+    const [draft, setDraft] = useState(value ?? '');
+    const [prev, setPrev] = useState(value);
+    if (prev !== value) { setPrev(value); setDraft(value ?? ''); }
+    const commit = () => {
+        const v = normalizeChannel(draft);
+        setDraft(v);
+        if (v !== (value ?? '')) onCommit(v);
+    };
+    const bad = draft.trim() !== '' && !normalizeChannel(draft);
+    return (
+        <TextInput
+            value={draft}
+            onChange={setDraft}
+            placeholder="yourchannel"
+            style={{ width: 140, borderColor: bad ? 'rgba(248,113,113,0.6)' : undefined }}
+            onBlur={commit}
+            onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+        />
+    );
+};
+
+const ElementEditor = ({ element, onChange, onDelete, twitchChannel = '', onTwitchChannelChange }) => {
     const fileRef = useRef(null);
     // Match feed for the scoreboard picker — fetched once when a match element is
     // selected. `null` while loading; otherwise { configured, matches: [...] }.
@@ -764,6 +794,27 @@ const ElementEditor = ({ element, onChange, onDelete }) => {
                 </>
             )}
 
+            {/* ── Style kit: headline effect / plate style ── */}
+            {type === 'text' && (
+                <Group label="Effect">
+                    <SelectInput value={element.fx ?? 'plain'} onChange={v => set('fx', v)} options={withThemeOption(TEXT_FX, '@fx')} />
+                </Group>
+            )}
+            {(type === 'text' || type === 'countdown') && (
+                <Group label="Font">
+                    <SelectInput
+                        value={element.fontFamily ?? ''}
+                        onChange={v => set('fontFamily', v || undefined)}
+                        options={[{ value: '', label: 'Theme body' }, { value: '@display', label: 'Theme headline' }]}
+                    />
+                </Group>
+            )}
+            {type === 'lowerthird' && (
+                <Group label="Plate">
+                    <SelectInput value={element.variant ?? 'panel'} onChange={v => set('variant', v)} options={withThemeOption(LOWER_THIRDS, '@lt')} />
+                </Group>
+            )}
+
             {/* Lower third sub-text */}
             {type === 'lowerthird' && (
                 <Group label="Subtitle">
@@ -872,10 +923,13 @@ const ElementEditor = ({ element, onChange, onDelete }) => {
             {type === 'frame' && (
                 <>
                     <Group label="Frame style">
-                        {['solid', 'glow', 'gradient', 'none'].map(s => (
-                            <ToggleBtn key={s} active={(element.frameStyle ?? 'solid') === s} onClick={() => set('frameStyle', s)} title={s}>{s}</ToggleBtn>
-                        ))}
+                        <SelectInput value={element.frameStyle ?? 'solid'} onChange={v => set('frameStyle', v)} options={withThemeOption(FRAME_STYLES, '@frame')} />
                     </Group>
+                    {(element.frameStyle === '@frame' || isGraphicFrame(element.frameStyle)) && (
+                        <Group label="Label">
+                            <TextInput value={element.content === 'New Title' ? '' : element.content} onChange={v => set('content', v)} placeholder="CAM_01 / webcam.exe / REC" style={{ width: 130 }} />
+                        </Group>
+                    )}
                     <Group label="Border width">
                         <NumberInput value={element.borderWidth} onChange={v => set('borderWidth', v)} min={1} max={24} style={{ width: 52 }} />
                     </Group>
@@ -886,8 +940,113 @@ const ElementEditor = ({ element, onChange, onDelete }) => {
                 </>
             )}
 
+            {/* ── Live chat ── */}
+            {type === 'chat' && (
+                <>
+                    <Group label="Twitch channel">
+                        <ChannelInput value={twitchChannel} onCommit={v => onTwitchChannelChange?.(v)} />
+                    </Group>
+                    <Group label="Style">
+                        <SelectInput value={element.variant ?? '@lt'} onChange={v => set('variant', v)} options={withThemeOption(LOWER_THIRDS, '@lt')} />
+                    </Group>
+                    <Group label="Size">
+                        <NumberInput value={element.fontSize} onChange={v => set('fontSize', v)} min={10} max={48} />
+                    </Group>
+                    <ColorInput value={element.fontColor} onChange={v => set('fontColor', v)} label="Text" />
+                    <Group label="Show last">
+                        <NumberInput value={element.maxMessages} onChange={v => set('maxMessages', v)} min={1} max={40} style={{ width: 52 }} />
+                    </Group>
+                    <Group label="Fade after (s)">
+                        <NumberInput value={element.fadeSec} onChange={v => set('fadeSec', v)} min={0} max={600} style={{ width: 52 }} />
+                    </Group>
+                    <Group label="Filter">
+                        <ToggleBtn active={element.hideCommands !== false} onClick={() => set('hideCommands', element.hideCommands === false)} title="Hide !commands">!cmds</ToggleBtn>
+                        <ToggleBtn active={element.hideBots !== false} onClick={() => set('hideBots', element.hideBots === false)} title="Hide Nightbot, StreamElements and other bots">bots</ToggleBtn>
+                    </Group>
+                    <Group label="Show">
+                        <ToggleBtn active={element.showBadges !== false} onClick={() => set('showBadges', element.showBadges === false)} title="Mod / VIP / sub badges">badges</ToggleBtn>
+                        <ToggleBtn active={element.showEvents !== false} onClick={() => set('showEvents', element.showEvents === false)} title="Subs, gift subs and raids">subs & raids</ToggleBtn>
+                    </Group>
+                    <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace', lineHeight: 1.4, maxWidth: 200 }}>
+                        Read-only, no login needed. The channel applies to every chat box in this layout. Fade 0 = keep messages.
+                    </div>
+                    <Divider />
+                </>
+            )}
+
+            {/* ── Alert box / event list ── */}
+            {(type === 'alerts' || type === 'eventlist') && (
+                <>
+                    <Group label="Twitch channel">
+                        <ChannelInput value={twitchChannel} onCommit={v => onTwitchChannelChange?.(v)} />
+                    </Group>
+                    <Group label="Style">
+                        <SelectInput value={element.variant ?? '@lt'} onChange={v => set('variant', v)} options={withThemeOption(LOWER_THIRDS, '@lt')} />
+                    </Group>
+                    <Group label="Size">
+                        <NumberInput value={element.fontSize} onChange={v => set('fontSize', v)} min={10} max={72} />
+                    </Group>
+                    {type === 'alerts' && (
+                        <>
+                            <Group label="Name effect">
+                                <SelectInput value={element.fx ?? '@fx'} onChange={v => set('fx', v)} options={withThemeOption(TEXT_FX, '@fx')} />
+                            </Group>
+                            <Group label="Show for (s)">
+                                <NumberInput value={element.durationSec} onChange={v => set('durationSec', v)} min={2} max={30} style={{ width: 52 }} />
+                            </Group>
+                            <Group label="Sound">
+                                <ToggleBtn active={element.sound !== false} onClick={() => set('sound', element.sound === false)} title="Play a chime in OBS">chime</ToggleBtn>
+                                <ToggleBtn active={element.showMessage !== false} onClick={() => set('showMessage', element.showMessage === false)} title="Show the viewer's message">message</ToggleBtn>
+                            </Group>
+                        </>
+                    )}
+                    {type === 'eventlist' && (
+                        <>
+                            <Group label="Title">
+                                <TextInput value={element.content} onChange={v => set('content', v)} placeholder="(none)" style={{ width: 120 }} />
+                            </Group>
+                            <Group label="Show last">
+                                <NumberInput value={element.maxEvents} onChange={v => set('maxEvents', v)} min={1} max={20} style={{ width: 52 }} />
+                            </Group>
+                        </>
+                    )}
+                    <Group label="Events">
+                        {[['showSubs', 'subs'], ['showGifts', 'gifts'], ['showRaids', 'raids'], ['showCheers', 'cheers']].map(([k, label]) => (
+                            <ToggleBtn key={k} active={element[k] !== false} onClick={() => set(k, element[k] === false)} title={`Show ${label}`}>{label}</ToggleBtn>
+                        ))}
+                    </Group>
+                    <Group label="Min bits">
+                        <NumberInput value={element.minBits} onChange={v => set('minBits', v)} min={1} max={100000} style={{ width: 64 }} />
+                    </Group>
+                    {type === 'alerts' && (
+                        <Group label="Test">
+                            {[['sub', 'Sub'], ['resub', 'Resub'], ['giftbomb', 'Gifts'], ['raid', 'Raid'], ['cheer', 'Cheer']].map(([t, label]) => (
+                                <ToggleBtn key={t} active={false} onClick={() => onChange({ test: { type: t, at: Date.now() } })} title={`Play a test ${label.toLowerCase()} alert (also shows in OBS)`}>{label}</ToggleBtn>
+                            ))}
+                        </Group>
+                    )}
+                    <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace', lineHeight: 1.4, maxWidth: 220 }}>
+                        Subs, gift subs, raids and cheers come straight from Twitch chat, no login needed. Follows need Twitch login and aren't supported yet.
+                    </div>
+                    <Divider />
+                </>
+            )}
+
+            {/* ── Backdrop scenery ── */}
+            {type === 'backdrop' && (
+                <>
+                    <Group label="Scenery">
+                        <SelectInput value={element.variant ?? '@backdrop'} onChange={v => set('variant', v)} options={withThemeOption(BACKDROPS, '@backdrop')} />
+                    </Group>
+                    <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace', lineHeight: 1.4, maxWidth: 180 }}>
+                        Best on Starting / BRB / Ending screens. It draws over OBS cameras, so leave it out of cam scenes.
+                    </div>
+                    <Divider />
+                </>
+            )}
+
             {/* ── Background ── */}
-            {type !== 'divider' && type !== 'frame' && type !== 'wheel' && type !== 'note' && !isClipShape && !isMoodEl && (
+            {type !== 'divider' && type !== 'frame' && type !== 'backdrop' && type !== 'chat' && type !== 'alerts' && type !== 'eventlist' && type !== 'wheel' && type !== 'note' && !isClipShape && !isMoodEl && (
                 <>
                     <ColorInput value={element.bgColor} onChange={v => set('bgColor', v)} label="BG Color" />
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 110 }}>
@@ -913,7 +1072,7 @@ const ElementEditor = ({ element, onChange, onDelete }) => {
             )}
 
             {/* ── Shared: border radius + element opacity ── */}
-            {type !== 'divider' && type !== 'wheel' && type !== 'note' && !isClipShape && !isMoodEl && (
+            {type !== 'divider' && type !== 'wheel' && type !== 'note' && type !== 'backdrop' && type !== 'chat' && type !== 'alerts' && type !== 'eventlist' && !isClipShape && !isMoodEl && (
                 <Group label="Radius">
                     <NumberInput value={element.borderRadius} onChange={v => set('borderRadius', v)} min={0} max={100} style={{ width: 52 }} />
                 </Group>

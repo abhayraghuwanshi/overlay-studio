@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import { THEMES } from '../theme/themes';
 import { THEME_PACKS, packGradient } from '../scenes/packs';
+import { BACKDROPS, FRAME_STYLES, LOWER_THIRDS, TEXT_FX } from './graphics';
 
 // ── Font choices ──────────────────────────────────────────────────────────
 const FONTS = [
@@ -8,9 +9,40 @@ const FONTS = [
     { label: 'Mono',      value: "'JetBrains Mono', ui-monospace, monospace" },
     { label: 'Serif',     value: 'Georgia, "Times New Roman", serif' },
     { label: 'System',    value: 'system-ui, -apple-system, sans-serif' },
+    { label: 'Grotesk',   value: "'Space Grotesk', 'Inter', system-ui, sans-serif" },
+    { label: 'Rajdhani',  value: "'Rajdhani', 'Inter', system-ui, sans-serif" },
+    { label: 'Fredoka',   value: "'Fredoka', 'Inter', system-ui, sans-serif" },
+    { label: 'Playfair',  value: "'Playfair Display', Georgia, serif" },
+    { label: 'Caveat',    value: "'Caveat', 'Segoe Print', cursive" },
+    { label: 'VT323',     value: "'VT323', ui-monospace, monospace" },
 ];
 
-const FRAMES = ['none', 'solid', 'glow', 'gradient'];
+// Headline fonts, used by elements set to the theme's headline font.
+const DISPLAY_FONTS = [
+    { label: 'Same as body', value: '' },
+    { label: 'Orbitron',     value: "'Orbitron', 'Rajdhani', sans-serif" },
+    { label: 'Monoton',      value: "'Monoton', 'Space Grotesk', sans-serif" },
+    { label: 'Anton',        value: "'Anton', 'Impact', sans-serif" },
+    { label: 'Press Start',  value: "'Press Start 2P', 'VT323', monospace" },
+    { label: 'Playfair',     value: "'Playfair Display', Georgia, serif" },
+    { label: 'Fredoka',      value: "'Fredoka', 'Inter', sans-serif" },
+    { label: 'Caveat',       value: "'Caveat', 'Segoe Print', cursive" },
+    { label: 'VT323',        value: "'VT323', ui-monospace, monospace" },
+];
+
+const selectStyle = {
+    width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 5,
+    color: 'rgba(255,255,255,0.75)', fontSize: 10, fontFamily: 'monospace', padding: '4px 6px', outline: 'none', cursor: 'pointer',
+};
+
+const StyleSelect = ({ caption, value, options, onChange }) => (
+    <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ width: 64, flexShrink: 0, fontSize: 8.5, color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 0.5 }}>{caption}</span>
+        <select value={value ?? ''} onChange={e => onChange(e.target.value)} style={selectStyle}>
+            {options.map(o => <option key={o.id ?? o.value} value={o.id ?? o.value} style={{ background: '#0d0d1a' }}>{o.label}</option>)}
+        </select>
+    </label>
+);
 
 const swatch = (theme) => ({
     width: 44, height: 30, borderRadius: 5, overflow: 'hidden', flexShrink: 0,
@@ -55,6 +87,7 @@ const ThemePanel = ({ theme, onApply, onChange, onInstallPack, onClose }) => {
             zIndex: 350,
             boxShadow: '0 8px 32px rgba(0,0,0,0.65)',
             overflow: 'hidden',
+            maxHeight: 'calc(100% - 64px)', overflowY: 'auto',
         }}>
             {/* Header */}
             <div style={{
@@ -159,15 +192,15 @@ const ThemePanel = ({ theme, onApply, onChange, onInstallPack, onClose }) => {
                     </div>
                 </div>
 
-                {/* ── Frame style ── */}
+                {/* ── Style kit: the graphics token-authored elements pick up ── */}
                 <div>
-                    <div style={labelStyle}>Cam frame</div>
-                    <div style={{ display: 'flex', gap: 4 }}>
-                        {FRAMES.map(fr => (
-                            <button key={fr} onClick={() => set({ frameStyle: fr })} style={tabStyle(t.frameStyle === fr)}>
-                                {fr}
-                            </button>
-                        ))}
+                    <div style={labelStyle}>Graphics</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                        <StyleSelect caption="Cam frame" value={t.frameStyle} options={FRAME_STYLES} onChange={v => set({ frameStyle: v })} />
+                        <StyleSelect caption="Backdrop" value={t.backdrop ?? 'bokeh'} options={BACKDROPS} onChange={v => set({ backdrop: v })} />
+                        <StyleSelect caption="Headline" value={t.textFx ?? 'plain'} options={TEXT_FX} onChange={v => set({ textFx: v })} />
+                        <StyleSelect caption="Lower 3rd" value={t.lowerThird ?? 'panel'} options={LOWER_THIRDS} onChange={v => set({ lowerThird: v })} />
+                        <StyleSelect caption="Head font" value={t.displayFont ?? ''} options={DISPLAY_FONTS} onChange={v => set({ displayFont: v || undefined })} />
                     </div>
                 </div>
             </div>

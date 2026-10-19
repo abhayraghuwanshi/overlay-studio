@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Check, ChevronLeft, ChevronRight, Plus, Trash2, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { getTheme } from '../theme/themes';
+import { TEMPLATE_CATEGORIES } from '../scenes/starterLayouts';
 import { bgToStyle } from './BackgroundPanel';
 import CameraFrame, { DEFAULT_CAM_STYLE } from './CameraFrame';
 import ElementRenderer from './ElementRenderer';
@@ -73,7 +74,7 @@ const Thumb = ({ snapshot = {}, fallbackTheme }) => {
                             position: 'absolute', left: `${e.box.x}%`, top: `${e.box.y}%`, width: `${e.box.w}%`, height: `${e.box.h}%`,
                             overflow: 'hidden', zIndex: 100 + (els.length - 1 - i),
                         }}>
-                            <ElementRenderer element={e} theme={theme} mood={mood} editMode={false} />
+                            <ElementRenderer element={e} theme={theme} mood={mood} editMode={false} preview />
                         </div>
                     ))}
                 </div>
@@ -179,9 +180,9 @@ const richestScene = (scenes = []) => scenes.reduce((best, sc, i) => {
 
 const startSceneOf = (kind, item) => {
     const scenes = item.scenes ?? [];
-    return kind === 'mine'
-        ? Math.max(0, scenes.findIndex(s => s.id === item.activeSceneId))
-        : richestScene(scenes);
+    if (kind === 'mine') return Math.max(0, scenes.findIndex(s => s.id === item.activeSceneId));
+    // Style-kit packs lead with their animated Starting Soon screen.
+    return item.isNew ? 0 : richestScene(scenes);
 };
 
 const LayoutCard = ({ layout, active, selected, onSelect, onRename, onDelete }) => {
@@ -240,7 +241,11 @@ const LayoutCard = ({ layout, active, selected, onSelect, onRename, onDelete }) 
 // a real, editable layout from its scenes.
 const StarterCard = ({ starter, selected, onSelect }) => (
     <Card selected={selected} onSelect={onSelect}>{() => (<>
-        <ScenePreview scenes={starter.scenes} startIndex={startSceneOf('templates', starter)} theme={starter.themeId} />
+        <ScenePreview scenes={starter.scenes} startIndex={startSceneOf('templates', starter)} theme={starter.themeId}>
+            {starter.isNew && (
+                <span style={{ position: 'absolute', top: 5, left: 5, background: 'rgba(250,204,21,0.92)', color: '#1a1405', borderRadius: 5, padding: '2px 6px', fontSize: 8, fontFamily: 'monospace', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>New</span>
+            )}
+        </ScenePreview>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 2px 2px' }}>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.88)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {starter.name}
@@ -327,10 +332,14 @@ const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStart
     // Land on your own layouts once you have some; first-timers see templates.
     const [tab, setTab] = useState(layouts.length > 0 || !hasStarters ? 'mine' : 'templates');
     const [selectedId, setSelectedId] = useState({ mine: activeLayoutId ?? layouts[0]?.id, templates: starters[0]?.id });
+    const [category, setCategory] = useState('all');
 
     const create = () => { onCreate(newName); setNewName(''); };
 
-    const list = tab === 'mine' ? layouts : starters;
+    const shownStarters = category === 'all' ? starters
+        : category === 'new' ? starters.filter(st => st.isNew)
+        : starters.filter(st => st.tags?.includes(category));
+    const list = tab === 'mine' ? layouts : shownStarters;
     const selected = list.find(x => x.id === selectedId[tab]) ?? list[0] ?? null;
     const select = (id) => setSelectedId(s => ({ ...s, [tab]: id }));
     const primary = () => {
@@ -400,6 +409,26 @@ const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStart
                     </div>
                 )}
 
+                {tab === 'templates' && (
+                    /* Category filter — the template library groups by stream type */
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                        {[{ id: 'all', label: 'All' }, ...(starters.some(st => st.isNew) ? [{ id: 'new', label: 'New' }] : []), ...TEMPLATE_CATEGORIES].map(cat => {
+                            const on = category === cat.id;
+                            const n = cat.id === 'all' ? starters.length : cat.id === 'new' ? starters.filter(st => st.isNew).length : starters.filter(st => st.tags?.includes(cat.id)).length;
+                            return (
+                                <button key={cat.id} onClick={() => setCategory(cat.id)} style={{
+                                    padding: '4px 10px', borderRadius: 999, cursor: 'pointer',
+                                    background: on ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.04)',
+                                    border: `1px solid ${on ? 'rgba(165,180,252,0.6)' : 'rgba(255,255,255,0.09)'}`,
+                                    color: on ? '#fff' : 'rgba(255,255,255,0.55)', fontSize: 10, fontFamily: 'monospace', letterSpacing: 0.5,
+                                }}>
+                                    {cat.label} <span style={{ opacity: 0.5 }}>{n}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
+
                 {/* Body — list (2 columns) | preview. Wraps to a single column on narrow screens. */}
                 <div style={{ flex: 1, minHeight: 0, display: 'flex', flexWrap: 'wrap', overflowY: 'auto' }}>
                     <div style={{ flex: '1 1 380px', minWidth: 0, maxHeight: '100%', overflowY: 'auto', padding: 14, boxSizing: 'border-box' }}>
@@ -412,7 +441,7 @@ const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStart
                         ) : (
                             <div style={LIST_GRID}>
                                 {tab === 'templates'
-                                    ? starters.map(st => <StarterCard key={st.id} starter={st} selected={st.id === selected?.id} onSelect={() => select(st.id)} />)
+                                    ? shownStarters.map(st => <StarterCard key={st.id} starter={st} selected={st.id === selected?.id} onSelect={() => select(st.id)} />)
                                     : layouts.map(l => (
                                         <LayoutCard
                                             key={l.id}

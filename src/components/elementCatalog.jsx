@@ -15,6 +15,8 @@ const TONE = {
     timers: '#7dd3fc', // sky
     goals:  '#86efac', // mint
     fun:    '#f9a8d4', // rose
+    gfx:    '#fcd34d', // amber
+    live:   '#c4a1ff', // twitch purple
     shapes: '#cbd5e1', // slate
 };
 
@@ -139,6 +141,33 @@ export const ELEMENT_TYPES = [
         </span>
     )},
 
+    // ── Live ──
+    { type: 'chat',       label: 'Twitch chat', color: TONE.live, preview: (
+        <span style={{ display: 'flex', flexDirection: 'column', gap: 2.5, alignItems: 'flex-start', width: 22 }}>
+            {bar(16, 3, 0.55)}{bar(21, 3, 0.8)}{bar(12, 3)}
+        </span>
+    )},
+
+    { type: 'alerts',     label: 'Alert box',   color: TONE.live, preview: (
+        <svg width="20" height="18" viewBox="0 0 20 18" fill="none" stroke={C} strokeWidth="1.5" strokeLinejoin="round">
+            <path d="M10 1.5 L12.2 6.2 L17.3 6.8 L13.5 10.3 L14.5 15.4 L10 12.9 L5.5 15.4 L6.5 10.3 L2.7 6.8 L7.8 6.2 Z" fill={C} fillOpacity="0.25" />
+        </svg>
+    )},
+    { type: 'eventlist',  label: 'Event list',  color: TONE.live, preview: (
+        <span style={{ display: 'flex', flexDirection: 'column', gap: 2.5, width: 22 }}>
+            {[1, 0.7, 0.45].map((o, i) => <span key={i} style={{ display: 'flex', gap: 2, alignItems: 'center' }}>{bar(3, 3, o)}{bar(17, 3, o)}</span>)}
+        </span>
+    )},
+
+    // ── Graphics ──
+    { type: 'backdrop',   label: 'Backdrop',    color: TONE.gfx, preview: (
+        <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke={C} strokeWidth="1.3">
+            <rect x="0.7" y="0.7" width="20.6" height="14.6" rx="2" />
+            <path d="M1 11 H21 M5 11 L2 15 M9 11 L8 15 M13 11 L14 15 M17 11 L20 15" opacity="0.7" />
+            <circle cx="11" cy="7" r="3" fill={C} stroke="none" opacity="0.8" />
+        </svg>
+    )},
+
     // ── Shapes ──
     { type: 'shape',    group: 'shape', label: 'Rectangle', color: TONE.shapes, preview: <span style={{ width: 20, height: 13, borderRadius: 3, display: 'block', boxShadow: `inset 0 0 0 2px ${C}` }} /> },
     { type: 'circle',   group: 'shape', label: 'Ellipse',   color: TONE.shapes, preview: <span style={{ width: 16, height: 16, borderRadius: '50%', display: 'block', boxShadow: `inset 0 0 0 2px ${C}` }} /> },
@@ -159,6 +188,8 @@ export const ADD_SECTIONS = [
     { title: 'Timers',           types: ['clock', 'countdown', 'pomodoro', 'daycounter'] },
     { title: 'Goals & scores',   types: ['goal', 'liquidgoal', 'match'] },
     { title: 'Fun & interactive', types: ['pet', 'moodring', 'wheel', 'note'] },
+    { title: 'Live',              types: ['chat', 'alerts', 'eventlist'] },
+    { title: 'Graphics',          types: ['backdrop'] },
 ];
 const SECTIONED = new Set(ADD_SECTIONS.flatMap(s => s.types));
 const LEFTOVER = ELEMENT_TYPES.filter(t => t.group !== 'shape' && !SECTIONED.has(t.type)).map(t => t.type);

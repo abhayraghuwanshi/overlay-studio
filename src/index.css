@@ -45,6 +45,42 @@
 @keyframes petSlither{ 0%, 100% { transform: translateY(-5px); } 50% { transform: translateY(5px); } }
 @keyframes petTongue { 0%, 78%, 100% { opacity: 0; } 84%, 94% { opacity: 1; } }
 
+/* ── Style-kit graphics (graphics.jsx) ── */
+@keyframes crtRoll    { from { transform: translateY(-30%); } to { transform: translateY(130%); } }
+@keyframes crtFlicker { 0%, 100% { opacity: 1; } 47% { opacity: 0.92; } 50% { opacity: 0.8; } 53% { opacity: 0.95; } }
+@keyframes blobDrift  {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(8%, -10%) scale(1.15); }
+  66%  { transform: translate(-6%, 8%) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes twinkle    { 0%, 100% { opacity: 0.15; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes bokehFloat { 0% { transform: translateY(0); opacity: 0; } 15%, 85% { opacity: 1; } 100% { transform: translateY(-60%); opacity: 0; } }
+@keyframes hudScan    { from { top: -4%; } to { top: 104%; } }
+@keyframes spinSlow   { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes fallDown   { from { transform: translateY(-8%); } to { transform: translateY(108%); } }
+@keyframes petalSway  { 0%, 100% { transform: translateX(0) rotate(0deg); } 50% { transform: translateX(40px) rotate(160deg); } }
+@keyframes halftonePan{ from { background-position: 0 0; } to { background-position: 72px 72px; } }
+@keyframes neonFlicker{ 0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.55; } }
+@keyframes glitchA {
+  0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+  20% { clip-path: inset(12% 0 60% 0); transform: translate(-4px, 1px); }
+  40% { clip-path: inset(55% 0 20% 0); transform: translate(4px, -1px); }
+  60% { clip-path: inset(30% 0 45% 0); transform: translate(-3px, 0); }
+  80% { clip-path: inset(70% 0 5% 0);  transform: translate(3px, 1px); }
+}
+@keyframes glitchB {
+  0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+  25% { clip-path: inset(60% 0 15% 0); transform: translate(4px, 0); }
+  50% { clip-path: inset(5% 0 70% 0);  transform: translate(-4px, 1px); }
+  75% { clip-path: inset(40% 0 35% 0); transform: translate(2px, -1px); }
+}
+@keyframes chatIn     { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes alertIn    { 0% { opacity: 0; transform: translateY(-40px) scale(0.85); } 60% { opacity: 1; transform: translateY(4px) scale(1.04); } 100% { opacity: 1; transform: none; } }
+@keyframes alertOut   { to { opacity: 0; transform: translateY(-24px) scale(0.95); } }
+@keyframes alertSpark { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); } }
+@keyframes recBlink   { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
 @theme {
   --color-obs-bg: rgba(0, 0, 0, 0);
 }

@@ -4,6 +4,9 @@ import { scoresUrl } from '../config';
 import { DEFAULT_THEME, resolveElement } from '../theme/themes';
 import { getMood } from '../theme/moods';
 import { DEFAULT_PET, PetMascot, WalkingPet } from './pets';
+import { Backdrop, FxText, GraphicFrame, LowerThirdPlate, isGraphicFrame } from './graphics';
+import ChatBox from './ChatBox';
+import { AlertBox, EventList } from './LiveAlerts';
 
 // Social platforms surfaced by the `social` chip element. Each maps to a lucide
 // icon and a brand tint; platforms lucide doesn't ship (discord/tiktok/kick) use
@@ -97,7 +100,8 @@ export const defaultElement = (type, theme = DEFAULT_THEME) => {
             bgOpacity: 0,
             borderRadius: '@radius',
             borderWidth: 3,
-            frameStyle: T.frameStyle,  // none | solid | glow | gradient
+            frameStyle: T.frameStyle,  // see FRAME_STYLES in graphics.jsx
+            content: '',               // label on HUD / window / camcorder frames
             box: { x: 49, y: 6, w: 22, h: 32 },
         },
         logo: {
@@ -169,6 +173,34 @@ export const defaultElement = (type, theme = DEFAULT_THEME) => {
             paperColor: '#fde68a', fontColor: '#3a2f10',
             fontSize: 16, tilt: -3,
             box: { x: 74, y: 8, w: 20, h: 26 },
+        },
+        chat: {
+            // Live Twitch chat. The channel is a layout-wide setting; `channel`
+            // here overrides it for this box only.
+            channel: '', variant: '@lt',
+            fontSize: 22, fontColor: T.textColor,
+            maxMessages: 10, fadeSec: 0,
+            hideCommands: true, hideBots: true, showBadges: true, showEvents: true,
+            box: { x: 72, y: 22, w: 26, h: 56 },
+        },
+        alerts: {
+            // Pop-up for subs / gift subs / raids / cheers from the chat feed.
+            channel: '', variant: '@lt', fx: '@fx',
+            fontSize: 28, durationSec: 6, sound: true, volume: 0.5, showMessage: true,
+            showSubs: true, showGifts: true, showRaids: true, showCheers: true, minBits: 1,
+            box: { x: 28, y: 6, w: 44, h: 30 },
+        },
+        eventlist: {
+            channel: '', variant: '@lt', content: 'RECENT EVENTS',
+            fontSize: 18, maxEvents: 6,
+            showSubs: true, showGifts: true, showRaids: true, showCheers: true, minBits: 1,
+            box: { x: 2, y: 30, w: 22, h: 40 },
+        },
+        backdrop: {
+            // Animated full-canvas scenery; follows the theme's backdrop unless
+            // the streamer pins one.
+            variant: '@backdrop',
+            box: { x: 0, y: 0, w: 100, h: 100 },
         },
         daycounter: {
             content: '#100DaysOfCode', day: 1, prefix: 'DAY',
@@ -290,8 +322,9 @@ const CountdownElement = ({ element }) => {
             fontSize: element.fontSize,
             color: element.fontColor,
             fontWeight: element.bold ? 'bold' : 'normal',
-            fontFamily: 'monospace',
-            textShadow: '0 2px 8px rgba(0,0,0,0.6)',
+            fontFamily: element.fontFamily || 'monospace',
+            fontVariantNumeric: 'tabular-nums',
+            textShadow: element.glow ? `0 0 18px ${element.fontColor}, 0 2px 8px rgba(0,0,0,0.6)` : '0 2px 8px rgba(0,0,0,0.6)',
             letterSpacing: 2,
         }}>
             {fmtCountdown(remaining)}
@@ -742,7 +775,9 @@ const MatchElement = ({ element, T }) => {
 };
 
 // ── Main renderer ──────────────────────────────────────────────────────────
-const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, theme = DEFAULT_THEME, mood = 'chill' }) => {
+// `channel` is the layout's Twitch channel; `preview` marks gallery thumbnails
+// (they show sample chat rather than nothing).
+const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, preview = false, channel = '', theme = DEFAULT_THEME, mood = 'chill' }) => {
     const T = theme ?? DEFAULT_THEME;
     // Resolve any theme tokens (@accent, @text, @radius…) to concrete values.
     const resolved = resolveElement(element, T);
@@ -776,22 +811,54 @@ const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, the
         textAlign: align,
         letterSpacing,
         lineHeight: 1.2,
-        textShadow: bgOpacity > 0 ? 'none' : '0 2px 10px rgba(0,0,0,0.7)',
-        fontFamily: T.fontFamily,
+        // `shadow: false` drops the legibility shadow (light / paper themes).
+        textShadow: bgOpacity > 0 || resolved.shadow === false ? 'none' : '0 2px 10px rgba(0,0,0,0.7)',
+        fontFamily: resolved.fontFamily || T.fontFamily,
         wordBreak: 'break-word',
     };
 
     // ── Text ──
     if (type === 'text') {
+        const label = content || 'Title Text';
+        const styled = resolved.fx && resolved.fx !== 'plain'
+            ? <FxText fx={resolved.fx} base={textStyle} T={T}>{label}</FxText>
+            : null;
         return (
-            <div style={{ ...outerStyle, display: 'flex', alignItems: 'center', justifyContent: align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center', padding: '4px 12px' }}>
-                <span style={{ ...textStyle, width: '100%' }}>{content || 'Title Text'}</span>
+            <div style={{ ...outerStyle, overflow: styled ? 'visible' : 'hidden', display: 'flex', alignItems: 'center', justifyContent: align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center', padding: '4px 12px' }}>
+                {styled ?? <span style={{ ...textStyle, width: '100%' }}>{label}</span>}
             </div>
         );
     }
 
+    // ── Live chat ── Twitch chat styled with the theme's lower-third look
+    if (type === 'chat') {
+        return <ChatBox element={resolved} T={T} channel={channel} editMode={editMode} preview={preview} />;
+    }
+
+    // ── Alerts / event list ── subs, gifts, raids, cheers from the chat feed
+    if (type === 'alerts') {
+        return <AlertBox element={resolved} T={T} channel={channel} editMode={editMode} />;
+    }
+    if (type === 'eventlist') {
+        return <EventList element={resolved} T={T} channel={channel} editMode={editMode} preview={preview} />;
+    }
+
+    // ── Backdrop ── animated full-canvas scenery from the style kit
+    if (type === 'backdrop') {
+        return <Backdrop variant={resolved.variant} T={T} opacity={opacity} />;
+    }
+
     // ── Lower Third ──
     if (type === 'lowerthird') {
+        const subStyle = { fontSize: subFontSize, color: subFontColor, fontFamily: T.fontFamily, lineHeight: 1.2, letterSpacing: 0.5 };
+        const plate = resolved.variant && resolved.variant !== 'panel' && (
+            <LowerThirdPlate
+                variant={resolved.variant} T={T} radius={borderRadius}
+                name={content || 'Your Name'} sub={subContent || 'Role / Subtitle'}
+                nameStyle={textStyle} subStyle={subStyle}
+            />
+        );
+        if (plate) return <div style={{ width: '100%', height: '100%', opacity }}>{plate}</div>;
         return (
             <div style={{ ...outerStyle, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '6px 14px', gap: 2 }}>
                 <div style={{ ...textStyle, marginBottom: 0 }}>{content || 'Your Name'}</div>
@@ -820,15 +887,27 @@ const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, the
 
     // ── Cam frame ── decorative border over a cam box; transparent centre.
     if (type === 'frame') {
-        const fs = element.frameStyle ?? T.frameStyle ?? 'solid';
+        const fs = resolved.frameStyle ?? T.frameStyle ?? 'solid';
         if (fs === 'none') return null;
         const color = bgColor;           // resolved frame colour (defaults to @accent)
         const w = element.borderWidth ?? 4;
+        if (isGraphicFrame(fs)) {
+            return (
+                <div style={{ width: '100%', height: '100%', opacity }}>
+                    <GraphicFrame style={fs} color={color} T={T} w={w} radius={typeof borderRadius === 'number' ? borderRadius : 0} label={element.content === 'New Title' ? '' : element.content} />
+                </div>
+            );
+        }
         if (fs === 'gradient') {
             return (
-                <div style={{ width: '100%', height: '100%', borderRadius, padding: w, opacity, boxSizing: 'border-box', background: `linear-gradient(135deg, ${color}, ${T.accent2})` }}>
-                    <div style={{ width: '100%', height: '100%', borderRadius: Math.max(0, borderRadius - w), background: 'transparent' }} />
-                </div>
+                // Mask out the content box so only the gradient ring paints and the
+                // cam underneath stays visible.
+                <div style={{
+                    width: '100%', height: '100%', borderRadius, padding: w, opacity, boxSizing: 'border-box',
+                    background: `linear-gradient(135deg, ${color}, ${T.accent2})`,
+                    WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
+                    WebkitMaskComposite: 'xor', mask: 'linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0)',
+                }} />
             );
         }
         // "glow" is a soft halo, not a neon tube: a slightly translucent stroke, a

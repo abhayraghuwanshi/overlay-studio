@@ -142,9 +142,11 @@ const ticker = (content, box, extra = {}) => ({
 });
 
 // ── Scene builder ── stamps stable per-scene ids + shared element defaults ───
-const scene = (name, background, els = [], boxes = {}, vis = {}) => ({
+// `extra` merges into the snapshot (e.g. camStyles for shaped cams).
+const scene = (name, background, els = [], boxes = {}, vis = {}, extra = {}) => ({
     name,
     snapshot: {
+        ...extra,
         background,
         boxes,
         boxVisibility: { ...hideAll, ...vis },
@@ -292,24 +294,84 @@ const kitShow = (c) => {
             backdrop(),
         ]);
 
-    const gameplay = scene('Gameplay', transparent, [
+    // Shaped packs (hexagon / circle / diamond cams) style the camera itself;
+    // the rest frame a plain cam with the theme's graphic cam-frame element.
+    // Every scene sets camStyles so a shape never leaks into the next scene.
+    const camStyles = c.camShape
+        ? { faceCam: { frame: c.camShape, radius: 0 }, roomCam: { frame: c.camShape, radius: 0 } }
+        : { faceCam: { frame: 'none' }, roomCam: { frame: 'none' } };
+    const camScene = (name, bg, els, boxes, vis) => scene(name, bg, els, boxes, vis, { camStyles });
+    const framed = (box, extra) => (c.camShape ? [] : [camFrame(box, extra)]);
+    const shapedBox = (box) => (c.camShape === 'circle' || c.camShape === 'hexagon' || c.camShape === 'diamond'
+        // keep shaped cams roughly square on the 16:9 canvas
+        ? { ...box, w: +(box.h * 9 / 16).toFixed(1) }
+        : box);
+    const tickerLine = c.ticker ?? 'Welcome in — grab a seat\nFollow so you never miss a stream\n!discord to hang out between streams';
+    const chatBg = c.chatBg ?? c.bg;
+
+    const camSized = shapedBox({ x: 76, y: 64, w: 22, h: 32 });
+    const gameCam = { ...camSized, x: 98 - camSized.w };   // keep it hugging the right edge
+    const gameplay = camScene('Gameplay', transparent, [
         alerts({ x: 28, y: 5, w: 44, h: 30 }),
         live({ x: 2, y: 3, w: 10, h: 6 }),
         eventlist({ x: 78, y: 3, w: 20, h: 26 }),
-        camFrame({ x: 76, y: 66, w: 22, h: 30 }),
-        goal(c.goal ?? 'Sub Goal', 34, 50, { x: 76, y: 58, w: 22, h: 6 }),
+        ...framed(gameCam),
+        goal(c.goal ?? 'Sub Goal', 34, 50, { x: 76, y: 56, w: 22, h: 6 }),
         plate(c.name ?? 'Your Name', c.role ?? 'Live now', { x: 2, y: 82, w: 30, h: 11 }),
-    ], { faceCam: { x: 76, y: 66, w: 22, h: 30 } }, { faceCam: true });
+    ], { faceCam: gameCam }, { faceCam: true });
 
-    const chatting = scene('Just Chatting', c.chatBg ?? c.bg, [
+    // Just Chatting 1 — big cam left, chat column right.
+    const sideCam = c.camShape ? { x: 8, y: 13, w: 40, h: 72 } : { x: 3, y: 13, w: 58, h: 72 };
+    const chatting = camScene('Just Chatting', chatBg, [
         alerts({ x: 9, y: 16, w: 46, h: 30 }),
         live({ x: 3, y: 5, w: 10, h: 6 }),
-        camFrame({ x: 3, y: 13, w: 58, h: 72 }),
+        ...framed(sideCam),
         plate(c.name ?? 'Your Name', c.chatRole ?? 'Just chatting', { x: 64, y: 13, w: 33, h: 12 }),
         goal(c.goal ?? 'Sub Goal', 34, 50, { x: 64, y: 30, w: 33, h: 7 }, c.light ? { fontColor: '@text' } : {}),
         chat({ x: 64, y: 40, w: 33, h: 49 }),
-        ticker(c.ticker ?? 'Welcome in — grab a seat\nFollow so you never miss a stream\n!discord to hang out between streams', { x: 0, y: 92, w: 100, h: 8 }),
-    ], { faceCam: { x: 3, y: 13, w: 58, h: 72 } }, { faceCam: true });
+        ticker(tickerLine, { x: 0, y: 92, w: 100, h: 8 }),
+    ], { faceCam: sideCam }, { faceCam: true });
+
+    // Just Chatting 2 — centred cam, info column left, chat right.
+    const midCam = c.camShape ? { x: 31, y: 12, w: 38, h: 68 } : { x: 26, y: 12, w: 48, h: 68 };
+    const center = camScene('Just Chatting · Center', chatBg, [
+        alerts({ x: 28, y: 14, w: 44, h: 30 }),
+        live({ x: 3, y: 4, w: 10, h: 6 }),
+        ...framed(midCam),
+        plate(c.name ?? 'Your Name', c.chatRole ?? 'Just chatting', { x: 2, y: 12, w: 22, h: 12 }, { fontSize: 20 }),
+        goal(c.goal ?? 'Sub Goal', 34, 50, { x: 2, y: 28, w: 22, h: 7 }, c.light ? { fontColor: '@text' } : {}),
+        eventlist({ x: 2, y: 40, w: 22, h: 30 }, { maxEvents: 5 }),
+        social('twitch', c.handle, { x: 2, y: 74, w: 22, h: 6 }),
+        chat({ x: 76, y: 12, w: 22, h: 68 }, { fontSize: 20, maxMessages: 10 }),
+        ticker(tickerLine, { x: 0, y: 92, w: 100, h: 8 }),
+    ], { faceCam: midCam }, { faceCam: true });
+
+    // Game + Cam — a 16:9 game window (cut out so an OBS game capture shows
+    // through), cam and chat stacked on the right.
+    const gameWin = { x: 2, y: 4, w: 70, h: 70 };
+    const sideCam2 = c.camShape ? { x: 79, y: 4, w: 14, h: 30 } : { x: 74, y: 4, w: 24, h: 30 };
+    const game = camScene('Game + Cam', chatBg, [
+        alerts({ x: 15, y: 12, w: 44, h: 30 }),
+        camFrame(gameWin, { hole: true, content: 'GAME', frameStyle: '@frame' }),
+        ...framed(sideCam2),
+        chat({ x: 74, y: 37, w: 24, h: 52 }, { fontSize: 20 }),
+        plate(c.name ?? 'Your Name', c.role ?? 'Live now', { x: 2, y: 78, w: 36, h: 11 }),
+        goal(c.goal ?? 'Sub Goal', 34, 50, { x: 41, y: 80, w: 31, h: 7 }, c.light ? { fontColor: '@text' } : {}),
+        ticker(tickerLine, { x: 0, y: 92, w: 100, h: 8 }),
+    ], { faceCam: sideCam2 }, { faceCam: true });
+
+    // Duo — two cams side by side for co-hosts and podcasts. The guest is the
+    // Room Cam slot (name the OBS source with "room" for auto-placement).
+    const duoA = c.camShape ? { x: 12, y: 12, w: 33, h: 60 } : { x: 3, y: 12, w: 46, h: 62 };
+    const duoB = c.camShape ? { x: 55, y: 12, w: 33, h: 60 } : { x: 51, y: 12, w: 46, h: 62 };
+    const duo = camScene('Duo', chatBg, [
+        alerts({ x: 28, y: 14, w: 44, h: 30 }),
+        live({ x: 3, y: 3, w: 10, h: 6 }),
+        ...framed(duoA), ...framed(duoB),
+        plate(c.name ?? 'Your Name', c.hostRole ?? 'Host', { x: duoA.x, y: 77, w: Math.min(30, duoA.w), h: 11 }),
+        plate('Guest Name', 'Guest', { x: duoB.x, y: 77, w: Math.min(30, duoB.w), h: 11 }),
+        ticker(tickerLine, { x: 0, y: 92, w: 100, h: 8 }),
+    ], { faceCam: duoA, roomCam: duoB }, { faceCam: true, roomCam: true });
 
     const brb = scene('Be Right Back', c.bg, [
         clock({ x: 43, y: 8, w: 14, h: 6 }, c.light ? { fontColor: '@text' } : {}),
@@ -335,7 +397,7 @@ const kitShow = (c) => {
         backdrop(),
     ]);
 
-    return [starting, gameplay, chatting, brb, ending, offline];
+    return [starting, gameplay, chatting, center, game, ...(c.duo ? [duo] : []), brb, ending, offline];
 };
 
 // Style-kit packs, modelled on the looks leading the overlay marketplaces
@@ -343,7 +405,7 @@ const kitShow = (c) => {
 // lamp, nouveau, VHS…). Each is six scenes on one style-kit theme.
 const KIT_LAYOUTS = [
     {
-        id: 'kit-tactical-hud', name: 'Tactical HUD', themeId: 'cyberhud', tags: ['gaming'], isNew: true,
+        id: 'kit-tactical-hud', name: 'Tactical HUD', themeId: 'cyberhud', tags: ['gaming'], kit: true,
         tagline: 'HUD grid · glitch type · bracket cam',
         scenes: kitShow({
             split: true, bg: grad('#021018', '#000000', '160deg'), chatBg: grad('#03141c', '#01060a', '160deg'),
@@ -355,7 +417,7 @@ const KIT_LAYOUTS = [
         }),
     },
     {
-        id: 'kit-outrun', name: 'Outrun', themeId: 'synthwave', tags: ['retro', 'gaming'], isNew: true,
+        id: 'kit-outrun', name: 'Outrun', themeId: 'synthwave', tags: ['retro', 'gaming'], kit: true,
         tagline: 'Synth sun · neon grid · chrome 3D type',
         scenes: kitShow({
             bg: grad('#1a0033', '#05000f', '180deg'),
@@ -364,7 +426,7 @@ const KIT_LAYOUTS = [
         }),
     },
     {
-        id: 'kit-lofi-cafe', name: 'Lo-fi Café', themeId: 'lofi', tags: ['cozy', 'creative'], isNew: true,
+        id: 'kit-lofi-cafe', name: 'Lo-fi Café', themeId: 'lofi', tags: ['cozy', 'creative'], kit: true,
         tagline: 'Rainy window · glass plates · study vibes',
         scenes: kitShow({
             split: true, titleScale: 1.15, bg: grad('#2a1d17', '#0f0a08', '170deg'),
@@ -377,7 +439,7 @@ const KIT_LAYOUTS = [
         }),
     },
     {
-        id: 'kit-sketchbook', name: 'Sketchbook', themeId: 'sketchbook', tags: ['creative', 'cozy'], isNew: true,
+        id: 'kit-sketchbook', name: 'Sketchbook', themeId: 'sketchbook', tags: ['creative', 'cozy'], kit: true,
         tagline: 'Paper doodles · tape · marker headlines',
         scenes: kitShow({
             light: true, titleScale: 1.3, bg: grad('#f6efdf', '#ece1c8', '160deg'), chatBg: grad('#efe5cf', '#e2d5b8', '160deg'),
@@ -388,7 +450,7 @@ const KIT_LAYOUTS = [
         }),
     },
     {
-        id: 'kit-brutalist', name: 'Brutalist', themeId: 'brutalist', tags: ['creative', 'pro'], isNew: true,
+        id: 'kit-brutalist', name: 'Brutalist', themeId: 'brutalist', tags: ['creative', 'pro'], kit: true,
         tagline: 'Halftone · hard shadows · block type',
         scenes: kitShow({
             split: true, bg: grad('#111111', '#000000', '135deg'),
@@ -399,7 +461,7 @@ const KIT_LAYOUTS = [
         }),
     },
     {
-        id: 'kit-pixel-quest', name: 'Pixel Quest', themeId: 'pixel', tags: ['retro', 'gaming'], isNew: true,
+        id: 'kit-pixel-quest', name: 'Pixel Quest', themeId: 'pixel', tags: ['retro', 'gaming'], kit: true,
         tagline: '8-bit stars · stepped frames · pixel type',
         scenes: kitShow({
             titleScale: 0.7, bg: grad('#120f2e', '#05040f', '180deg'),
@@ -409,7 +471,7 @@ const KIT_LAYOUTS = [
         }),
     },
     {
-        id: 'kit-y2k', name: 'Y2K Desktop', themeId: 'y2k', tags: ['retro', 'creative'], isNew: true,
+        id: 'kit-y2k', name: 'Y2K Desktop', themeId: 'y2k', tags: ['retro', 'creative'], kit: true,
         tagline: 'Chrome type · OS windows · lava blobs',
         scenes: kitShow({
             bg: grad('#1b1d4a', '#07081a', '160deg'),
@@ -419,7 +481,7 @@ const KIT_LAYOUTS = [
         }),
     },
     {
-        id: 'kit-lava-lamp', name: 'Lava Lamp', themeId: 'lavalamp', tags: ['cozy', 'creative'], isNew: true,
+        id: 'kit-lava-lamp', name: 'Lava Lamp', themeId: 'lavalamp', tags: ['cozy', 'creative'], kit: true,
         tagline: 'Blobby gradients · outline type · glass',
         scenes: kitShow({
             bg: grad('#150c22', '#06030b', '160deg'),
@@ -428,7 +490,7 @@ const KIT_LAYOUTS = [
         }),
     },
     {
-        id: 'kit-sakura', name: 'Sakura Season', themeId: 'sakura', tags: ['cozy'], isNew: true,
+        id: 'kit-sakura', name: 'Sakura Season', themeId: 'sakura', tags: ['cozy'], kit: true,
         tagline: 'Falling petals · soft neon · glass',
         scenes: kitShow({
             bg: grad('#2a1428', '#0c060d', '170deg'),
@@ -438,7 +500,7 @@ const KIT_LAYOUTS = [
         }),
     },
     {
-        id: 'kit-nouveau', name: 'Grand Nouveau', themeId: 'nouveau', tags: ['pro'], isNew: true,
+        id: 'kit-nouveau', name: 'Grand Nouveau', themeId: 'nouveau', tags: ['pro'], kit: true,
         tagline: 'Art-deco rays · ornate frame · serif',
         scenes: kitShow({
             bg: grad('#10201f', '#030706', '160deg'),
@@ -448,7 +510,7 @@ const KIT_LAYOUTS = [
         }),
     },
     {
-        id: 'kit-vhs', name: 'VHS Rewind', themeId: 'vhs', tags: ['retro'], isNew: true,
+        id: 'kit-vhs', name: 'VHS Rewind', themeId: 'vhs', tags: ['retro'], kit: true,
         tagline: 'CRT scanlines · camcorder cam · glitch',
         scenes: kitShow({
             split: true, titleScale: 1.5, bg: grad('#101014', '#000000', '180deg'),
@@ -459,7 +521,7 @@ const KIT_LAYOUTS = [
         }),
     },
     {
-        id: 'kit-rewild', name: 'Rewild', themeId: 'rewild', tags: ['cozy'], isNew: true,
+        id: 'kit-rewild', name: 'Rewild', themeId: 'rewild', tags: ['cozy'], kit: true,
         tagline: 'Earthy waves · polaroid cam · calm',
         scenes: kitShow({
             split: true, bg: grad('#16261a', '#060c07', '160deg'),
@@ -467,6 +529,106 @@ const KIT_LAYOUTS = [
             today: ['Garden check-in', 'Cozy game', 'Tea & chat'],
             role: 'slow living', chatRole: 'garden chat', goal: 'Seed Fund', brb: 'Out in the garden', brbSub: 'back shortly 🌿',
             end: 'Until next time', offline: 'Gone outside',
+        }),
+    },
+];
+
+
+// Motif packs — modelled on the best-selling Streamlabs-library themes (Norse,
+// samurai, night city, sun & moon, Halloween, esports, cats, café). Shaped-cam
+// packs (camShape) use hexagon / circle / diamond webcams; talk packs add Duo.
+const MOTIF_LAYOUTS = [
+    {
+        id: 'kit-valhalla', name: 'Valhalla', themeId: 'viking', tags: ['gaming'], kit: true, isNew: true,
+        tagline: 'Rising embers · Norse serif · rune cam',
+        scenes: kitShow({
+            camShape: 'diamond', bg: grad('#1c0f07', '#050302', '170deg'),
+            title: 'THE HORN SOUNDS', tagline: 'Gather in the great hall — the raid begins soon', handle: '@jarl',
+            role: 'Raiding', chatRole: 'Mead hall', goal: 'Shield Wall', brb: 'SHARPENING AXES', brbSub: 'Back before the next tide',
+            end: 'SKÅL!', endSub: 'Until we feast again in Valhalla', offline: 'THE HALL IS QUIET',
+            ticker: 'Join the shield wall — follow for raid alerts\n!discord for the longhouse\nSkål to every raider',
+        }),
+    },
+    {
+        id: 'kit-samurai', name: 'Samurai', themeId: 'samurai', tags: ['gaming', 'creative'], kit: true, isNew: true,
+        tagline: 'Rising sun · seigaiha waves · hex cam',
+        scenes: kitShow({
+            split: true, camShape: 'hexagon', bg: grad('#1a0707', '#050102', '170deg'),
+            title: 'THE DUEL BEGINS', tagline: 'Blades drawn — stream starting', handle: '@ronin',
+            today: ['Warm-up kata', 'Ranked duels', 'Viewer battles'],
+            role: 'The way of the blade', chatRole: 'Tea house', goal: 'Honour Goal', brb: 'MEDITATING', brbSub: 'Back after the tea ceremony 🍵',
+            end: 'ARIGATŌ', endSub: 'Thank you for watching — until the next duel', offline: 'THE DOJO IS CLOSED',
+            schedule: ['Mon · Ranked duels', 'Wed · Viewer battles', 'Sat · Boss rush'],
+        }),
+    },
+    {
+        id: 'kit-night-city', name: 'Night City', themeId: 'nightcity', tags: ['gaming', 'retro'], kit: true, isNew: true,
+        tagline: 'Neon skyline · glitch type · HUD cam',
+        scenes: kitShow({
+            split: true, bg: grad('#0a0a1c', '#020205', '180deg'),
+            title: 'JACKING IN', tagline: 'Uplink established — stream online shortly', handle: '@netrunner',
+            today: ['Gig: main story', 'Side jobs', 'Chat picks the build'],
+            role: 'Netrunning', chatRole: 'Afterlife bar', goal: 'Eddies Goal', brb: 'SIGNAL JAMMED', brbSub: 'Rebooting cyberdeck…',
+            end: 'FLATLINED', endSub: 'Thanks for running with me, choom', offline: 'OFF THE GRID',
+            ticker: 'Follow for gig alerts\n!build to see the loadout\nWake up, chat — we have a city to burn',
+        }),
+    },
+    {
+        id: 'kit-sun-moon', name: 'Sun & Moon', themeId: 'celestial', tags: ['cozy'], kit: true, isNew: true,
+        tagline: 'Crescent moon · starfield · round cam',
+        scenes: kitShow({
+            camShape: 'circle', duo: true, bg: grad('#121638', '#04050f', '170deg'),
+            title: 'The Stars Align', tagline: 'a gentle stream is rising', handle: '@luna',
+            role: 'Night stream', chatRole: 'Stargazing', hostRole: 'Sun', goal: 'Star Goal', brb: 'Eclipse', brbSub: 'back when the light returns',
+            end: 'Goodnight, stars', endSub: 'thank you for orbiting with me ✨', offline: 'Below the horizon',
+            schedule: ['Mon · Tarot & chat', 'Thu · Cozy games', 'Sun · Moonlit art'],
+        }),
+    },
+    {
+        id: 'kit-spooky', name: 'Spooky Season', themeId: 'spooky', tags: ['seasonal', 'gaming'], kit: true, isNew: true,
+        tagline: 'Bats · full moon · fog — Halloween',
+        scenes: kitShow({
+            bg: grad('#1a0b24', '#050208', '180deg'),
+            title: 'THE HAUNTING BEGINS', tagline: 'Something wicked this way streams 🎃', handle: '@spooky',
+            role: 'Horror night', chatRole: 'Campfire stories', goal: 'Candy Goal', brb: 'BE RIGHT BOO', brbSub: 'Checking under the bed…',
+            end: 'SWEET SCREAMS', endSub: 'Thanks for surviving the night 👻', offline: 'THE CRYPT IS CLOSED',
+            ticker: 'Trick or treat — follow for a treat\n!jumpscare for regrets\nHappy Halloween, chat 🎃',
+        }),
+    },
+    {
+        id: 'kit-esports', name: 'Esports Arena', themeId: 'esports', tags: ['gaming', 'pro'], kit: true, isNew: true,
+        tagline: 'Broadcast desk · bold plates · casters duo',
+        scenes: kitShow({
+            split: true, duo: true, bg: grad('#0b1328', '#03050c', '160deg'),
+            title: 'MATCH DAY', tagline: 'Pre-show begins shortly', handle: '@arena',
+            today: ['Pre-show analysis', 'Grand final · Bo5', 'Post-match interviews'],
+            role: 'Grand Final', chatRole: 'Analyst desk', hostRole: 'Caster', goal: 'Viewer Goal', brb: 'TECHNICAL PAUSE', brbSub: 'Players are resetting — stay tuned',
+            end: 'GG WP', endSub: 'Thanks for watching the final', offline: 'NEXT MATCH SOON',
+            schedule: ['Fri · Qualifiers', 'Sat · Playoffs', 'Sun · Grand final'],
+            ticker: 'Predictions are open — !predict\nFollow for match alerts\nGG to both teams',
+        }),
+    },
+    {
+        id: 'kit-kitty', name: 'Kitty Café', themeId: 'kitty', tags: ['cozy'], kit: true, isNew: true,
+        tagline: 'Paw prints · floating hearts · round cam',
+        scenes: kitShow({
+            camShape: 'circle', bg: grad('#2c1d38', '#120b18', '170deg'),
+            title: 'Starting soon!', tagline: 'the cats are getting comfy 🐾', handle: '@kittycafe',
+            role: 'cozy stream', chatRole: 'pets & chats', goal: 'Treat Goal', brb: 'brb, cat on keyboard', brbSub: 'rescuing the stream from paws',
+            end: 'thanks for the pets ♡', endSub: 'see you next time, kitties', offline: 'napping 💤',
+            ticker: 'pet the cat: !pet\nfollow for more cat content\nbe purrfect in chat ♡',
+        }),
+    },
+    {
+        id: 'kit-coffee', name: 'Coffee Lovers', themeId: 'coffee', tags: ['cozy', 'creative'], kit: true, isNew: true,
+        tagline: 'Rising steam · polaroid notes · duo',
+        scenes: kitShow({
+            split: true, duo: true, bg: grad('#2b1d14', '#0f0905', '170deg'),
+            title: 'Brewing…', tagline: 'fresh stream, just poured ☕', handle: '@brewbar',
+            today: ['Morning catch-up', 'Study session', 'Coffee tasting'],
+            role: 'study with me', chatRole: 'café chat', hostRole: 'Barista', goal: 'Coffee Fund', brb: 'Refill break', brbSub: 'grinding fresh beans',
+            end: 'Last call!', endSub: 'thanks for sharing a cup with me', offline: 'Café closed',
+            schedule: ['Mon · Study with me', 'Wed · Latte art', 'Fri · Coffee & games'],
         }),
     },
 ];
@@ -479,9 +641,11 @@ export const TEMPLATE_CATEGORIES = [
     { id: 'retro',    label: 'Retro' },
     { id: 'creative', label: 'Creative' },
     { id: 'pro',      label: 'Talk & pro' },
+    { id: 'seasonal', label: 'Seasonal' },
 ];
 
 export const STARTER_LAYOUTS = [
+    ...MOTIF_LAYOUTS,
     ...KIT_LAYOUTS,
     {
         id: 'aurora-glow', name: 'Aurora Glow', themeId: 'aurora', tags: ['cozy'],

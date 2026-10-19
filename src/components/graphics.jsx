@@ -43,6 +43,13 @@ export const BACKDROPS = [
     { id: 'paper',     label: 'Paper' },
     { id: 'halftone',  label: 'Halftone' },
     { id: 'sunburst',  label: 'Sunburst' },
+    { id: 'embers',    label: 'Embers' },
+    { id: 'skyline',   label: 'Neon skyline' },
+    { id: 'nightsky',  label: 'Moonlit sky' },
+    { id: 'spooky',    label: 'Spooky night' },
+    { id: 'paws',      label: 'Paw prints' },
+    { id: 'seigaiha',  label: 'Seigaiha waves' },
+    { id: 'steam',     label: 'Coffee steam' },
 ];
 
 const Corner = ({ pos, color, size = 90, w = 3 }) => {
@@ -293,16 +300,189 @@ const Sunburst = ({ a }) => (
     </div>
 );
 
+
+// Rising sparks over a fire glow (Norse / forge looks). Same column trick as
+// Faller, run in reverse so sparks climb.
+const Embers = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, background: `radial-gradient(ellipse 90% 45% at 50% 105%, ${rgba(a, 0.55)}, ${rgba(a, 0.12)} 55%, transparent 75%)` }} />
+        <div style={{ ...fill, background: 'radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.6) 100%)' }} />
+        {Array.from({ length: 46 }, (_, i) => {
+            const s = 3 + rand(i, 31) * 5;
+            const c = i % 5 === 0 ? b : a;
+            return (
+                <div key={i} style={{ position: 'absolute', left: `${rand(i, 32) * 100}%`, top: 0, height: '100%', animation: `fallDown ${5 + rand(i, 33) * 6}s linear ${-rand(i, 34) * 11}s infinite reverse` }}>
+                    <div style={{ animation: `petalSway ${2 + rand(i, 35) * 2}s ease-in-out infinite` }}>
+                        <div style={{ width: s, height: s, borderRadius: '50%', background: '#fff3d6', boxShadow: `0 0 ${s * 2}px ${c}, 0 0 ${s * 4}px ${rgba(c, 0.6)}`, opacity: 0.4 + rand(i, 36) * 0.6 }} />
+                    </div>
+                </div>
+            );
+        })}
+    </div>
+);
+
+// Layered city silhouette with lit windows under a hazy neon sky.
+const Skyline = ({ a, b, panel }) => {
+    const layer = (n, salt, minH, maxH, color, windows) => {
+        let x = 0;
+        const out = [];
+        for (let i = 0; x < 1920; i++) {
+            const w = 70 + rand(i, salt) * 120, h = minH + rand(i, salt + 1) * (maxH - minH);
+            out.push(<rect key={`b${i}`} x={x} y={1080 - h} width={w - 6} height={h} fill={color} />);
+            if (windows) {
+                for (let wy = 1080 - h + 20; wy < 1060; wy += 26) {
+                    for (let wx = x + 10; wx < x + w - 20; wx += 20) {
+                        const k = i * 997 + wx * 7 + wy;
+                        if (rand(k, salt + 2) < 0.28) {
+                            out.push(<rect key={`w${k}`} x={wx} y={wy} width={8} height={12} fill={rand(k, salt + 3) < 0.8 ? a : b} opacity={0.35 + rand(k, salt + 4) * 0.5} />);
+                        }
+                    }
+                }
+            }
+            x += w;
+        }
+        return out;
+    };
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            <div style={{ ...fill, background: `linear-gradient(180deg, transparent 20%, ${rgba(b, 0.22)} 70%, ${rgba(a, 0.25)})` }} />
+            <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+                {layer(0, 40, 260, 560, rgba(b, 0.16), false)}
+                {layer(1, 50, 140, 420, panel, true)}
+            </svg>
+            <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 4, background: a, boxShadow: `0 0 30px 6px ${rgba(a, 0.6)}` }} />
+        </div>
+    );
+};
+
+// `glow` null = no box-shadow halo (needed when the moon is masked, where a
+// shadow would show as a square tile).
+const Moon = ({ size, color, glow }) => (
+    <div style={{ width: size, height: size, borderRadius: '50%', background: `radial-gradient(circle at 35% 35%, #fffdf2, ${color} 70%)`, boxShadow: glow ? `0 0 ${size * 0.4}px ${glow}, 0 0 ${size}px ${rgba(color, 0.25)}` : 'none' }} />
+);
+
+const NightSky = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <Starfield a={a} b={b} />
+        <div style={{ position: 'absolute', right: '9%', top: '9%' }}>
+            {/* crescent: the full moon with an offset disc masked out of it;
+                the halo sits behind it since the mask would clip a box-shadow */}
+            <div style={{ position: 'absolute', inset: -120, borderRadius: '50%', background: `radial-gradient(circle, ${rgba(a, 0.22)}, transparent 65%)` }} />
+            <div style={{ position: 'relative', WebkitMaskImage: 'radial-gradient(circle at 74% 30%, transparent 44%, #000 45.5%)', maskImage: 'radial-gradient(circle at 74% 30%, transparent 44%, #000 45.5%)' }}>
+                <Moon size={190} color={a} glow={null} />
+            </div>
+        </div>
+        {[0, 1, 2].map(i => (
+            <div key={i} style={{
+                position: 'absolute', left: `${-20 + i * 35}%`, top: `${58 + i * 9}%`, width: '60%', height: '22%',
+                background: `radial-gradient(ellipse at center, ${rgba(b, 0.16)}, transparent 70%)`,
+                animation: `blobDrift ${40 + i * 12}s ease-in-out ${-i * 9}s infinite`,
+            }} />
+        ))}
+    </div>
+);
+
+const BAT = 'M0 6 C4 2 8 2 10 5 C11 2 13 1 14 3 C15 1 17 2 18 5 C20 2 24 2 28 6 C24 5 22 7 21 10 C19 8 17 8 14 11 C11 8 9 8 7 10 C6 7 4 5 0 6 Z';
+const Spooky = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', left: '50%', top: '10%', marginLeft: -170 }}>
+            <Moon size={340} color="#f6e7b0" glow={rgba(a, 0.55)} />
+        </div>
+        {/* bats crossing the moon */}
+        {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} style={{ position: 'absolute', top: `${8 + rand(i, 60) * 45}%`, left: 0, width: '100%', animation: `batFly ${14 + rand(i, 61) * 12}s linear ${-rand(i, 62) * 26}s infinite` }}>
+                <svg viewBox="0 0 28 12" style={{ width: 40 + rand(i, 63) * 40, animation: `batFlap ${0.25 + rand(i, 64) * 0.2}s ease-in-out infinite alternate`, transformOrigin: 'center' }}>
+                    <path d={BAT} fill="#0a0410" />
+                </svg>
+            </div>
+        ))}
+        {/* low drifting fog */}
+        {[0, 1, 2, 3].map(i => (
+            <div key={`f${i}`} style={{
+                position: 'absolute', left: `${-30 + i * 30}%`, bottom: `${-12 + (i % 2) * 6}%`, width: '70%', height: '40%',
+                background: `radial-gradient(ellipse at center, ${rgba(i % 2 ? b : '#d8d0ff', 0.22)}, transparent 70%)`,
+                animation: `blobDrift ${22 + i * 7}s ease-in-out ${-i * 5}s infinite`,
+            }} />
+        ))}
+        <div style={{ ...fill, background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.65) 100%)' }} />
+    </div>
+);
+
+const PAW = 'M12 22c-4 0-8-3-8-6 0-3 4-5 8-5s8 2 8 5c0 3-4 6-8 6zM4 10a2.6 3.2 0 1 0 0.01 0zM9 5a2.6 3.2 0 1 0 0.01 0zM15 5a2.6 3.2 0 1 0 0.01 0zM20 10a2.6 3.2 0 1 0 0.01 0z';
+const Paws = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        {Array.from({ length: 36 }, (_, i) => {
+            const col = i % 6, row = Math.floor(i / 6);
+            return (
+                <svg key={i} viewBox="0 0 24 24" style={{
+                    position: 'absolute', width: 54, left: `${col * 17 + (row % 2) * 8 + 2}%`, top: `${row * 17 + 3}%`,
+                    transform: `rotate(${rand(i, 70) * 50 - 25}deg)`, opacity: 0.16,
+                }}>
+                    <path d={PAW} fill={i % 3 ? a : b} />
+                </svg>
+            );
+        })}
+        {Array.from({ length: 14 }, (_, i) => (
+            <div key={`h${i}`} style={{ position: 'absolute', left: `${rand(i, 71) * 100}%`, top: 0, height: '100%', animation: `fallDown ${9 + rand(i, 72) * 8}s linear ${-rand(i, 73) * 17}s infinite reverse` }}>
+                <span style={{ display: 'block', fontSize: 22 + rand(i, 74) * 18, color: i % 2 ? a : b, opacity: 0.55, filter: `drop-shadow(0 0 6px ${rgba(a, 0.6)})` }}>♥</span>
+            </div>
+        ))}
+    </div>
+);
+
+// Seigaiha (青海波) scale pattern under a rising sun.
+const Seigaiha = ({ a, b, panel }) => {
+    const id = `sg-${String(a).replace(/\W/g, '')}`;
+    const arcs = (cx, cy) => [40, 31, 22, 13].map(r => <circle key={`${cx}-${cy}-${r}`} cx={cx} cy={cy} r={r} fill={panel} stroke={rgba(a, 0.45)} strokeWidth="2.2" />);
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', left: '50%', top: '12%', width: 420, height: 420, marginLeft: -210, borderRadius: '50%', background: a, boxShadow: `0 0 120px ${rgba(a, 0.45)}` }} />
+            <svg style={{ position: 'absolute', left: 0, right: 0, bottom: 0, width: '100%', height: '46%' }}>
+                <defs>
+                    <pattern id={id} width="80" height="40" patternUnits="userSpaceOnUse">
+                        {arcs(40, 0)}{arcs(0, 20)}{arcs(80, 20)}{arcs(40, 40)}
+                    </pattern>
+                    <linearGradient id={`${id}-fade`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stopColor={panel} stopOpacity="1" />
+                        <stop offset="0.35" stopColor={panel} stopOpacity="0" />
+                    </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill={`url(#${id})`} />
+                <rect width="100%" height="100%" fill={`url(#${id}-fade)`} />
+            </svg>
+            <div style={{ position: 'absolute', left: 0, right: 0, top: '54%', height: 3, background: b, opacity: 0.6 }} />
+        </div>
+    );
+};
+
+// Wisps of steam rising and fading (café looks).
+const Steam = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, background: `radial-gradient(ellipse 80% 50% at 50% 100%, ${rgba(a, 0.28)}, transparent 70%)` }} />
+        {Array.from({ length: 9 }, (_, i) => (
+            <svg key={i} viewBox="0 0 60 300" style={{
+                position: 'absolute', bottom: '-8%', left: `${6 + i * 11 + rand(i, 80) * 4}%`, width: 70 + rand(i, 81) * 50, height: '75%',
+                animation: `steamRise ${7 + rand(i, 82) * 5}s ease-in-out ${-rand(i, 83) * 12}s infinite`, overflow: 'visible',
+            }}>
+                <path d="M30 300 C10 250 50 210 30 160 C10 110 50 70 30 0" fill="none" stroke={rgba(i % 3 ? '#ffffff' : b, 0.22)} strokeWidth="14" strokeLinecap="round" style={{ filter: 'blur(4px)' }} />
+            </svg>
+        ))}
+        <div style={{ ...fill, background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5) 100%)' }} />
+    </div>
+);
+
 const BACKDROP_MAP = {
     hudgrid: HudGrid, synthgrid: SynthGrid, scanlines: Scanlines, blobs: Blobs, starfield: Starfield,
     bokeh: Bokeh, rain: Rain, code: CodeRain, petals: Petals, waves: Waves, paper: Paper,
-    halftone: Halftone, sunburst: Sunburst,
+    halftone: Halftone, sunburst: Sunburst, embers: Embers, skyline: Skyline, nightsky: NightSky,
+    spooky: Spooky, paws: Paws, seigaiha: Seigaiha, steam: Steam,
 };
 
-export const Backdrop = ({ variant, T, opacity = 1 }) => {
+// `holes` + `box` cut the backdrop away over cameras (see holeMask below).
+export const Backdrop = ({ variant, T, opacity = 1, holes, box }) => {
     const Comp = BACKDROP_MAP[variant] ?? Bokeh;
     return (
-        <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', opacity, pointerEvents: 'none' }}>
+        <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', opacity, pointerEvents: 'none', ...holeMask(holes, box) }}>
             <Comp a={T.accent} b={T.accent2 ?? T.accent} panel={T.panelColor} text={T.textColor} />
         </div>
     );
@@ -615,3 +795,60 @@ export const GraphicFrame = ({ style, color, T, w = 3, radius = 0, label }) => {
             return null;
     }
 };
+
+// ── Camera cut-outs ────────────────────────────────────────────────────────
+// OBS cameras sit *under* the overlay, so an opaque scene background or a
+// backdrop would hide them. holeMask() returns mask styles that punch
+// transparent holes (rounded rect / ellipse / hexagon / diamond) where cameras
+// or game-capture frames are, in the coordinate space of `frame` (the masked
+// layer's own box, in canvas %). Holes: [{ box, shape, radius }].
+
+const CANVAS_W = 1920, CANVAS_H = 1080;
+
+const holePath = ({ box, shape = 'rect', radius = 0 }, frame, fw, fh) => {
+    const x = ((box.x - frame.x) / frame.w) * fw;
+    const y = ((box.y - frame.y) / frame.h) * fh;
+    const w = (box.w / frame.w) * fw;
+    const h = (box.h / frame.h) * fh;
+    const f = (n) => n.toFixed(1);
+    if (shape === 'ellipse') {
+        const rx = w / 2, ry = h / 2;
+        return `M${f(x)} ${f(y + ry)}a${f(rx)} ${f(ry)} 0 1 0 ${f(w)} 0a${f(rx)} ${f(ry)} 0 1 0 ${f(-w)} 0Z`;
+    }
+    if (shape === 'hexagon') {
+        return `M${f(x + w * 0.25)} ${f(y)}H${f(x + w * 0.75)}L${f(x + w)} ${f(y + h / 2)}L${f(x + w * 0.75)} ${f(y + h)}H${f(x + w * 0.25)}L${f(x)} ${f(y + h / 2)}Z`;
+    }
+    if (shape === 'diamond') {
+        return `M${f(x + w / 2)} ${f(y)}L${f(x + w)} ${f(y + h / 2)}L${f(x + w / 2)} ${f(y + h)}L${f(x)} ${f(y + h / 2)}Z`;
+    }
+    // Scale px radius from the 1920-wide canvas into this layer's units.
+    const r = Math.max(0, Math.min(radius * (fw / ((frame.w / 100) * CANVAS_W)), w / 2, h / 2));
+    if (!r) return `M${f(x)} ${f(y)}h${f(w)}v${f(h)}h${f(-w)}Z`;
+    return `M${f(x + r)} ${f(y)}H${f(x + w - r)}A${f(r)} ${f(r)} 0 0 1 ${f(x + w)} ${f(y + r)}V${f(y + h - r)}A${f(r)} ${f(r)} 0 0 1 ${f(x + w - r)} ${f(y + h)}H${f(x + r)}A${f(r)} ${f(r)} 0 0 1 ${f(x)} ${f(y + h - r)}V${f(y + r)}A${f(r)} ${f(r)} 0 0 1 ${f(x + r)} ${f(y)}Z`;
+};
+
+export const holeMask = (holes, frame = { x: 0, y: 0, w: 100, h: 100 }) => {
+    if (!holes?.length || !frame?.w || !frame?.h) return {};
+    const fw = (frame.w / 100) * CANVAS_W, fh = (frame.h / 100) * CANVAS_H;
+    const d = `M0 0H${fw}V${fh}H0Z` + holes.map(hl => holePath(hl, frame, fw, fh)).join('');
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${fw} ${fh}' preserveAspectRatio='none'><path fill-rule='evenodd' d='${d}'/></svg>`;
+    const url = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+    return {
+        WebkitMaskImage: url, maskImage: url,
+        WebkitMaskSize: '100% 100%', maskSize: '100% 100%',
+        WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+    };
+};
+
+// Cut-outs for a scene: visible cameras (shaped by their cam frame) plus any
+// cam-frame element marked `hole` (e.g. a game-capture window).
+const CAM_SLOTS = ['faceCam', 'handCam', 'roomCam'];
+const CAM_SHAPE = { circle: 'ellipse', hexagon: 'hexagon', diamond: 'diamond' };
+export const sceneHoles = ({ boxes = {}, boxVisibility = {}, camStyles = {}, elements = [] }, theme) => [
+    ...CAM_SLOTS.filter(id => boxVisibility[id] && boxes[id]).map(id => {
+        const cs = camStyles[id] ?? {};
+        return { box: boxes[id], shape: CAM_SHAPE[cs.frame] ?? 'rect', radius: cs.frame && cs.frame !== 'none' ? (cs.radius ?? 14) : (theme?.cornerRadius ?? 0) };
+    }),
+    ...elements.filter(e => e.type === 'frame' && e.hole && !e.hidden && e.box)
+        .map(e => ({ box: e.box, shape: 'rect', radius: typeof e.borderRadius === 'number' ? e.borderRadius : (theme?.cornerRadius ?? 0) })),
+];

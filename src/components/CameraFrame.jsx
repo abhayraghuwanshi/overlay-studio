@@ -11,7 +11,36 @@ export const CAMERA_FRAMES = [
     { id: 'gradient', label: 'Gradient' },
     { id: 'glass',    label: 'Glass' },
     { id: 'circle',   label: 'Circle' },
+    { id: 'hexagon',  label: 'Hexagon' },
+    { id: 'diamond',  label: 'Diamond' },
 ];
+
+// Polygon frames: the video is clipped to the shape and an SVG outline is
+// drawn on top (a border can't follow a clip-path). In OBS the overlay cuts a
+// matching hole in the background, see sceneHoles() in graphics.jsx.
+const POLYGONS = {
+    hexagon: [[25, 0], [75, 0], [100, 50], [75, 100], [25, 100], [0, 50]],
+    diamond: [[50, 0], [100, 50], [50, 100], [0, 50]],
+};
+
+const PolygonFrame = ({ points, accent, accent2, children }) => {
+    const clip = `polygon(${points.map(([x, y]) => `${x}% ${y}%`).join(', ')})`;
+    const id = `pf-${points.length}-${String(accent).replace(/\W/g, '')}`;
+    return (
+        <div style={{ position: 'relative', width: '100%', height: '100%', filter: `drop-shadow(0 0 12px ${accent}55) drop-shadow(0 10px 24px rgba(0,0,0,0.5))` }}>
+            <div style={{ width: '100%', height: '100%', clipPath: clip, overflow: 'hidden' }}>{children}</div>
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' }}>
+                <defs>
+                    <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stopColor={accent} />
+                        <stop offset="1" stopColor={accent2 || accent} />
+                    </linearGradient>
+                </defs>
+                <polygon points={points.map(p => p.join(',')).join(' ')} fill="none" stroke={`url(#${id})`} strokeWidth="5" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+            </svg>
+        </div>
+    );
+};
 
 export const DEFAULT_CAM_STYLE = { frame: 'soft', radius: 14 };
 
@@ -72,6 +101,9 @@ const buildFrame = (frame, accent, accent2, radius) => {
 };
 
 const CameraFrame = ({ frame = 'none', accent = '#6366f1', accent2, radius, children }) => {
+    if (POLYGONS[frame]) {
+        return <PolygonFrame points={POLYGONS[frame]} accent={accent} accent2={accent2}>{children}</PolygonFrame>;
+    }
     if (!frame || frame === 'none') {
         return <div style={{ width: '100%', height: '100%' }}>{children}</div>;
     }

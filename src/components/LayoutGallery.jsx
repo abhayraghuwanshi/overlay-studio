@@ -3,6 +3,7 @@ import { Check, ChevronLeft, ChevronRight, Plus, Trash2, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react';
 import { getTheme } from '../theme/themes';
 import { TEMPLATE_CATEGORIES } from '../scenes/starterLayouts';
+import { sceneHoles } from './graphics';
 import { bgToStyle } from './BackgroundPanel';
 import CameraFrame, { DEFAULT_CAM_STYLE } from './CameraFrame';
 import ElementRenderer from './ElementRenderer';
@@ -43,6 +44,7 @@ const Thumb = ({ snapshot = {}, fallbackTheme }) => {
     const shown = els.filter(e => !e.hidden && e.box);
     const mood = els.find(e => e.type === 'moodring' && !e.hidden)?.mood ?? 'chill';
     const scale = width / BASE_W;
+    const holes = sceneHoles(snapshot, theme);
 
     return (
         <div ref={ref} style={{
@@ -74,7 +76,7 @@ const Thumb = ({ snapshot = {}, fallbackTheme }) => {
                             position: 'absolute', left: `${e.box.x}%`, top: `${e.box.y}%`, width: `${e.box.w}%`, height: `${e.box.h}%`,
                             overflow: 'hidden', zIndex: 100 + (els.length - 1 - i),
                         }}>
-                            <ElementRenderer element={e} theme={theme} mood={mood} editMode={false} preview />
+                            <ElementRenderer element={e} theme={theme} mood={mood} editMode={false} preview holes={e.type === 'backdrop' ? holes : undefined} />
                         </div>
                     ))}
                 </div>
@@ -182,7 +184,7 @@ const startSceneOf = (kind, item) => {
     const scenes = item.scenes ?? [];
     if (kind === 'mine') return Math.max(0, scenes.findIndex(s => s.id === item.activeSceneId));
     // Style-kit packs lead with their animated Starting Soon screen.
-    return item.isNew ? 0 : richestScene(scenes);
+    return item.kit ? 0 : richestScene(scenes);
 };
 
 const LayoutCard = ({ layout, active, selected, onSelect, onRename, onDelete }) => {

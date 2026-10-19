@@ -28,6 +28,12 @@ const DISPLAY_FONTS = [
     { label: 'Fredoka',      value: "'Fredoka', 'Inter', sans-serif" },
     { label: 'Caveat',       value: "'Caveat', 'Segoe Print', cursive" },
     { label: 'VT323',        value: "'VT323', ui-monospace, monospace" },
+    { label: 'Cinzel',       value: "'Cinzel', Georgia, serif" },
+    { label: 'Shojumaru',    value: "'Shojumaru', 'Inter', sans-serif" },
+    { label: 'Audiowide',    value: "'Audiowide', 'Rajdhani', sans-serif" },
+    { label: 'Teko',         value: "'Teko', 'Rajdhani', sans-serif" },
+    { label: 'Creepster',    value: "'Creepster', 'Fredoka', cursive" },
+    { label: 'Pacifico',     value: "'Pacifico', 'Fredoka', cursive" },
 ];
 
 const selectStyle = {

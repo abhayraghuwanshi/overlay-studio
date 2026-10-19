@@ -777,7 +777,8 @@ const MatchElement = ({ element, T }) => {
 // ── Main renderer ──────────────────────────────────────────────────────────
 // `channel` is the layout's Twitch channel; `preview` marks gallery thumbnails
 // (they show sample chat rather than nothing).
-const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, preview = false, channel = '', theme = DEFAULT_THEME, mood = 'chill' }) => {
+// `holes` are camera cut-outs (canvas %) that backdrops leave transparent.
+const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, preview = false, channel = '', holes, theme = DEFAULT_THEME, mood = 'chill' }) => {
     const T = theme ?? DEFAULT_THEME;
     // Resolve any theme tokens (@accent, @text, @radius…) to concrete values.
     const resolved = resolveElement(element, T);
@@ -845,7 +846,7 @@ const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, pre
 
     // ── Backdrop ── animated full-canvas scenery from the style kit
     if (type === 'backdrop') {
-        return <Backdrop variant={resolved.variant} T={T} opacity={opacity} />;
+        return <Backdrop variant={resolved.variant} T={T} opacity={opacity} holes={holes} box={element.box} />;
     }
 
     // ── Lower Third ──

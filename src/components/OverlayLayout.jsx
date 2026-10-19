@@ -17,6 +17,7 @@ import LayersPanel from './LayersPanel';
 import ThemePanel from './ThemePanel';
 import CameraFrame, { DEFAULT_CAM_STYLE } from './CameraFrame';
 import LayoutGallery from './LayoutGallery';
+import { holeMask, sceneHoles } from './graphics';
 import { DEFAULT_THEME, getTheme } from '../theme/themes';
 import { MOODS } from '../theme/moods';
 import { packSnapshot } from '../scenes/packs';
@@ -31,12 +32,13 @@ const DEFAULT_BOXES = {
 };
 
 const CAMERA_IDS = ['faceCam', 'handCam', 'roomCam'];
+const NO_CAM_STYLES = {};   // stable fallback so memoised cut-outs don't churn
 
 const elementTitle = (type) => type.charAt(0).toUpperCase() + type.slice(1);
 
 const ElementBox = memo(
     ({
-        element, zIndex, selected, editMode, canvasRef, extraStyle, theme, mood, channel,
+        element, zIndex, selected, editMode, canvasRef, extraStyle, theme, mood, channel, holes,
         onSelect, onBoxChange, onUploadLogo, onElementUpdate,
     }) => {
         const handleUploadLogo = useCallback(() => onUploadLogo(element.id), [element.id, onUploadLogo]);
@@ -55,7 +57,7 @@ const ElementBox = memo(
                 canvasRef={canvasRef}
                 extraStyle={extraStyle}
             >
-                <ElementRenderer element={element} editMode={editMode} onUploadLogo={handleUploadLogo} onElementUpdate={handleUpdate} theme={theme} mood={mood} channel={channel} />
+                <ElementRenderer element={element} editMode={editMode} onUploadLogo={handleUploadLogo} onElementUpdate={handleUpdate} theme={theme} mood={mood} channel={channel} holes={holes} />
             </DraggableBox>
         );
     },
@@ -69,6 +71,7 @@ const ElementBox = memo(
         prev.theme === next.theme &&
         prev.mood === next.mood &&
         prev.channel === next.channel &&
+        prev.holes === next.holes &&
         prev.onSelect === next.onSelect &&
         prev.onBoxChange === next.onBoxChange &&
         prev.onUploadLogo === next.onUploadLogo &&
@@ -854,7 +857,7 @@ const OverlayLayout = () => {
 
     // ── Memoised DraggableBox children — prevents re-renders on box drag ─────
     // Each child only re-creates when its own data changes (stream, social info, etc.)
-    const camStyles = layoutSettings.camStyles ?? {};
+    const camStyles = layoutSettings.camStyles ?? NO_CAM_STYLES;
     // The frame (border/glow) is CSS and renders in OBS. The CENTER is a
     // placeholder: in the editor it shows a label so you can position the box;
     // in live/OBS mode it's fully transparent so the native OBS webcam shows
@@ -919,6 +922,19 @@ const OverlayLayout = () => {
         ? { background: '#050510' }
         : bgToStyle(background);
     const activeCanvasBg = inEditor ? {} : (livePreview ? {} : canvasBg);
+
+    // Camera cut-outs: OBS draws cameras *under* this browser source, so the
+    // scene background (and any backdrop element) gets transparent holes where
+    // visible cams / game-capture frames sit. Without them an opaque Just
+    // Chatting background would hide the webcam.
+    const visFace = getBoxVisible('faceCam'), visHand = getBoxVisible('handCam'), visRoom = getBoxVisible('roomCam');
+    const camHoles = useMemo(() => sceneHoles({
+        boxes, camStyles, elements,
+        boxVisibility: { faceCam: visFace, handCam: visHand, roomCam: visRoom },
+    }, theme), [boxes, camStyles, elements, visFace, visHand, visRoom, theme]);
+    const canvasBgLayer = Object.keys(activeCanvasBg).length > 0
+        ? { ...activeCanvasBg, ...holeMask(camHoles) }
+        : null;
 
     return (
         <div style={{
@@ -1173,9 +1189,12 @@ const OverlayLayout = () => {
                             position: 'absolute',
                             inset: 0,
                         }),
-                        ...activeCanvasBg,
                     }}
                 >
+                    {canvasBgLayer && (
+                        <div aria-hidden style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', ...canvasBgLayer }} />
+                    )}
+
                     {/* ── Custom elements ── */}
                     {elements.map((el, i) => {
                         if (el.hidden) return null;
@@ -1194,6 +1213,7 @@ const OverlayLayout = () => {
                                 theme={theme}
                                 mood={currentMood}
                                 channel={twitchChannel}
+                                holes={el.type === 'backdrop' ? camHoles : undefined}
                             />
                         );
                     })}

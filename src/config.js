@@ -83,3 +83,6 @@ export function shareLinks(room) {
     const q = `room=${encodeURIComponent(room)}`;
     return { editor: `${base}?${q}`, obs: `${base}?obs&${q}` };
 }
+
+// Where streamers can ask for a custom overlay or theme.
+export const CONTACT_EMAIL = 'raghuwanshi.abhay405@gmail.com';

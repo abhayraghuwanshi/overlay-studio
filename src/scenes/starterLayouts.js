@@ -633,6 +633,129 @@ const MOTIF_LAYOUTS = [
     },
 ];
 
+// Festive packs — festivals and celebrations, each on its own festive theme
+// and backdrop. Listed first so seasonal looks are easy to find.
+const FESTIVE_LAYOUTS = [
+    {
+        id: 'kit-diwali', name: 'Diwali Lights', themeId: 'diwali', tags: ['seasonal', 'cozy'], kit: true, isNew: true,
+        tagline: 'Glowing diyas · marigold toran · ornate cam',
+        scenes: kitShow({
+            split: true, duo: true, bg: grad('#2a0b1c', '#0a0306', '170deg'),
+            title: 'Happy Diwali', tagline: 'Lighting the diyas — stream begins soon 🪔', handle: '@diwali',
+            today: ['Lakshmi puja & chat', 'Rangoli speed-draw', 'Festive games night'],
+            role: 'Festival of lights', chatRole: 'Mithai & chai', hostRole: 'Host', goal: 'Diya Goal', brb: 'Bursting crackers', brbSub: 'back in a flash ✨',
+            end: 'Shubh Deepavali', endSub: 'may your year shine bright — thank you!', offline: 'Celebrating offline',
+            schedule: ['Dhanteras · Chill stream', 'Diwali · Festive special', 'Bhai Dooj · Family games'],
+            ticker: 'Happy Diwali, chat! 🪔\nFollow to light up the stream\nShare your rangoli in !discord',
+        }),
+    },
+    {
+        id: 'kit-new-year', name: 'New Year Countdown', themeId: 'newyear', tags: ['seasonal', 'pro'], kit: true, isNew: true,
+        tagline: 'Fireworks · gold chrome type · glitter',
+        scenes: kitShow({
+            bg: grad('#0b1030', '#020309', '180deg'),
+            title: 'COUNTDOWN TO 2027', tagline: 'Ringing in the new year together 🥂', handle: '@newyear',
+            role: 'New Year’s Eve', chatRole: 'Resolutions', hostRole: 'Host', goal: 'Midnight Goal', brb: 'POPPING THE BUBBLY', brbSub: 'back before the ball drops',
+            end: 'HAPPY NEW YEAR', endSub: 'thanks for spending midnight with me ✨', offline: 'SEE YOU NEXT YEAR',
+            ticker: 'Drop your 2027 resolution in chat\nFollow to start the year right\nHappy New Year! 🎆',
+        }),
+    },
+    {
+        id: 'kit-christmas', name: 'Cozy Christmas', themeId: 'christmas', tags: ['seasonal', 'cozy'], kit: true, isNew: true,
+        tagline: 'Snowfall · fairy lights · round cam',
+        scenes: kitShow({
+            camShape: 'circle', duo: true, titleScale: 1.15, bg: grad('#10291f', '#04100b', '180deg'),
+            title: 'Merry Christmas!', tagline: 'grab some cocoa — the stream starts soon ☕', handle: '@northpole',
+            role: 'holiday stream', chatRole: 'by the fireplace', hostRole: 'Santa', goal: 'Gift Goal', brb: 'Wrapping presents', brbSub: 'back before the cookies are gone 🍪',
+            end: 'Happy Holidays!', endSub: 'thanks for spending Christmas with me 🎄', offline: 'Out sledding',
+            schedule: ['Dec 24 · Christmas Eve special', 'Dec 25 · Gift unboxing', 'Dec 31 · New Year countdown'],
+            ticker: 'Merry Christmas, chat! 🎄\nFollow for a festive surprise\n!secretsanta to join the gift swap',
+        }),
+    },
+    {
+        id: 'kit-pumpkin', name: 'Pumpkin Patch', themeId: 'pumpkin', tags: ['seasonal', 'gaming'], kit: true, isNew: true,
+        tagline: 'Jack-o’-lanterns · cobwebs · ghosts — Halloween',
+        scenes: kitShow({
+            split: true, bg: grad('#1c1008', '#050302', '180deg'),
+            title: 'Trick or Treat!', tagline: 'the pumpkins are carved — stream starts soon 🎃', handle: '@pumpkin',
+            today: ['Costume reveal', 'Spooky game marathon', 'Scary story hour'],
+            role: 'Halloween stream', chatRole: 'Haunted hangout', goal: 'Candy Goal', brb: 'Refilling the candy bowl', brbSub: 'no tricks, back soon 👻',
+            end: 'Happy Halloween!', endSub: 'thanks for haunting the stream 🕸️', offline: 'Out trick-or-treating',
+            schedule: ['Oct 29 · Spooky games', 'Oct 30 · Horror night', 'Oct 31 · Costume party'],
+            ticker: 'Happy Halloween! 🎃\nShow off your costume in !discord\nFollow for a treat',
+        }),
+    },
+    {
+        id: 'kit-holi', name: 'Holi Hai', themeId: 'holi', tags: ['seasonal', 'creative'], kit: true, isNew: true,
+        tagline: 'Colour clouds · powder splats · bold type',
+        scenes: kitShow({
+            camShape: 'hexagon', titleScale: 0.85, bg: grad('#2a0f3d', '#0b0414', '160deg'),
+            title: 'HAPPY HOLI', tagline: 'bura na mano, Holi hai! 🎨', handle: '@holi',
+            role: 'Festival of colours', chatRole: 'Gujiya & chat', goal: 'Colour Goal', brb: 'GETTING MORE GULAL', brbSub: 'back before the colours dry',
+            end: 'RANG BARSE!', endSub: 'thanks for playing colours with me', offline: 'WASHING OFF THE COLOURS',
+            ticker: 'Happy Holi! 🌈\nThrow a colour in chat\nFollow to add some colour to the stream',
+        }),
+    },
+    {
+        id: 'kit-lunar', name: 'Lunar New Year', themeId: 'lunar', tags: ['seasonal'], kit: true, isNew: true,
+        tagline: 'Red lanterns · gold tassels · plum blossom',
+        scenes: kitShow({
+            split: true, bg: grad('#3a0808', '#0c0101', '170deg'),
+            title: 'Happy New Year', tagline: 'ring in the Year of the Horse 🧧', handle: '@lunar',
+            today: ['Red-envelope giveaway', 'Dumpling cook-along', 'Lucky games'],
+            role: 'Spring Festival', chatRole: 'Tea & dumplings', hostRole: 'Host', goal: 'Red Envelope Goal', brb: 'Lighting firecrackers', brbSub: 'good fortune returns soon',
+            end: 'Gong Xi Fa Cai', endSub: 'wishing you luck and prosperity 🧧', offline: 'Visiting family',
+            schedule: ['Eve · Reunion dinner stream', 'Day 1 · Red-envelope giveaway', 'Day 15 · Lantern festival'],
+        }),
+    },
+    {
+        id: 'kit-eid', name: 'Eid Nights', themeId: 'eid', tags: ['seasonal', 'cozy'], kit: true, isNew: true,
+        tagline: 'Crescent moon · fanous lanterns · domes',
+        scenes: kitShow({
+            duo: true, bg: grad('#0a2630', '#02080b', '180deg'),
+            title: 'Eid Mubarak', tagline: 'gathering for a blessed celebration 🌙', handle: '@eidnights',
+            role: 'Eid celebration', chatRole: 'Iftar talks', hostRole: 'Host', goal: 'Charity Goal', brb: 'Grabbing sweets', brbSub: 'back after some sheer khurma',
+            end: 'Eid Mubarak!', endSub: 'thank you for celebrating with us ✨', offline: 'With family tonight',
+            schedule: ['Ramadan · Late-night streams', 'Chand Raat · Q&A', 'Eid · Celebration stream'],
+            ticker: 'Eid Mubarak, chat! 🌙\nCharity stream — every follow counts\nShare your Eid outfit in !discord',
+        }),
+    },
+    {
+        id: 'kit-valentine', name: 'Sweetheart', themeId: 'valentine', tags: ['seasonal', 'cozy'], kit: true, isNew: true,
+        tagline: 'Floating hearts · script type · duo',
+        scenes: kitShow({
+            camShape: 'circle', duo: true, titleScale: 1.2, bg: grad('#3a0a1a', '#0e0206', '170deg'),
+            title: 'Be My Valentine', tagline: 'a little love-filled stream starts soon 💌', handle: '@sweetheart',
+            role: 'Valentine’s stream', chatRole: 'Love letters', hostRole: 'Cupid', goal: 'Love Goal', brb: 'Be right back', brbSub: 'writing you a love letter 💕',
+            end: 'Love you, chat', endSub: 'thanks for being my valentine ♡', offline: 'On a date',
+            ticker: 'Happy Valentine’s Day 💘\nSend some love — follow the stream\n!ship to find your chat soulmate',
+        }),
+    },
+    {
+        id: 'kit-harvest', name: 'Autumn Harvest', themeId: 'harvest', tags: ['seasonal', 'cozy'], kit: true, isNew: true,
+        tagline: 'Falling maple leaves · polaroid cam · Thanksgiving',
+        scenes: kitShow({
+            split: true, duo: true, bg: grad('#2b1608', '#0c0603', '170deg'),
+            title: 'Cozy Autumn Stream', tagline: 'sweater weather — pull up a chair 🍂', handle: '@harvest',
+            today: ['Pumpkin spice catch-up', 'Cozy game of the week', 'Gratitude round'],
+            role: 'autumn vibes', chatRole: 'gratitude circle', hostRole: 'Host', goal: 'Pie Goal', brb: 'Getting more pie', brbSub: 'back before the cider cools',
+            end: 'Thankful for you', endSub: 'thanks for sharing the season with me 🍁', offline: 'Raking leaves',
+            schedule: ['Mon · Cozy farming games', 'Thu · Thanksgiving special', 'Sat · Bake-along'],
+        }),
+    },
+    {
+        id: 'kit-birthday', name: 'Birthday Bash', themeId: 'birthday', tags: ['seasonal', 'creative'], kit: true, isNew: true,
+        tagline: 'Rising balloons · confetti · bunting',
+        scenes: kitShow({
+            duo: true, titleScale: 0.85, bg: grad('#24164a', '#0a0618', '170deg'),
+            title: 'BIRTHDAY STREAM!', tagline: 'another trip around the sun — party starts soon 🎂', handle: '@birthday',
+            role: 'Birthday stream', chatRole: 'Party chat', hostRole: 'Birthday star', goal: 'Birthday Goal', brb: 'CUTTING THE CAKE', brbSub: 'saving you a slice 🍰',
+            end: 'BEST BIRTHDAY EVER', endSub: 'thank you for celebrating with me 🎉', offline: 'STILL EATING CAKE',
+            ticker: 'It’s my birthday! 🎂\nDrop a 🎉 in chat\nFollow as a birthday gift',
+        }),
+    },
+];
+
 // ── The catalog ── style-kit packs first, then the classic themed styles ─────
 // `tags` drive the gallery's category filter.
 export const TEMPLATE_CATEGORIES = [
@@ -641,10 +764,11 @@ export const TEMPLATE_CATEGORIES = [
     { id: 'retro',    label: 'Retro' },
     { id: 'creative', label: 'Creative' },
     { id: 'pro',      label: 'Talk & pro' },
-    { id: 'seasonal', label: 'Seasonal' },
+    { id: 'seasonal', label: 'Festive' },
 ];
 
 export const STARTER_LAYOUTS = [
+    ...FESTIVE_LAYOUTS,
     ...MOTIF_LAYOUTS,
     ...KIT_LAYOUTS,
     {

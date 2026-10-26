@@ -82,6 +82,17 @@
 @keyframes batFly     { from { transform: translateX(-10%); } to { transform: translateX(110%); } }
 @keyframes batFlap    { from { transform: scaleY(1); } to { transform: scaleY(0.45); } }
 @keyframes steamRise  { 0% { transform: translateY(20%) scaleX(1); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(-25%) scaleX(1.4); opacity: 0; } }
+@keyframes riseUp      { from { transform: translateY(110%); } to { transform: translateY(-30%); } }
+@keyframes flameFlicker{ from { transform: scale(1, 1) rotate(-3deg); opacity: 1; } to { transform: scale(0.9, 1.12) rotate(3deg); opacity: 0.85; } }
+@keyframes fwBurst     { 0% { transform: translateY(0) scaleY(0.3); opacity: 0; } 8% { opacity: 1; } 70% { opacity: 0.9; } 100% { transform: translateY(var(--r)) scaleY(1); opacity: 0; } }
+@keyframes fwFlash     { 0% { opacity: 0; transform: scale(0.2); } 8% { opacity: 1; transform: scale(1); } 40%, 100% { opacity: 0; transform: scale(1.5); } }
+@keyframes confettiSpin{ from { transform: rotate3d(1, 0.4, 0.2, 0deg); } to { transform: rotate3d(1, 0.4, 0.2, 360deg); } }
+@keyframes bulbBlink   { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes glowFlicker { 0%, 100% { opacity: 1; } 40% { opacity: 0.75; } 45% { opacity: 0.95; } 70% { opacity: 0.8; } }
+@keyframes ghostBob    { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(18px); } }
+@keyframes lanternSwing{ 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@keyframes leafSpin    { from { transform: translateY(-100%) rotate(0deg); } to { transform: translateY(-100%) rotate(360deg); } }
+@keyframes drift       { 0%, 100% { transform: translateX(0) rotate(-5deg); } 50% { transform: translateX(30px) rotate(5deg); } }
 @keyframes recBlink   { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 
 @theme {

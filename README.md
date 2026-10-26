@@ -21,7 +21,7 @@ If it's useful to you, a ⭐ helps other streamers find it.
 - **Pets and mood ring:** little mascots that roam the canvas and react to the mood of the room.
 - **Layouts and scenes:** group scenes (Intro, Gameplay, BRB, Outro) into a layout and switch between them.
 - **Themes and style kits:** re-skin the whole overlay in one click. Style-kit themes (Cyber HUD, Synthwave, Lo-fi, Sketchbook, Brutalist, Pixel, Y2K, Lava Lamp, Sakura, Nouveau, VHS, Rewild) also swap the graphics: animated backdrops, headline effects, lower-third plates and cam frames.
-- **Template library:** 40 ready-made shows, filterable by Gaming, Cozy, Retro, Creative, Talk and Seasonal. Style-kit packs ship 8–9 scenes: Starting Soon, Gameplay, three Just Chatting layouts (cam + chat, centred cam, game + cam), an optional Duo for co-hosts, BRB, Ending and Offline. Some packs use hexagon, circle or diamond webcams.
+- **Template library:** 50 ready-made shows, filterable by Gaming, Cozy, Retro, Creative, Talk and Festive. Festive packs cover Diwali, New Year, Christmas, Halloween, Holi, Lunar New Year, Eid, Valentine’s Day, autumn / Thanksgiving and birthdays, each with its own animated backdrop. Style-kit packs ship 8–9 scenes: Starting Soon, Gameplay, three Just Chatting layouts (cam + chat, centred cam, game + cam), an optional Duo for co-hosts, BRB, Ending and Offline. Some packs use hexagon, circle or diamond webcams.
 - **Camera cut-outs:** scene backgrounds and backdrops leave a transparent hole where each visible camera (or a game-capture frame) sits, so the OBS sources underneath show through.
 - **Recording:** record the stream right in the browser.
 - **Camera auto-placement (optional):** with OBS WebSocket turned on, your real camera snaps into the overlay's camera frame on every scene switch.
@@ -60,6 +60,8 @@ Missing a widget, theme or layout? [Open a request](https://github.com/abhayragh
 - 🐞 **Bug:** something broke
 
 You can also click **Missing something? Request a component** in the studio's **Add Layer** panel.
+
+Want a custom overlay, theme or scene pack made for your channel? Email [raghuwanshi.abhay405@gmail.com](mailto:raghuwanshi.abhay405@gmail.com).
 
 ## Running it locally
 

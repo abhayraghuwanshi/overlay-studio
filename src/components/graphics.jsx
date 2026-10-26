@@ -50,6 +50,16 @@ export const BACKDROPS = [
     { id: 'paws',      label: 'Paw prints' },
     { id: 'seigaiha',  label: 'Seigaiha waves' },
     { id: 'steam',     label: 'Coffee steam' },
+    { id: 'diyas',     label: 'Diyas & toran' },
+    { id: 'fireworks', label: 'Fireworks' },
+    { id: 'snowfall',  label: 'Snow & lights' },
+    { id: 'pumpkins',  label: 'Jack-o\'-lanterns' },
+    { id: 'holi',      label: 'Holi colours' },
+    { id: 'lanterns',  label: 'Red lanterns' },
+    { id: 'crescent',  label: 'Crescent & fanous' },
+    { id: 'hearts',    label: 'Floating hearts' },
+    { id: 'leaves',    label: 'Autumn leaves' },
+    { id: 'balloons',  label: 'Balloons & confetti' },
 ];
 
 const Corner = ({ pos, color, size = 90, w = 3 }) => {
@@ -472,11 +482,452 @@ const Steam = ({ a, b }) => (
     </div>
 );
 
+// ── Festive backdrops ──────────────────────────────────────────────────────
+
+// Points along a sagging swag from x0→x1, for garlands, fairy lights, bunting.
+const swag = (x0, x1, y, sag, n) => Array.from({ length: n + 1 }, (_, k) => {
+    const t = k / n;
+    return [x0 + (x1 - x0) * t, y + sag * 4 * t * (1 - t)];
+});
+const vignette = (a = 0.6) => <div style={{ ...fill, background: `radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,${a}) 100%)` }} />;
+
+// Elements that float up from below the canvas and leave off the top.
+const Riser = ({ i, salt, dur, left, children }) => (
+    <div style={{ position: 'absolute', left, top: 0, height: '100%', animation: `riseUp ${dur}s linear ${-rand(i, salt) * dur}s infinite` }}>
+        {children}
+    </div>
+);
+
+const CONFETTI = ['#ff5fa2', '#4cc9f0', '#ffd23f', '#7bf1a8', '#b388ff'];
+const Confetti = ({ a, b, n = 40, salt = 90 }) => Array.from({ length: n }, (_, i) => {
+    const c = [a, b, ...CONFETTI][i % 7];
+    const w = 8 + rand(i, salt) * 8;
+    return (
+        <Faller key={`c${i}`} i={i + salt} left={`${rand(i, salt + 1) * 100}%`} dur={6 + rand(i, salt + 2) * 6}>
+            <div style={{ animation: `petalSway ${3 + rand(i, salt + 3) * 3}s ease-in-out infinite` }}>
+                <div style={{ animation: `confettiSpin ${1.2 + rand(i, salt + 4) * 1.6}s linear infinite` }}>
+                    <div style={{ width: w, height: i % 3 === 0 ? w : w * 0.45, borderRadius: i % 3 === 0 ? '50%' : 2, background: c, transform: 'translateY(-100%)' }} />
+                </div>
+            </div>
+        </Faller>
+    );
+});
+
+// Clay diyas with flickering flames under a marigold toran (Diwali).
+const Diyas = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, background: `radial-gradient(ellipse 100% 40% at 50% 100%, ${rgba(a, 0.32)}, transparent 70%)` }} />
+        {Array.from({ length: 40 }, (_, i) => {
+            const s = 2 + rand(i, 100) * 4;
+            const c = i % 3 ? a : b;
+            return (
+                <span key={`s${i}`} style={{
+                    position: 'absolute', left: `${rand(i, 101) * 100}%`, top: `${18 + rand(i, 102) * 60}%`, width: s, height: s, borderRadius: '50%',
+                    background: '#fff3c4', boxShadow: `0 0 ${s * 3}px ${c}`, animation: `twinkle ${2 + rand(i, 103) * 3}s ease-in-out ${-rand(i, 104) * 5}s infinite`,
+                }} />
+            );
+        })}
+        {/* toran: marigold swags with hanging mango leaves */}
+        <svg viewBox="0 0 1920 200" preserveAspectRatio="xMidYMin slice" style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '19%' }}>
+            {[0, 1, 2, 3, 4, 5].map(s => (
+                <g key={s}>
+                    {swag(s * 320, s * 320 + 320, 8, 80, 16).map(([x, y], k) => (
+                        <circle key={k} cx={x} cy={y} r={13} fill={k % 2 ? '#ff7a00' : a} stroke="rgba(120,40,0,0.35)" strokeWidth="2" />
+                    ))}
+                    <path d={`M${s * 320} 14 q-12 40 0 70 q12 -30 0 -70z`} fill="#2f8f3a" />
+                    <circle cx={s * 320} cy={12} r={10} fill={b} />
+                </g>
+            ))}
+        </svg>
+        {/* diya row */}
+        {Array.from({ length: 9 }, (_, i) => (
+            <div key={`d${i}`} style={{ position: 'absolute', left: `${3 + i * 11.6}%`, bottom: `${-1 + (i % 2)}%`, width: 96, height: 96, transform: 'scale(0.8)', transformOrigin: '50% 100%' }}>
+                <div style={{ position: 'absolute', left: -70, top: -90, width: 236, height: 236, borderRadius: '50%', background: `radial-gradient(circle, ${rgba(a, 0.42)}, transparent 62%)` }} />
+                <svg viewBox="0 0 24 40" style={{ position: 'absolute', left: 36, top: 0, width: 24, height: 44, transformOrigin: '50% 100%', animation: `flameFlicker ${0.8 + rand(i, 105) * 0.7}s ease-in-out ${-rand(i, 106)}s infinite alternate` }}>
+                    <path d="M12 0 C20 14 22 26 12 38 C2 26 4 14 12 0Z" fill="#ff9d1a" />
+                    <path d="M12 12 C16 20 17 28 12 36 C7 28 8 20 12 12Z" fill="#fff4b0" />
+                </svg>
+                <svg viewBox="0 0 96 48" style={{ position: 'absolute', left: 0, top: 40, width: 96, height: 48 }}>
+                    <path d="M2 10 Q48 70 94 10 Q48 22 2 10Z" fill="#b5532a" />
+                    <path d="M2 10 Q48 22 94 10 Q48 2 2 10Z" fill="#7a2e14" />
+                    <path d="M14 22 Q48 46 82 22" fill="none" stroke={a} strokeWidth="3" strokeDasharray="2 7" strokeLinecap="round" />
+                </svg>
+            </div>
+        ))}
+        {vignette(0.55)}
+    </div>
+);
+
+// Fireworks bursting around the edges with falling glitter (New Year).
+const BURSTS = [[14, 24], [84, 18], [30, 10], [70, 32], [8, 58], [92, 56], [52, 8], [22, 78], [80, 80]];
+const Fireworks = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, background: `linear-gradient(180deg, transparent 55%, ${rgba(b, 0.14)})` }} />
+        {BURSTS.map(([x, y], i) => {
+            const c = [a, b, '#ff6b9a', '#7cf7ff', '#ffffff'][i % 5];
+            const r = 110 + rand(i, 110) * 90, dur = 2.4 + rand(i, 111) * 1.4, delay = -rand(i, 112) * dur;
+            return (
+                <div key={i} style={{ position: 'absolute', left: `${x}%`, top: `${y}%` }}>
+                    <div style={{ position: 'absolute', left: -r * 0.6, top: -r * 0.6, width: r * 1.2, height: r * 1.2, borderRadius: '50%', background: `radial-gradient(circle, ${rgba(c, 0.45)}, transparent 65%)`, animation: `fwFlash ${dur}s ease-out ${delay}s infinite` }} />
+                    {Array.from({ length: 20 }, (_, k) => (
+                        <div key={k} style={{ position: 'absolute', transform: `rotate(${k * 18}deg)` }}>
+                            <div style={{ '--r': `${-r}px`, marginLeft: -2, width: 4, height: 16, borderRadius: 3, background: k % 2 ? c : '#fff', boxShadow: `0 0 8px ${c}`, animation: `fwBurst ${dur}s cubic-bezier(.15,.7,.3,1) ${delay}s infinite` }} />
+                        </div>
+                    ))}
+                </div>
+            );
+        })}
+        {Array.from({ length: 50 }, (_, i) => (
+            <Faller key={`g${i}`} i={i + 120} left={`${rand(i, 121) * 100}%`} dur={7 + rand(i, 122) * 7}>
+                <span style={{ display: 'block', width: 3, height: 3, borderRadius: '50%', background: i % 2 ? a : '#fff', boxShadow: `0 0 6px ${a}`, opacity: 0.7, animation: `twinkle ${1 + rand(i, 123) * 2}s ease-in-out infinite` }} />
+            </Faller>
+        ))}
+        {vignette(0.5)}
+    </div>
+);
+
+// Snowfall, fairy lights and snowy pines (Christmas).
+const Snowfall = ({ a, b }) => {
+    const bulbs = ['#ffd23f', a, '#4cc9f0', b];
+    const pine = (x, y, s, k) => (
+        <g key={k} transform={`translate(${x} ${y}) scale(${s})`}>
+            <path d="M0 -150 L45 -70 L22 -70 L60 0 L-60 0 L-22 -70 L-45 -70Z" fill="#0f3d2a" />
+            <path d="M0 -150 L18 -118 L-18 -118Z M-22 -70 L0 -84 L22 -70 L14 -66 L0 -74 L-14 -66Z" fill="#f4fbff" opacity="0.9" />
+            <rect x="-8" y="0" width="16" height="18" fill="#3b2414" />
+        </g>
+    );
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+                {[[110, 960, 1.4], [260, 990, 1], [1700, 970, 1.5], [1830, 1000, 1.05], [1560, 1010, 0.8]].map(([x, y, s], k) => pine(x, y, s, k))}
+                <path d="M0 990 Q300 930 640 985 T1280 980 T1920 960 V1080 H0Z" fill="#e8f4ff" opacity="0.92" />
+                <path d="M0 1040 Q480 990 960 1035 T1920 1020 V1080 H0Z" fill="#ffffff" />
+            </svg>
+            <svg viewBox="0 0 1920 220" preserveAspectRatio="xMidYMin slice" style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '20%', overflow: 'visible' }}>
+                {[0, 1, 2, 3].map(s => {
+                    const pts = swag(s * 480, s * 480 + 480, 6, 110, 12);
+                    return (
+                        <g key={s}>
+                            <polyline points={pts.map(p => p.join(',')).join(' ')} fill="none" stroke="#1d2b22" strokeWidth="3" />
+                            {pts.slice(1, -1).map(([x, y], k) => {
+                                const c = bulbs[(k + s) % 4];
+                                return (
+                                    <g key={k} style={{ animation: `bulbBlink ${1.6 + rand(k + s * 20, 130) * 1.6}s ease-in-out ${-rand(k + s * 20, 131) * 3}s infinite` }}>
+                                        <circle cx={x} cy={y + 16} r={20} fill={c} opacity="0.25" />
+                                        <ellipse cx={x} cy={y + 14} rx={8} ry={12} fill={c} />
+                                        <rect x={x - 5} y={y - 2} width={10} height={7} rx={2} fill="#555" />
+                                    </g>
+                                );
+                            })}
+                        </g>
+                    );
+                })}
+            </svg>
+            {Array.from({ length: 80 }, (_, i) => {
+                const s = 3 + rand(i, 132) * (i % 8 === 0 ? 10 : 5);
+                return (
+                    <Faller key={`f${i}`} i={i + 133} left={`${rand(i, 134) * 100}%`} dur={8 + rand(i, 135) * 10}>
+                        <div style={{ animation: `petalSway ${3 + rand(i, 136) * 4}s ease-in-out infinite` }}>
+                            <div style={{ width: s, height: s, borderRadius: '50%', background: '#ffffff', opacity: 0.55 + rand(i, 137) * 0.45, filter: s > 8 ? 'blur(1.5px)' : 'none', transform: 'translateY(-100%)' }} />
+                        </div>
+                    </Faller>
+                );
+            })}
+            {vignette(0.45)}
+        </div>
+    );
+};
+
+// Glowing jack-o'-lanterns, cobwebs and drifting ghosts (Halloween).
+const Web = ({ flip }) => {
+    const rays = [0, 15, 30, 45, 60, 75, 90].map(d => d * Math.PI / 180);
+    return (
+        <svg viewBox="0 0 300 300" style={{ position: 'absolute', top: 0, [flip ? 'right' : 'left']: 0, width: 300, height: 300, transform: flip ? 'scaleX(-1)' : 'none' }}>
+            {rays.map((t, k) => <line key={k} x1="0" y1="0" x2={Math.cos(t) * 300} y2={Math.sin(t) * 300} stroke="rgba(255,255,255,0.22)" strokeWidth="1.5" />)}
+            {[50, 95, 145, 200, 255].map(r => (
+                <path key={r} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1.2"
+                    d={rays.map((t, k) => `${k ? 'Q' + (Math.cos(t - 0.13) * r * 0.9) + ' ' + (Math.sin(t - 0.13) * r * 0.9) + ' ' : 'M'}${Math.cos(t) * r} ${Math.sin(t) * r}`).join(' ')} />
+            ))}
+        </svg>
+    );
+};
+const Pumpkin = ({ size, i }) => (
+    <svg viewBox="0 0 120 100" style={{ width: size, height: size * 0.83, overflow: 'visible' }}>
+        <path d="M56 18 C54 8 58 2 66 0 L68 6 C63 8 62 12 63 18Z" fill="#3f6b1f" />
+        <ellipse cx="34" cy="58" rx="30" ry="38" fill="#d9600b" />
+        <ellipse cx="86" cy="58" rx="30" ry="38" fill="#d9600b" />
+        <ellipse cx="60" cy="58" rx="32" ry="41" fill="#f07a14" />
+        <g style={{ animation: `glowFlicker ${1.4 + rand(i, 140)}s ease-in-out ${-rand(i, 141) * 2}s infinite` }}>
+            <path d="M36 46 L48 30 L56 48Z M84 46 L72 30 L64 48Z M54 58 L60 50 L66 58Z" fill="#ffe27a" />
+            <path d="M28 66 Q60 96 92 66 L84 70 L78 64 L70 72 L60 66 L50 72 L42 64 L36 70Z" fill="#ffe27a" />
+        </g>
+    </svg>
+);
+const GHOST = 'M0 30 C0 10 12 0 25 0 C38 0 50 10 50 30 L50 62 L42 55 L34 62 L25 55 L16 62 L8 55 L0 62Z';
+const Pumpkins = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, background: `radial-gradient(ellipse 100% 35% at 50% 100%, ${rgba(a, 0.35)}, transparent 70%)` }} />
+        <Web /><Web flip />
+        {/* a spider on a thread */}
+        <div style={{ position: 'absolute', left: '19%', top: 0, animation: 'ghostBob 5s ease-in-out infinite' }}>
+            <div style={{ width: 1.5, height: 150, margin: '0 auto', background: 'rgba(255,255,255,0.35)' }} />
+            <svg viewBox="0 0 40 30" style={{ width: 40, marginLeft: -19 }}>
+                <g stroke="#0a0505" strokeWidth="2" fill="none">{[-1, 1].map(s => [6, 12, 18].map(y => <path key={`${s}${y}`} d={`M20 ${y} q${s * 10} -6 ${s * 18} ${y / 3}`} />))}</g>
+                <ellipse cx="20" cy="14" rx="8" ry="10" fill="#0a0505" />
+            </svg>
+        </div>
+        {Array.from({ length: 4 }, (_, i) => (
+            <div key={`g${i}`} style={{ position: 'absolute', top: `${14 + i * 16}%`, left: 0, width: '100%', animation: `batFly ${30 + rand(i, 142) * 20}s linear ${-rand(i, 143) * 50}s infinite` }}>
+                <svg viewBox="0 0 50 62" style={{ width: 50 + rand(i, 144) * 30, opacity: 0.32, animation: `ghostBob ${3 + rand(i, 145) * 2}s ease-in-out infinite`, filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.5))' }}>
+                    <path d={GHOST} fill="#f4f1ff" />
+                    <ellipse cx="17" cy="26" rx="4" ry="6" fill="#1a1020" /><ellipse cx="33" cy="26" rx="4" ry="6" fill="#1a1020" />
+                </svg>
+            </div>
+        ))}
+        {Array.from({ length: 24 }, (_, i) => (
+            <span key={`w${i}`} style={{
+                position: 'absolute', left: `${rand(i, 146) * 100}%`, top: `${45 + rand(i, 147) * 45}%`, width: 5, height: 5, borderRadius: '50%',
+                background: b, boxShadow: `0 0 12px ${b}`, animation: `twinkle ${2 + rand(i, 148) * 3}s ease-in-out ${-rand(i, 149) * 4}s infinite`,
+            }} />
+        ))}
+        {[[2, 150], [10, 110], [17, 80], [80, 90], [87, 150], [95, 100]].map(([x, s], i) => (
+            <div key={`p${i}`} style={{ position: 'absolute', left: `${x}%`, bottom: '1%', transform: 'translateX(-50%)', filter: `drop-shadow(0 0 24px ${rgba(a, 0.7)})` }}>
+                <Pumpkin size={s} i={i} />
+            </div>
+        ))}
+        {vignette(0.6)}
+    </div>
+);
+
+// Clouds of coloured powder and flying specks (Holi).
+const HOLI = ['#ff3d9a', '#ffd400', '#22c55e', '#3b82f6', '#ff7a00', '#a855f7'];
+const splat = (i, r = 100) => {
+    const pts = Array.from({ length: 16 }, (_, k) => {
+        const t = (k / 16) * Math.PI * 2, rr = r * (0.6 + rand(i * 16 + k, 150) * 0.55);
+        return [Math.cos(t) * rr, Math.sin(t) * rr];
+    });
+    const mid = (p, q) => [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+    const m0 = mid(pts[15], pts[0]);
+    return `M${m0} ` + pts.map((p, k) => `Q${p} ${mid(p, pts[(k + 1) % 16])}`).join(' ') + 'Z';
+};
+const Holi = ({ a, b }) => {
+    const cols = [a, b, ...HOLI];
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            {Array.from({ length: 10 }, (_, i) => {
+                const left = i % 2 ? 60 + rand(i, 151) * 45 : -15 + rand(i, 151) * 40;
+                return (
+                    <div key={`c${i}`} style={{
+                        position: 'absolute', left: `${left}%`, top: `${rand(i, 152) * 90 - 10}%`, width: '45%', height: '55%',
+                        background: `radial-gradient(ellipse at center, ${rgba(cols[i % cols.length], 0.42)}, transparent 68%)`,
+                        animation: `blobDrift ${18 + rand(i, 153) * 14}s ease-in-out ${-rand(i, 154) * 20}s infinite`,
+                    }} />
+                );
+            })}
+            <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+                {[[90, 120, 1.6], [1820, 140, 1.3], [140, 950, 1.4], [1780, 960, 1.8], [420, 60, 0.7], [1500, 1040, 0.8]].map(([x, y, s], i) => (
+                    <g key={i} transform={`translate(${x} ${y}) scale(${s})`} opacity="0.85">
+                        <path d={splat(i)} fill={cols[(i + 2) % cols.length]} />
+                        {[0, 1, 2, 3].map(k => <circle key={k} cx={Math.cos(k * 1.7 + i) * 135} cy={Math.sin(k * 1.7 + i) * 135} r={6 + rand(k + i * 4, 155) * 10} fill={cols[(i + 2) % cols.length]} />)}
+                    </g>
+                ))}
+            </svg>
+            {Array.from({ length: 50 }, (_, i) => (
+                <Riser key={`s${i}`} i={i} salt={156} dur={8 + rand(i, 157) * 8} left={`${rand(i, 158) * 100}%`}>
+                    <div style={{ animation: `drift ${3 + rand(i, 159) * 3}s ease-in-out infinite` }}>
+                        <span style={{ display: 'block', width: 6 + rand(i, 160) * 8, height: 6 + rand(i, 160) * 8, borderRadius: '50%', background: cols[i % cols.length], opacity: 0.8, filter: 'blur(1px)' }} />
+                    </div>
+                </Riser>
+            ))}
+        </div>
+    );
+};
+
+// Swaying red lanterns with gold tassels and drifting blossoms (Lunar New Year).
+const Lanterns = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, background: `radial-gradient(ellipse 100% 40% at 50% 100%, ${rgba(b, 0.2)}, transparent 70%)` }} />
+        {[[4, 70, 1], [14, 20, 0.75], [25, 60, 0.85], [74, 40, 0.85], [85, 10, 0.75], [95, 60, 1], [40, 0, 0.55], [60, 10, 0.55]].map(([x, len, s], i) => (
+            <div key={i} style={{ position: 'absolute', left: `${x}%`, top: 0, transformOrigin: '50% 0', animation: `lanternSwing ${3.5 + rand(i, 160) * 2}s ease-in-out ${-rand(i, 161) * 4}s infinite` }}>
+                <div style={{ width: 2, height: len, marginLeft: -1, background: rgba(b, 0.7) }} />
+                <div style={{ position: 'relative', marginLeft: -60 * s, width: 120 * s }}>
+                    <div style={{ position: 'absolute', left: '-40%', top: '-10%', width: '180%', height: 180 * s, borderRadius: '50%', background: `radial-gradient(circle, ${rgba(a, 0.4)}, transparent 62%)` }} />
+                    <svg viewBox="0 0 120 170" style={{ position: 'relative', width: '100%' }}>
+                        <rect x="38" y="0" width="44" height="12" rx="3" fill={b} />
+                        <ellipse cx="60" cy="66" rx="56" ry="54" fill={a} />
+                        <ellipse cx="60" cy="66" rx="56" ry="54" fill="url(#lnShade)" />
+                        {[16, 34, 50].map(rx => <ellipse key={rx} cx="60" cy="66" rx={rx} ry="54" fill="none" stroke="rgba(90,0,0,0.45)" strokeWidth="2" />)}
+                        <rect x="38" y="116" width="44" height="12" rx="3" fill={b} />
+                        {[-12, -6, 0, 6, 12].map(dx => <line key={dx} x1={60 + dx} y1="128" x2={60 + dx * 1.3} y2="168" stroke={b} strokeWidth="2.5" />)}
+                        <defs>
+                            <radialGradient id="lnShade" cx="0.4" cy="0.4" r="0.7">
+                                <stop offset="0" stopColor="#ffd27a" stopOpacity="0.55" />
+                                <stop offset="1" stopColor="#5a0000" stopOpacity="0.5" />
+                            </radialGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        ))}
+        {Array.from({ length: 26 }, (_, i) => {
+            const s = 10 + rand(i, 162) * 10;
+            return (
+                <Faller key={`p${i}`} i={i + 163} left={`${rand(i, 164) * 100}%`} dur={10 + rand(i, 165) * 10}>
+                    <div style={{ animation: `petalSway ${3 + rand(i, 166) * 3}s ease-in-out infinite` }}>
+                        <div style={{ width: s, height: s * 0.75, borderRadius: '80% 0 80% 0', background: i % 3 ? '#ffb7c5' : b, opacity: 0.85, transform: 'translateY(-100%)' }} />
+                    </div>
+                </Faller>
+            );
+        })}
+        {vignette(0.55)}
+    </div>
+);
+
+// Crescent and star, glowing fanous lanterns and a domed skyline (Eid).
+const Fanous = ({ a, size }) => (
+    <svg viewBox="0 0 60 130" style={{ width: size, overflow: 'visible' }}>
+        <circle cx="30" cy="76" r="44" fill={rgba(a, 0.22)} />
+        <path d="M30 0 L30 10" stroke={a} strokeWidth="2" />
+        <path d="M18 24 Q30 6 42 24Z" fill={a} />
+        <path d="M14 26 H46 L52 46 H8Z" fill="#8a5a1c" />
+        <path d="M8 46 H52 L46 100 H14Z" fill="#2a1a08" />
+        {[0, 1, 2].map(k => <path key={k} d={`M${14 + k * 11.5} 50 h9 l-1 46 h-7z`} fill="#ffd27a" opacity="0.92" />)}
+        <path d="M14 100 H46 L30 124Z" fill="#8a5a1c" />
+    </svg>
+);
+const Crescent = ({ a, b, panel }) => {
+    let x = 0;
+    const city = [];
+    for (let i = 0; x < 1920; i++) {
+        const w = 120 + rand(i, 170) * 160, h = 120 + rand(i, 171) * 120;
+        const base = 1080 - h;
+        city.push(<rect key={`r${i}`} x={x} y={base} width={w} height={h} fill={panel} />);
+        city.push(<path key={`w${i}`} d={`M${x + w / 2 - 12} ${base + 70} v-24 a12 12 0 0 1 24 0 v24Z`} fill={rgba(a, 0.55)} />);
+        city.push(<path key={`d${i}`} d={`M${x + w * 0.15} ${base} A${w * 0.35} ${w * 0.38} 0 0 1 ${x + w * 0.85} ${base}Z`} fill={panel} />);
+        city.push(<path key={`f${i}`} d={`M${x + w / 2} ${base - w * 0.38} v-26`} stroke={panel} strokeWidth="4" />);
+        if (i % 2 === 0) {
+            const mx = x + w + 6;
+            city.push(<path key={`m${i}`} d={`M${mx} 1080 V${base - 140} l9 -40 l9 40 V1080Z`} fill={panel} />);
+        }
+        x += w + 30;
+    }
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            <Starfield a={a} b={b} />
+            <div style={{ position: 'absolute', right: '10%', top: '10%' }}>
+                <div style={{ position: 'absolute', inset: -110, borderRadius: '50%', background: `radial-gradient(circle, ${rgba(a, 0.25)}, transparent 65%)` }} />
+                <div style={{ position: 'relative', WebkitMaskImage: 'radial-gradient(circle at 72% 32%, transparent 42%, #000 43.5%)', maskImage: 'radial-gradient(circle at 72% 32%, transparent 42%, #000 43.5%)' }}>
+                    <Moon size={170} color={a} glow={null} />
+                </div>
+                <span style={{ position: 'absolute', left: 120, top: 38, fontSize: 42, color: a, textShadow: `0 0 14px ${a}` }}>★</span>
+            </div>
+            {[[6, 60, 70], [14, 160, 52], [22, 40, 44]].map(([x, len, size], i) => (
+                <div key={i} style={{ position: 'absolute', left: `${x}%`, top: 0, transformOrigin: '50% 0', animation: `lanternSwing ${4 + i}s ease-in-out ${-i * 1.3}s infinite` }}>
+                    <div style={{ width: 2, height: len, marginLeft: size / 2 - 1, background: rgba(a, 0.6) }} />
+                    <div style={{ marginTop: -2, filter: `drop-shadow(0 0 16px ${rgba(a, 0.8)})` }}><Fanous a={a} size={size} /></div>
+                </div>
+            ))}
+            <div style={{ ...fill, background: `linear-gradient(180deg, transparent 50%, ${rgba(b, 0.32)})` }} />
+            <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', filter: `drop-shadow(0 -2px 0 ${rgba(a, 0.35)})` }}>{city}</svg>
+        </div>
+    );
+};
+
+// Hearts drifting upward through soft bokeh (Valentine's).
+const HEART = 'M12 21 C5 15 1 11.5 1 7.5 C1 4 3.7 1.5 7 1.5 C9 1.5 11 2.6 12 4.3 C13 2.6 15 1.5 17 1.5 C20.3 1.5 23 4 23 7.5 C23 11.5 19 15 12 21Z';
+const Hearts = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <Bokeh a={a} b={b} />
+        {Array.from({ length: 28 }, (_, i) => {
+            const s = 18 + rand(i, 180) * 52;
+            const outline = i % 4 === 0;
+            return (
+                <Riser key={i} i={i} salt={181} dur={11 + rand(i, 182) * 10} left={`${rand(i, 183) * 100}%`}>
+                    <div style={{ animation: `drift ${4 + rand(i, 184) * 3}s ease-in-out infinite` }}>
+                        <svg viewBox="0 0 24 24" style={{ width: s, opacity: 0.45 + rand(i, 185) * 0.45, filter: `drop-shadow(0 0 ${s / 5}px ${rgba(a, 0.7)})${s > 55 ? ' blur(2px)' : ''}`, transform: `rotate(${rand(i, 186) * 30 - 15}deg)` }}>
+                            <path d={HEART} fill={outline ? 'none' : (i % 3 ? a : b)} stroke={outline ? '#ffffff' : 'none'} strokeWidth="1.4" />
+                        </svg>
+                    </div>
+                </Riser>
+            );
+        })}
+        {vignette(0.5)}
+    </div>
+);
+
+// Tumbling maple leaves in a warm late-afternoon glow (autumn / Thanksgiving).
+const MAPLE = 'M0 -48 L8 -28 L22 -34 L18 -14 L40 -18 L30 0 L44 8 L20 12 L24 30 L4 20 L2 44 L-2 44 L-4 20 L-24 30 L-20 12 L-44 8 L-30 0 L-40 -18 L-18 -14 L-22 -34 L-8 -28Z';
+const Leaves = ({ a, b }) => {
+    const cols = [a, b, '#c0392b', '#d35400', '#9c6b30'];
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            <div style={{ ...fill, background: `radial-gradient(ellipse 80% 60% at 80% 0%, ${rgba(b, 0.28)}, transparent 70%)` }} />
+            <div style={{ ...fill, background: `radial-gradient(ellipse 100% 30% at 50% 100%, ${rgba(a, 0.3)}, transparent 70%)` }} />
+            {Array.from({ length: 30 }, (_, i) => {
+                const s = 26 + rand(i, 190) * 34;
+                return (
+                    <Faller key={i} i={i + 191} left={`${rand(i, 192) * 100}%`} dur={10 + rand(i, 193) * 9}>
+                        <div style={{ animation: `petalSway ${3.5 + rand(i, 194) * 3}s ease-in-out infinite` }}>
+                            <svg viewBox="-50 -50 100 100" style={{ width: s, transform: 'translateY(-100%)', animation: `leafSpin ${4 + rand(i, 195) * 5}s linear infinite${i % 2 ? ' reverse' : ''}`, opacity: 0.9 }}>
+                                <path d={MAPLE} fill={cols[i % cols.length]} />
+                                <path d="M0 44 V-30" stroke="rgba(60,20,0,0.45)" strokeWidth="2.5" />
+                            </svg>
+                        </div>
+                    </Faller>
+                );
+            })}
+            {vignette(0.5)}
+        </div>
+    );
+};
+
+// Rising balloons, bunting and confetti (birthdays).
+const Balloons = ({ a, b }) => {
+    const cols = [a, b, ...CONFETTI];
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            {Array.from({ length: 14 }, (_, i) => {
+                const s = 70 + rand(i, 200) * 50;
+                const c = cols[i % cols.length];
+                return (
+                    <Riser key={`b${i}`} i={i} salt={201} dur={16 + rand(i, 202) * 10} left={`${(i / 14) * 100 + rand(i, 203) * 4}%`}>
+                        <div style={{ animation: `drift ${5 + rand(i, 204) * 3}s ease-in-out infinite` }}>
+                            <svg viewBox="0 0 60 150" style={{ width: s, overflow: 'visible' }}>
+                                <ellipse cx="30" cy="34" rx="27" ry="33" fill={c} />
+                                <ellipse cx="20" cy="22" rx="6" ry="10" fill="#fff" opacity="0.4" transform="rotate(-20 20 22)" />
+                                <path d="M26 66 L34 66 L30 72Z" fill={c} />
+                                <path d="M30 72 C24 92 36 108 28 148" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="1.4" />
+                            </svg>
+                        </div>
+                    </Riser>
+                );
+            })}
+            <Confetti a={a} b={b} n={44} salt={210} />
+            <svg viewBox="0 0 1920 160" preserveAspectRatio="xMidYMin slice" style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '15%' }}>
+                {[0, 1, 2, 3].map(s => {
+                    const pts = swag(s * 480, s * 480 + 480, 4, 70, 10);
+                    return (
+                        <g key={s}>
+                            <polyline points={pts.map(p => p.join(',')).join(' ')} fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2.5" />
+                            {pts.slice(0, -1).map(([x, y], k) => {
+                                const [x2, y2] = pts[k + 1];
+                                return <path key={k} d={`M${x} ${y} L${x2} ${y2} L${(x + x2) / 2} ${(y + y2) / 2 + 58}Z`} fill={cols[(k + s) % cols.length]} />;
+                            })}
+                        </g>
+                    );
+                })}
+            </svg>
+        </div>
+    );
+};
+
 const BACKDROP_MAP = {
     hudgrid: HudGrid, synthgrid: SynthGrid, scanlines: Scanlines, blobs: Blobs, starfield: Starfield,
     bokeh: Bokeh, rain: Rain, code: CodeRain, petals: Petals, waves: Waves, paper: Paper,
     halftone: Halftone, sunburst: Sunburst, embers: Embers, skyline: Skyline, nightsky: NightSky,
     spooky: Spooky, paws: Paws, seigaiha: Seigaiha, steam: Steam,
+    diyas: Diyas, fireworks: Fireworks, snowfall: Snowfall, pumpkins: Pumpkins, holi: Holi,
+    lanterns: Lanterns, crescent: Crescent, hearts: Hearts, leaves: Leaves, balloons: Balloons,
 };
 
 // `holes` + `box` cut the backdrop away over cameras (see holeMask below).

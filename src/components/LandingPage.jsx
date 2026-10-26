@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { scoresUrl, usageUrl } from '../config';
+import { CONTACT_EMAIL, scoresUrl, usageUrl } from '../config';
 import { track } from '../analytics';
 
 const REPO = 'abhayraghuwanshi/overlay-studio';
@@ -333,6 +333,11 @@ export default function LandingPage() {
                     <span style={{ fontFamily: BODY, fontSize: 12, color: C.faint }}>Overlay Studio — free, browser-based, runs as an OBS browser source.</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
                         <a href="/?studio" style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>Studio</a>
+                        <a href={`mailto:${CONTACT_EMAIL}?subject=Custom%20stream%20overlay`}
+                            onClick={() => track('custom_email_click', { location: 'footer' })}
+                            style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>
+                            Custom overlays: {CONTACT_EMAIL}
+                        </a>
                         <a href={REQUEST_URL} target="_blank" rel="noreferrer"
                             onClick={() => track('request_click', { location: 'footer' })}
                             style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>

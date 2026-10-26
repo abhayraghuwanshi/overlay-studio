@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ChevronUp, Eye, Film, GripHorizontal, HelpCircle, Home, LayoutGrid, Pencil, Play, Plus, RotateCcw, Save, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
+import { CONTACT_EMAIL } from '../config';
 
 // In-app guide to the studio: what each dock button does, what you can do in
 // edit mode, and how to get the overlay into OBS. Opened from the "?" in the
@@ -168,6 +169,9 @@ const HelpPanel = ({ onClose, initialTab = 'dock' }) => {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
                     <a href={REQUEST_URL} target="_blank" rel="noreferrer" style={{ fontSize: 10.5, fontFamily: 'monospace', color: '#a5b4fc', textDecoration: 'none' }}>
                         Missing something? Request it ↗
+                    </a>
+                    <a href={`mailto:${CONTACT_EMAIL}?subject=Custom%20stream%20overlay`} style={{ fontSize: 10.5, fontFamily: 'monospace', color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>
+                        Custom work: {CONTACT_EMAIL}
                     </a>
                     <button onClick={onClose} style={{ padding: '6px 14px', borderRadius: 7, cursor: 'pointer', background: 'rgba(79,70,229,0.5)', border: '1px solid rgba(99,102,241,0.5)', color: '#fff', fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1 }}>
                         Got it

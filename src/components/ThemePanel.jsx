@@ -34,6 +34,14 @@ const DISPLAY_FONTS = [
     { label: 'Teko',         value: "'Teko', 'Rajdhani', sans-serif" },
     { label: 'Creepster',    value: "'Creepster', 'Fredoka', cursive" },
     { label: 'Pacifico',     value: "'Pacifico', 'Fredoka', cursive" },
+    { label: 'Yatra One',    value: "'Yatra One', 'Fredoka', cursive" },
+    { label: 'Cinzel Deco',  value: "'Cinzel Decorative', 'Cinzel', Georgia, serif" },
+    { label: 'Christmas',    value: "'Mountains of Christmas', 'Fredoka', cursive" },
+    { label: 'Henny Penny',  value: "'Henny Penny', 'Fredoka', cursive" },
+    { label: 'Bungee',       value: "'Bungee', 'Fredoka', sans-serif" },
+    { label: 'Ma Shan Zheng', value: "'Ma Shan Zheng', 'Cinzel', serif" },
+    { label: 'Aref Ruqaa',   value: "'Aref Ruqaa', 'Cinzel', Georgia, serif" },
+    { label: 'Great Vibes',  value: "'Great Vibes', 'Pacifico', cursive" },
 ];
 
 const selectStyle = {

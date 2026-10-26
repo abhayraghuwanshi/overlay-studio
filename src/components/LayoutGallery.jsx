@@ -3,6 +3,7 @@ import { Check, ChevronLeft, ChevronRight, Plus, Trash2, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react';
 import { getTheme } from '../theme/themes';
 import { TEMPLATE_CATEGORIES } from '../scenes/starterLayouts';
+import { CONTACT_EMAIL } from '../config';
 import { sceneHoles } from './graphics';
 import { bgToStyle } from './BackgroundPanel';
 import CameraFrame, { DEFAULT_CAM_STYLE } from './CameraFrame';
@@ -455,6 +456,12 @@ const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStart
                                             onDelete={onDelete}
                                         />
                                     ))}
+                            </div>
+                        )}
+                        {tab === 'templates' && (
+                            <div style={{ marginTop: 14, padding: '10px 12px', borderRadius: 8, border: '1px dashed rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)', fontSize: 11, fontFamily: 'monospace', lineHeight: 1.6, textAlign: 'center' }}>
+                                Want a custom overlay for your channel?{' '}
+                                <a href={`mailto:${CONTACT_EMAIL}?subject=Custom%20stream%20overlay`} style={{ color: '#a5b4fc', textDecoration: 'none' }}>{CONTACT_EMAIL}</a>
                             </div>
                         )}
                     </div>

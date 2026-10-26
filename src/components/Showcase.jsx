@@ -17,6 +17,7 @@ import { holeMask, sceneHoles } from './graphics';
 //   &scenes=0,2                                  scene indexes per pack (default: all)
 //   &sec=3.5                                     seconds per scene
 //   &vertical                                    1080×1920 layout for Shorts / TikTok / Reels
+//   &cover                                       static 1280×720 playlist / thumbnail image
 //   &autostart                                   play immediately (else wait for window.__showcaseStart())
 
 const W = 1920, H = 1080;
@@ -24,6 +25,7 @@ const VW = 1080, VH = 1920;     // vertical canvas
 const V_STAGE = VW / W;          // 16:9 overlay scaled to the vertical width
 const INTRO_MS = 2200, OUTRO_MS = 3000, FADE_S = 0.45;
 const ALERT_TYPES = ['sub', 'raid', 'giftbomb', 'cheer', 'resub'];
+const ALERT_DELAY_MS = 700;   // after a scene appears; the recorder times its chime from this
 
 const params = () => new URLSearchParams(window.location.search);
 
@@ -87,7 +89,7 @@ const Scene = ({ step }) => {
         const t = setTimeout(() => {
             const type = ALERT_TYPES[(starter.id.length + step.index) % ALERT_TYPES.length];
             setElements(els => els.map(e => (e.type === 'alerts' ? { ...e, test: { type, at: Date.now() } } : e)));
-        }, 700);
+        }, ALERT_DELAY_MS);
         return () => clearTimeout(t);
     }, [starter.id, step.index]);
     const mood = elements.find(e => e.type === 'moodring')?.mood ?? 'chill';
@@ -188,7 +190,63 @@ const VerticalFrame = ({ step }) => {
     );
 };
 
+// Playlist / thumbnail cover (1280×720): headline on the left, a tilted
+// collage of real template scenes on the right.
+const COVER_SCENES = [
+    ['kit-valhalla', 0], ['kit-samurai', 4], ['kit-sun-moon', 2],
+    ['kit-spooky', 0], ['kit-night-city', 0], ['kit-kitty', 2],
+];
+const Cover = () => {
+    const tiles = COVER_SCENES
+        .map(([id, i]) => { const st = STARTER_LAYOUTS.find(x => x.id === id); return st?.scenes[i] ? { starter: st, index: i, scene: st.scenes[i] } : null; })
+        .filter(Boolean);
+    const TW = 470, TH = TW * 9 / 16;
+    const count = STARTER_LAYOUTS.length;
+    useEffect(() => { window.__coverReady = true; }, []);
+    return (
+        <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', fontFamily: "'Space Grotesk', Inter, sans-serif", color: '#fff',
+            background: 'radial-gradient(ellipse at 20% 40%, #2a2470, transparent 55%), radial-gradient(ellipse at 90% 90%, #5b1a4a, transparent 50%), #07070f' }}>
+            {/* collage */}
+            <div style={{ position: 'absolute', left: 500, top: -170, width: 1100, height: 1100, transform: 'rotate(-12deg)', transformOrigin: 'center' }}>
+                {tiles.map((t, k) => {
+                    const col = k % 2, row = Math.floor(k / 2);
+                    return (
+                        <div key={k} style={{
+                            position: 'absolute', left: col * (TW + 26) + (row % 2) * 90, top: row * (TH + 26) + 60, width: TW, height: TH,
+                            borderRadius: 14, overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.12)',
+                        }}>
+                            <div style={{ position: 'absolute', left: 0, top: 0, width: W, height: H, transform: `scale(${TW / W})`, transformOrigin: 'top left' }}>
+                                <Scene step={t} />
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+            {/* fade the collage into the text side */}
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, #07070f 0%, rgba(7,7,15,0.95) 36%, rgba(7,7,15,0.3) 50%, transparent 60%)' }} />
+            {/* headline */}
+            <div style={{ position: 'absolute', left: 70, top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', width: 640 }}>
+                <div style={{ fontSize: 22, letterSpacing: 6, textTransform: 'uppercase', color: '#a5b4fc', fontWeight: 600 }}>Overlay Studio</div>
+                <div style={{ fontSize: 112, fontWeight: 700, lineHeight: 0.95, letterSpacing: -3, marginTop: 22 }}>
+                    FREE<br />STREAM<br />
+                    <span style={{ background: 'linear-gradient(90deg, #818cf8, #f472b6, #fbbf24)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>OVERLAYS</span>
+                </div>
+                <div style={{ fontSize: 30, marginTop: 30, color: 'rgba(255,255,255,0.82)' }}>No download. One link into OBS.</div>
+                <div style={{ display: 'flex', gap: 12, marginTop: 30 }}>
+                    <span style={{ padding: '10px 20px', borderRadius: 999, background: '#f1f1f5', color: '#0b0b12', fontSize: 22, fontWeight: 700 }}>{count} templates</span>
+                    <span style={{ padding: '10px 20px', borderRadius: 999, border: '2px solid rgba(255,255,255,0.35)', fontSize: 22, fontWeight: 600 }}>Twitch chat + alerts</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const Showcase = () => {
+    if (params().has('cover')) return <Cover />;
+    return <Player />;
+};
+
+const Player = () => {
     const steps = useMemo(() => buildSteps(), []);
     const sec = Math.max(1.5, Number(params().get('sec')) || 3.5);
     // phase: 'wait' → 'intro' → step index (number) → 'outro' → 'done'
@@ -200,10 +258,14 @@ const Showcase = () => {
     useEffect(() => {
         const onResize = () => setScale(Math.min(window.innerWidth / fw, window.innerHeight / fh));
         window.addEventListener('resize', onResize);
-        window.__showcaseStart = () => setPhase('intro');
-        window.__showcaseInfo = { steps: steps.length, sec, introMs: INTRO_MS, outroMs: OUTRO_MS };
+        // Returns the start time so the recorder can line the soundtrack up.
+        window.__showcaseStart = () => { setPhase('intro'); return Date.now(); };
+        window.__showcaseInfo = {
+            steps: steps.length, sec, introMs: INTRO_MS, outroMs: OUTRO_MS, alertDelayMs: ALERT_DELAY_MS,
+            alertSteps: steps.map(st => (st.scene.snapshot.elements ?? []).some(e => e.type === 'alerts' && !e.hidden)),
+        };
         return () => window.removeEventListener('resize', onResize);
-    }, [steps.length, sec, fw, fh]);
+    }, [steps, sec, fw, fh]);
 
     useEffect(() => {
         window.__showcaseDone = phase === 'done';

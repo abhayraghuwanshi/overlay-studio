@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "promo": "node scripts/record-showcase.mjs"
+    "promo": "node scripts/record-showcase.mjs",
+    "promo:cover": "node scripts/make-cover.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.2.0",

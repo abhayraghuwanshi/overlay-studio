@@ -9,18 +9,23 @@
 // encodes with ffmpeg. Each preset is recorded twice: 16:9, and a native
 // 1080×1920 vertical layout (?vertical) for Shorts / TikTok / Reels. Output
 // lands in promo-videos/ (gitignored).
+//
+// The soundtrack is generated (scripts/music.mjs): an original loop plus an
+// alert chime and a scene-change whoosh timed to the video. --no-music skips it.
 
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright-core';
 import { PORTS } from '../ports.config.js';
+import { renderTrack } from './music.mjs';
 
 const args = process.argv.slice(2);
 const urlArg = args.find(a => a.startsWith('--url='));
 const BASE = urlArg ? urlArg.slice(6) : `http://localhost:${PORTS.FRONTEND}`;
 const OUT = path.resolve('promo-videos');
 const FPS = 30;
+const MUSIC = !args.includes('--no-music');
 
 // What to record. `query` is appended to /?showcase.
 const PRESETS = {
@@ -64,10 +69,20 @@ const record = async (browser, name, query, vertical) => {
     });
     await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 92, maxWidth: vw, maxHeight: vh, everyNthFrame: 1 });
 
+    // Vite reloads the page when a source file changes, which would silently
+    // restart the player mid-recording. Fail loudly instead.
+    let reloaded = false;
+    page.on('framenavigated', (fr) => { if (fr === page.mainFrame()) reloaded = true; });
+
     const info = await page.evaluate(() => window.__showcaseInfo);
-    await page.evaluate(() => window.__showcaseStart());
+    const startedAt = (await page.evaluate(() => window.__showcaseStart())) / 1000;   // epoch seconds
     const expectMs = info.introMs + info.steps * info.sec * 1000 + info.outroMs;
-    await page.waitForFunction(() => window.__showcaseDone === true, null, { timeout: expectMs + 30000, polling: 100 });
+    await page.waitForFunction(() => window.__showcaseDone === true, null, { timeout: expectMs + 30000, polling: 100 })
+        .catch((e) => {
+            throw new Error(reloaded
+                ? `${name}: the page reloaded mid-recording (a source file changed?). Re-run without editing files.`
+                : `${name}: ${e.message}`);
+        });
     await page.waitForTimeout(300);
     await cdp.send('Page.stopScreencast');
     await page.close();
@@ -85,8 +100,22 @@ const record = async (browser, name, query, vertical) => {
 
     const seconds = frames[frames.length - 1].ts - frames[0].ts;
     const mp4 = path.join(OUT, `${name}.mp4`);
+    const silent = MUSIC ? path.join(frameDir, 'video.mp4') : mp4;
     await run('ffmpeg', ['-y', '-f', 'concat', '-safe', '0', '-i', list,
-        '-vf', `fps=${FPS},format=yuv420p`, '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-movflags', '+faststart', mp4]);
+        '-vf', `fps=${FPS},format=yuv420p`, '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-movflags', '+faststart', silent]);
+
+    if (MUSIC) {
+        // Frame timestamps and the page clock are both epoch seconds, so the
+        // player's timeline maps straight onto video time.
+        const t0 = startedAt - frames[0].ts;
+        const sceneStart = (k) => t0 + info.introMs / 1000 + k * info.sec;
+        const whooshes = Array.from({ length: info.steps + 1 }, (_, k) => sceneStart(k));
+        const alerts = info.alertSteps.flatMap((has, k) => (has ? [sceneStart(k) + info.alertDelayMs / 1000] : []));
+        const wav = path.join(frameDir, 'track.wav');
+        fs.writeFileSync(wav, renderTrack({ seconds: seconds + 0.2, alerts, whooshes }));
+        await run('ffmpeg', ['-y', '-i', silent, '-i', wav, '-map', '0:v', '-map', '1:a',
+            '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', mp4]);
+    }
 
     fs.rmSync(frameDir, { recursive: true, force: true });
     console.log(`✓ ${name}: ${seconds.toFixed(1)}s, ${frames.length} frames (~${(frames.length / seconds).toFixed(0)} fps captured) → ${path.relative(process.cwd(), mp4)}`);
@@ -108,6 +137,10 @@ const main = async () => {
             await record(browser, n, PRESETS[n].query, false);
             await record(browser, `${n}-vertical`, PRESETS[n].query, true);
         }
+    } catch (e) {
+        // Leave no half-written frame folders behind.
+        for (const d of fs.readdirSync(OUT)) if (d.startsWith('.frames-')) fs.rmSync(path.join(OUT, d), { recursive: true, force: true });
+        throw e;
     } finally {
         await browser.close();
     }

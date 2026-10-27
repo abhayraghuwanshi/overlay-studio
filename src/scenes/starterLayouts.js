@@ -756,6 +756,181 @@ const FESTIVE_LAYOUTS = [
     },
 ];
 
+// Game packs — fan-made looks for the most-streamed games, each on its own
+// game theme and backdrop. Original graphics only, no game art or logos.
+const GAME_LAYOUTS = [
+    {
+        id: 'kit-valorant', name: 'Valorant Agent', themeId: 'valorant', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'Valorant-style · angular shards · slant plates',
+        scenes: kitShow({
+            split: true, bg: grad('#1a2733', '#0a1016', '160deg'),
+            title: 'LOCKING IN', tagline: 'Agent select — the match starts soon', handle: '@agent',
+            today: ['Warm-up · Deathmatch', 'Ranked grind', 'Viewer customs'],
+            role: 'Ranked', chatRole: 'Lobby talk', goal: 'Rank-up Goal', brb: 'TACTICAL TIMEOUT', brbSub: 'Buy phase — back in 30',
+            end: 'GG, WELL PLAYED', endSub: 'Thanks for queueing with me', offline: 'OUT OF QUEUE',
+            schedule: ['Mon · Ranked grind', 'Wed · Viewer customs', 'Fri · Five-stack night'],
+            ticker: 'Follow to join the five-stack\n!crosshair for my code\n!rank to check the grind',
+        }),
+    },
+    {
+        id: 'kit-battlegrounds', name: 'Battlegrounds Drop', themeId: 'battlegrounds', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'PUBG / BGMI-style · zone map · airdrops · squad duo',
+        scenes: kitShow({
+            duo: true, bg: grad('#1e2216', '#07080a', '170deg'),
+            title: 'DROPPING IN', tagline: 'The plane is boarding — where we dropping, chat?', handle: '@winnerwinner',
+            role: 'Squad grind', chatRole: 'Lobby', hostRole: 'IGL', goal: 'Chicken Dinner Goal', brb: 'LOOTING', brbSub: 'Grabbing the airdrop — back soon',
+            end: 'WINNER WINNER', endSub: 'chicken dinner — thanks for squadding up 🍗', offline: 'OUT OF THE ZONE',
+            schedule: ['Mon · Ranked squads', 'Wed · Custom rooms', 'Sat · Scrims & TDM'],
+            ticker: 'Follow for drop alerts\n!sens for my sensitivity\nSquad up in !discord',
+        }),
+    },
+    {
+        id: 'kit-fortnite', name: 'Storm Royale', themeId: 'fortnite', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'Fortnite-style · purple storm · loot glow · round cam',
+        scenes: kitShow({
+            camShape: 'circle', bg: grad('#2a1260', '#0b0420', '170deg'),
+            title: 'LET’S DROP!', tagline: 'the battle bus is warming up 🚌', handle: '@victoryroyale',
+            role: 'Zero build', chatRole: 'Lobby chat', goal: 'Victory Goal', brb: 'STORM IS CLOSING', brbSub: 'back before the next circle',
+            end: 'VICTORY ROYALE', endSub: 'thanks for dropping in with me', offline: 'BACK TO THE LOBBY',
+            ticker: 'Follow for the next drop\nDrop a 🚌 in chat\n!duos to squad up',
+        }),
+    },
+    {
+        id: 'kit-warzone', name: 'Warzone Ops', themeId: 'warzone', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'Call of Duty-style · radar sweep · tactical green',
+        scenes: kitShow({
+            split: true, titleScale: 0.85, bg: grad('#121a12', '#040604', '170deg'),
+            title: 'BOOTS ON THE GROUND', tagline: 'Infil in progress — stream starts soon', handle: '@operator',
+            today: ['Loadout check', 'Battle royale quads', 'Resurgence sweats'],
+            role: 'Quads · Resurgence', chatRole: 'Briefing room', goal: 'Loadout Goal', brb: 'EXFIL IN PROGRESS', brbSub: 'Hold the line — back shortly',
+            end: 'MISSION COMPLETE', endSub: 'Thanks for running ops with me', offline: 'OFF DUTY',
+            schedule: ['Tue · Ranked play', 'Thu · Quads with viewers', 'Sat · Resurgence marathon'],
+            ticker: '!loadout for my builds\nFollow for infil alerts\nWin your gulag, chat',
+        }),
+    },
+    {
+        id: 'kit-apex', name: 'Apex Ring', themeId: 'apex', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'Apex Legends-style · closing ring · hex grid · trios duo',
+        scenes: kitShow({
+            duo: true, titleScale: 0.9, bg: grad('#24100e', '#080404', '160deg'),
+            title: 'JUMPMASTER READY', tagline: 'The dropship launches soon', handle: '@champion',
+            role: 'Ranked · Trios', chatRole: 'Lobby', hostRole: 'Jumpmaster', goal: 'Predator Goal', brb: 'RING CLOSING', brbSub: 'Rotating — back in a sec',
+            end: 'CHAMPIONS', endSub: 'Thanks for dropping with the squad', offline: 'OUT OF THE ARENA',
+            ticker: '!sens for my settings\nFollow — the ring is closing\nTrios in !discord',
+        }),
+    },
+    {
+        id: 'kit-minecraft', name: 'Block World', themeId: 'minecraft', tags: ['games', 'gaming', 'cozy'], kit: true, isNew: true,
+        tagline: 'Minecraft-style · pixel terrain · square moon',
+        scenes: kitShow({
+            duo: true, titleScale: 0.7, bg: grad('#0d1a3a', '#03060f', '180deg'),
+            title: 'LOADING WORLD...', tagline: 'generating terrain — the stream spawns soon', handle: '@blockhead',
+            role: 'Survival', chatRole: 'Village chat', hostRole: 'Builder', goal: 'Diamond Goal', brb: 'AFK MINING', brbSub: 'back before the creepers show up',
+            end: 'SAVING WORLD...', endSub: 'thanks for building with me', offline: 'WORLD SAVED',
+            schedule: ['Mon · Survival', 'Wed · Build battles', 'Sat · Hardcore attempt'],
+            ticker: 'Follow to join the server\n!ip for the SMP address\nNever dig straight down',
+        }),
+    },
+    {
+        id: 'kit-gta', name: 'City Life RP', themeId: 'gta', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'GTA RP-style · sunset palms · wanted stars',
+        scenes: kitShow({
+            split: true, duo: true, bg: grad('#2a1030', '#0a0410', '180deg'),
+            title: 'BACK IN THE CITY', tagline: 'Clocking in — RP starts soon', handle: '@citylife',
+            today: ['Morning shift', 'Heists & chases', 'Chat picks the story'],
+            role: 'Roleplay', chatRole: 'Street talk', hostRole: 'Driver', goal: 'Bail Fund Goal', brb: 'WASTED', brbSub: 'Respawning at the hospital…',
+            end: 'MISSION PASSED', endSub: 'Respect +100 — thanks for riding along', offline: 'LAYING LOW',
+            schedule: ['Mon · RP shift', 'Thu · Heist night', 'Sat · Car meet'],
+            ticker: 'Follow for heist alerts\n!server for the RP city\nKeep it in character, chat',
+        }),
+    },
+    {
+        id: 'kit-league', name: 'Hextech Rift', themeId: 'hextech', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'League of Legends-style · rune circles · gold & teal',
+        scenes: kitShow({
+            split: true, titleScale: 0.8, bg: grad('#0a1a2e', '#02060d', '170deg'),
+            title: 'WELCOME TO THE RIFT', tagline: 'Champion select — stream starts soon', handle: '@summoner',
+            today: ['Normals warm-up', 'Ranked climb', 'Viewer ARAMs'],
+            role: 'Ranked solo/duo', chatRole: 'Fountain chat', goal: 'LP Goal', brb: 'RECALLING', brbSub: 'Back to lane shortly',
+            end: 'VICTORY', endSub: 'GG — thanks for climbing with me', offline: 'AWAY FROM THE RIFT',
+            schedule: ['Mon · Ranked climb', 'Wed · Viewer ARAMs', 'Sun · Clash'],
+            ticker: '!opgg for my profile\nFollow for ranked alerts\nNo flame in chat 💙',
+        }),
+    },
+    {
+        id: 'kit-gta6', name: 'Vice Beach', themeId: 'gta6', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'GTA VI-style · neon Vice skyline · ocean sunset',
+        scenes: kitShow({
+            duo: true, bg: grad('#2b0f3a', '#0a0414', '180deg'),
+            title: 'Welcome to Vice', tagline: 'the sun is going down — stream starts soon 🌴', handle: '@vicebeach',
+            role: 'Leonida life', chatRole: 'Beach talk', hostRole: 'Driver', goal: 'Getaway Goal', brb: 'Laying low', brbSub: 'ditching the cops — back soon',
+            end: 'See you in Vice', endSub: 'thanks for cruising with me 🌴', offline: 'Off the grid',
+            schedule: ['Mon · Story mode', 'Thu · Heist night', 'Sat · Online with viewers'],
+            ticker: 'Follow for heist alerts\nDrop a 🌴 in chat\nCruise with the crew in !discord',
+        }),
+    },
+    {
+        id: 'kit-nether', name: 'Nether Run', themeId: 'nether', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'Minecraft Nether-style · lava sea · falling ash',
+        scenes: kitShow({
+            titleScale: 0.7, bg: grad('#2a0a08', '#080202', '180deg'),
+            title: 'ENTER THE NETHER', tagline: 'lighting the portal — the stream spawns soon', handle: '@netherrun',
+            role: 'Speedrun', chatRole: 'Bastion chat', goal: 'Blaze Rod Goal', brb: 'HIDING FROM GHASTS', brbSub: 'back before the lava rises',
+            end: 'PORTAL CLOSED', endSub: 'thanks for braving the Nether with me', offline: 'BACK IN THE OVERWORLD',
+            schedule: ['Mon · Any% speedrun', 'Wed · Hardcore', 'Sat · SMP with viewers'],
+            ticker: 'Follow to join the server\n!seed for the run seed\nNever mine with your fists',
+        }),
+    },
+    {
+        id: 'kit-pubg-sniper', name: 'Sniper Scope', themeId: 'sniper', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'PUBG / BGMI-style · 8x scope · mil-dot reticle',
+        scenes: kitShow({
+            bg: grad('#1a1d14', '#050604', '180deg'),
+            title: 'SCOPED IN', tagline: 'Holding the ridge — stream starts soon', handle: '@onetap',
+            role: 'Solo vs squads', chatRole: 'Lobby', goal: 'Headshot Goal', brb: 'RELOADING', brbSub: 'Swapping mags — back soon',
+            end: 'CHICKEN SECURED', endSub: 'Thanks for spotting for me 🍗', offline: 'OUT OF RANGE',
+            ticker: '!sens for my scope settings\nFollow for drop alerts\nCall the shot in chat',
+        }),
+    },
+    {
+        id: 'kit-cs2', name: 'Dust Site', themeId: 'cs2', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'Counter-Strike 2-style · desert walls · smoke & tracers',
+        scenes: kitShow({
+            split: true, bg: grad('#241c12', '#08070a', '170deg'),
+            title: 'ROUND ONE', tagline: 'Buy phase — stream starts soon', handle: '@entryfrag',
+            today: ['Warm-up · Deathmatch', 'Premier grind', 'Faceit with viewers'],
+            role: 'Premier', chatRole: 'Mid doors', goal: 'Rating Goal', brb: 'SAVE ROUND', brbSub: 'Back next round',
+            end: 'ROUND WON', endSub: 'GG — thanks for watching the match', offline: 'OFF THE SERVER',
+            schedule: ['Tue · Premier', 'Thu · Faceit 5-stack', 'Sat · Viewer 10-mans'],
+            ticker: '!crosshair for my code\nFollow for match alerts\nRush B, chat',
+        }),
+    },
+    {
+        id: 'kit-freefire', name: 'Blaze Squad', themeId: 'freefire', tags: ['games', 'gaming'], kit: true, isNew: true,
+        tagline: 'Free Fire-style · roaring flames · rising embers · squad duo',
+        scenes: kitShow({
+            duo: true, titleScale: 0.9, bg: grad('#2a1206', '#0a0402', '170deg'),
+            title: 'BOOYAH TIME', tagline: 'The squad is landing — stream starts soon 🔥', handle: '@booyah',
+            role: 'Clash squad', chatRole: 'Lobby', hostRole: 'Rusher', goal: 'Booyah Goal', brb: 'HEALING UP', brbSub: 'Back in the fight soon',
+            end: 'BOOYAH!', endSub: 'Thanks for squadding up 🔥', offline: 'SQUAD OFFLINE',
+            schedule: ['Mon · Rank push', 'Wed · Custom rooms', 'Sat · Guild war'],
+            ticker: 'Follow for custom room alerts\n!uid for my profile\nDrop a 🔥 in chat',
+        }),
+    },
+    {
+        id: 'kit-roblox', name: 'Obby Rush', themeId: 'roblox', tags: ['games', 'gaming', 'cozy'], kit: true, isNew: true,
+        tagline: 'Roblox-style · floating stud platforms · round cam',
+        scenes: kitShow({
+            camShape: 'circle', duo: true, bg: grad('#10213a', '#05080f', '180deg'),
+            title: 'LET’S PLAY!', tagline: 'joining the server — stream starts soon', handle: '@obbyrush',
+            role: 'Obby speedrun', chatRole: 'Hangout', hostRole: 'Player 1', goal: 'Checkpoint Goal', brb: 'RESPAWNING', brbSub: 'oof — back in a sec',
+            end: 'GG, CHAT!', endSub: 'thanks for playing with me', offline: 'LEFT THE GAME',
+            schedule: ['Mon · Obby marathon', 'Wed · Horror games', 'Sat · Viewer servers'],
+            ticker: 'Follow to join my server\nDrop your username in chat\n!games for today’s picks',
+        }),
+    },
+];
+
 // ── The catalog ── style-kit packs first, then the classic themed styles ─────
 // `tags` drive the gallery's category filter.
 export const TEMPLATE_CATEGORIES = [
@@ -765,10 +940,12 @@ export const TEMPLATE_CATEGORIES = [
     { id: 'creative', label: 'Creative' },
     { id: 'pro',      label: 'Talk & pro' },
     { id: 'seasonal', label: 'Festive' },
+    { id: 'games',    label: 'By game' },
 ];
 
 export const STARTER_LAYOUTS = [
     ...FESTIVE_LAYOUTS,
+    ...GAME_LAYOUTS,
     ...MOTIF_LAYOUTS,
     ...KIT_LAYOUTS,
     {

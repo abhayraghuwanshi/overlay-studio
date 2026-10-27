@@ -42,6 +42,14 @@ const DISPLAY_FONTS = [
     { label: 'Ma Shan Zheng', value: "'Ma Shan Zheng', 'Cinzel', serif" },
     { label: 'Aref Ruqaa',   value: "'Aref Ruqaa', 'Cinzel', Georgia, serif" },
     { label: 'Great Vibes',  value: "'Great Vibes', 'Pacifico', cursive" },
+    { label: 'Bebas Neue',   value: "'Bebas Neue', 'Anton', sans-serif" },
+    { label: 'Stencil',      value: "'Saira Stencil One', 'Teko', sans-serif" },
+    { label: 'Luckiest Guy', value: "'Luckiest Guy', 'Fredoka', cursive" },
+    { label: 'Black Ops',    value: "'Black Ops One', 'Teko', sans-serif" },
+    { label: 'Chakra Petch', value: "'Chakra Petch', 'Rajdhani', sans-serif" },
+    { label: 'Silkscreen',   value: "'Silkscreen', 'VT323', monospace" },
+    { label: 'Russo One',    value: "'Russo One', 'Rajdhani', sans-serif" },
+    { label: 'Lilita One',   value: "'Lilita One', 'Fredoka', sans-serif" },
 ];
 
 const selectStyle = {

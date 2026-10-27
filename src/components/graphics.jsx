@@ -60,6 +60,20 @@ export const BACKDROPS = [
     { id: 'hearts',    label: 'Floating hearts' },
     { id: 'leaves',    label: 'Autumn leaves' },
     { id: 'balloons',  label: 'Balloons & confetti' },
+    { id: 'shards',    label: 'Tactical shards' },
+    { id: 'airdrop',   label: 'Zone map & airdrops' },
+    { id: 'storm',     label: 'Purple storm' },
+    { id: 'radar',     label: 'Radar sweep' },
+    { id: 'ring',      label: 'Closing ring' },
+    { id: 'blocks',    label: 'Block world' },
+    { id: 'sunset',    label: 'Sunset city' },
+    { id: 'hextech',   label: 'Hextech runes' },
+    { id: 'vicebeach', label: 'Vice beach' },
+    { id: 'nether',    label: 'Nether lava' },
+    { id: 'scope',     label: 'Sniper scope' },
+    { id: 'dust',      label: 'Desert site' },
+    { id: 'blaze',     label: 'Flame wall' },
+    { id: 'obby',      label: 'Stud platforms' },
 ];
 
 const Corner = ({ pos, color, size = 90, w = 3 }) => {
@@ -921,6 +935,524 @@ const Balloons = ({ a, b }) => {
     );
 };
 
+// ── Game backdrops ── fan-made looks for popular games. Original shapes only,
+// no game art or logos.
+
+// Floating angular shards, a slashed band and a crosshair (Valorant-style).
+const SHARDS = [[6, 14, 150, 0], [82, 8, 110, 1], [90, 60, 170, 0], [12, 68, 90, 1], [62, 20, 70, 1], [34, 82, 120, 0], [74, 80, 64, 1], [46, 6, 54, 0]];
+const Shards = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, backgroundImage: `repeating-linear-gradient(-58deg, ${rgba(b, 0.035)} 0 2px, transparent 2px 26px)` }} />
+        <div style={{ position: 'absolute', left: '-10%', top: '62%', width: '120%', height: '22%', background: rgba(b, 0.06), transform: 'rotate(-10deg)' }} />
+        <div style={{ position: 'absolute', left: '-10%', top: '60%', width: '120%', height: 8, background: a, boxShadow: `0 0 24px ${rgba(a, 0.7)}`, transform: 'rotate(-10deg)' }} />
+        <div style={{ position: 'absolute', left: '-10%', top: '86%', width: '120%', height: 2, background: rgba(b, 0.5), transform: 'rotate(-10deg)' }} />
+        {SHARDS.map(([x, y, s, outline], i) => (
+            <div key={i} style={{ position: 'absolute', left: `${x}%`, top: `${y}%`, animation: `ghostBob ${5 + rand(i, 300) * 4}s ease-in-out ${-rand(i, 301) * 6}s infinite` }}>
+                <svg viewBox="0 0 100 100" style={{ width: s, height: s, overflow: 'visible', transform: `rotate(${rand(i, 302) * 360}deg)` }}>
+                    <polygon points="0,10 100,0 40,100" fill={outline ? 'none' : rgba(a, 0.85)} stroke={outline ? b : 'none'} strokeWidth="3" opacity={outline ? 0.5 : 1} />
+                </svg>
+            </div>
+        ))}
+        <svg viewBox="-60 -60 120 120" style={{ position: 'absolute', right: '5%', top: '40%', width: 120, height: 120 }}>
+            <circle r="40" fill="none" stroke={rgba(b, 0.35)} strokeWidth="2" strokeDasharray="10 14" />
+            <path d="M0 -52 V-18 M0 18 V52 M-52 0 H-18 M18 0 H52" stroke={a} strokeWidth="4" />
+            <circle r="3" fill={b} />
+        </svg>
+        {vignette(0.55)}
+    </div>
+);
+
+// Battle-royale map: coordinate grid, a shrinking blue zone, the flight path
+// and airdrop crates parachuting in (PUBG / BGMI-style).
+const Crate = ({ a, s }) => (
+    <svg viewBox="0 0 80 124" style={{ width: s, overflow: 'visible', transform: 'translateY(-100%)' }}>
+        <path d="M4 40 Q40 -8 76 40 Q58 30 40 40 Q22 30 4 40Z" fill="#e0483a" />
+        <path d="M24 35 Q40 -4 56 35 Q48 31 40 36 Q32 31 24 35Z" fill="#f3efe6" />
+        <path d="M6 40 L30 90 M74 40 L50 90 M40 40 L40 90" stroke="rgba(255,255,255,0.5)" strokeWidth="1.2" />
+        <rect x="24" y="88" width="32" height="30" fill="#4b5a2c" stroke="#1d2210" strokeWidth="2" />
+        <rect x="24" y="99" width="32" height="6" fill={a} />
+    </svg>
+);
+const Airdrop = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, backgroundImage: `linear-gradient(${rgba(b, 0.09)} 1px, transparent 1px), linear-gradient(90deg, ${rgba(b, 0.09)} 1px, transparent 1px)`, backgroundSize: '160px 160px' }} />
+        {Array.from({ length: 12 }, (_, i) => (
+            <span key={`x${i}`} style={{ position: 'absolute', left: i * 160 + 72, top: 8, fontFamily: 'monospace', fontSize: 16, color: rgba(b, 0.45) }}>{String.fromCharCode(65 + i)}</span>
+        ))}
+        {Array.from({ length: 6 }, (_, i) => (
+            <span key={`y${i}`} style={{ position: 'absolute', left: 10, top: i * 160 + 70, fontFamily: 'monospace', fontSize: 16, color: rgba(b, 0.45) }}>{i + 1}</span>
+        ))}
+        <div style={{ position: 'absolute', left: '58%', top: '50%', width: 900, height: 900, marginLeft: -450, marginTop: -450, borderRadius: '50%', border: `4px solid ${rgba(b, 0.85)}`, boxShadow: `0 0 40px ${rgba(b, 0.5)}, inset 0 0 80px ${rgba(b, 0.25)}`, animation: 'zoneShrink 9s ease-in-out infinite alternate' }} />
+        <div style={{ position: 'absolute', left: '62%', top: '46%', width: 420, height: 420, marginLeft: -210, marginTop: -210, borderRadius: '50%', border: '3px dashed rgba(255,255,255,0.55)' }} />
+        <svg viewBox="0 0 1920 1080" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+            <line x1="-40" y1="980" x2="1960" y2="80" stroke={a} strokeWidth="3" strokeDasharray="18 14" opacity="0.7" />
+        </svg>
+        {Array.from({ length: 6 }, (_, i) => (
+            <Faller key={i} i={i + 310} left={`${6 + i * 15 + rand(i, 311) * 6}%`} dur={14 + rand(i, 312) * 8}>
+                <div style={{ animation: `drift ${4 + rand(i, 313) * 2}s ease-in-out infinite` }}>
+                    <Crate a={a} s={60 + rand(i, 314) * 40} />
+                </div>
+            </Faller>
+        ))}
+        {vignette(0.55)}
+    </div>
+);
+
+// A swirling purple storm closing in from the edges, lightning and rising
+// loot glows in rarity colours (Fortnite-style).
+const RARITY = ['#b1b1b1', '#5bd13c', '#3cb6ff', '#c75bff', '#ffb43c'];
+const BOLT = 'M34 0 L10 90 L30 90 L14 200 L52 70 L32 70 L50 0Z';
+const Storm = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{
+            position: 'absolute', left: '50%', top: '50%', width: 3000, height: 3000, marginLeft: -1500, marginTop: -1500,
+            background: `repeating-conic-gradient(${rgba(a, 0.22)} 0deg 12deg, transparent 12deg 30deg)`, animation: 'spinSlow 80s linear infinite',
+            WebkitMaskImage: 'radial-gradient(circle, transparent 22%, #000 40%)', maskImage: 'radial-gradient(circle, transparent 22%, #000 40%)',
+        }} />
+        <div style={{ ...fill, background: `radial-gradient(ellipse 70% 70% at 50% 50%, transparent 45%, ${rgba(a, 0.45)} 85%, ${rgba(a, 0.7)})` }} />
+        {[[10, 6], [84, 12], [72, 58]].map(([x, y], k) => (
+            <svg key={k} viewBox="0 0 60 200" style={{ position: 'absolute', left: `${x}%`, top: `${y}%`, width: 70, height: 230, opacity: 0, filter: `drop-shadow(0 0 14px ${b})`, animation: `stormFlash ${5 + k * 1.7}s linear ${-k * 1.3}s infinite` }}>
+                <path d={BOLT} fill="#f4f8ff" />
+            </svg>
+        ))}
+        {Array.from({ length: 16 }, (_, i) => {
+            const c = RARITY[i % RARITY.length];
+            return (
+                <Riser key={i} i={i} salt={320} dur={10 + rand(i, 321) * 8} left={`${rand(i, 322) * 100}%`}>
+                    <div style={{ width: 10, height: 60 + rand(i, 323) * 60, borderRadius: 6, background: `linear-gradient(0deg, transparent, ${c})`, boxShadow: `0 0 18px ${c}`, opacity: 0.7 }} />
+                </Riser>
+            );
+        })}
+        {vignette(0.4)}
+    </div>
+);
+
+// Tactical map: topo contours, a sweeping radar with pinging blips, drifting
+// smoke and faint night-vision scanlines (Call of Duty: Warzone-style).
+const BLIPS = [[0.3, 0.38], [0.68, 0.3], [0.6, 0.72], [0.26, 0.66], [0.46, 0.2]];
+const Radar = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+            {Array.from({ length: 7 }, (_, k) => (
+                <ellipse key={`l${k}`} cx="360" cy="820" rx={120 + k * 110} ry={70 + k * 70} fill="none" stroke={rgba(a, 0.1)} strokeWidth="2" transform="rotate(-15 360 820)" />
+            ))}
+            {Array.from({ length: 5 }, (_, k) => (
+                <ellipse key={`r${k}`} cx="1500" cy="180" rx={90 + k * 100} ry={60 + k * 60} fill="none" stroke={rgba(a, 0.1)} strokeWidth="2" transform="rotate(20 1500 180)" />
+            ))}
+        </svg>
+        {Array.from({ length: 6 }, (_, i) => (
+            <div key={`s${i}`} style={{
+                position: 'absolute', left: `${rand(i, 340) * 90}%`, top: `${40 + rand(i, 341) * 50}%`, width: 420, height: 420, borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(190,200,180,0.09), transparent 65%)', animation: `bokehFloat ${16 + rand(i, 342) * 10}s ease-in-out ${-rand(i, 343) * 20}s infinite`,
+            }} />
+        ))}
+        <div style={{ position: 'absolute', right: '-5%', bottom: '-16%', width: 640, height: 640, borderRadius: '50%', overflow: 'hidden', background: rgba(a, 0.05), border: `2px solid ${rgba(a, 0.5)}` }}>
+            <div style={{ ...fill, background: `repeating-radial-gradient(circle, transparent 0 79px, ${rgba(a, 0.3)} 79px 81px)` }} />
+            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: rgba(a, 0.35) }} />
+            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 1, background: rgba(a, 0.35) }} />
+            <div style={{ ...fill, background: `conic-gradient(transparent 0deg 290deg, ${rgba(a, 0.55)} 360deg)`, animation: 'spinSlow 4s linear infinite' }} />
+            {BLIPS.map(([x, y], i) => (
+                <div key={i} style={{ position: 'absolute', left: `${x * 100}%`, top: `${y * 100}%`, width: 14, height: 14, margin: -7 }}>
+                    <div style={{ ...fill, borderRadius: '50%', border: `2px solid ${b}`, animation: `ping 2s ease-out ${-i * 0.6}s infinite` }} />
+                    <div style={{ ...fill, borderRadius: '50%', background: b, boxShadow: `0 0 10px ${b}` }} />
+                </div>
+            ))}
+        </div>
+        <div style={{ ...fill, backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.16) 0 2px, transparent 2px 4px)' }} />
+        {vignette(0.65)}
+    </div>
+);
+
+// The ring closing in from the edges, a hex texture and skydive trails
+// streaking down (Apex Legends-style).
+const hexTile = (c) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="56" height="97"><path d="M28 0 L56 16 V48 L28 64 L0 48 V16Z M28 64 V97" fill="none" stroke="${c}" stroke-width="2"/></svg>`)}")`;
+const Ring = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, backgroundImage: hexTile(rgba(b, 0.08)) }} />
+        <div style={{
+            position: 'absolute', left: '50%', top: '50%', width: 1700, height: 1700, marginLeft: -850, marginTop: -850, borderRadius: '50%',
+            border: `6px solid ${a}`, boxShadow: `0 0 0 2000px ${rgba(a, 0.16)}, 0 0 60px ${rgba(a, 0.8)}, inset 0 0 120px ${rgba(a, 0.5)}`,
+            animation: 'zoneShrink 10s ease-in-out infinite alternate',
+        }} />
+        {Array.from({ length: 18 }, (_, i) => (
+            <Faller key={i} i={i + 330} left={`${rand(i, 331) * 100}%`} dur={2.5 + rand(i, 332) * 2.5}>
+                <div style={{ width: 3, height: 120 + rand(i, 333) * 120, transform: 'rotate(18deg) translateY(-100%)', background: `linear-gradient(180deg, transparent, ${i % 3 ? b : '#ffffff'})`, boxShadow: `0 0 10px ${b}` }} />
+            </Faller>
+        ))}
+        {vignette(0.5)}
+    </div>
+);
+
+// Night-time voxel world: square moon and stars, drifting block clouds and a
+// grass / dirt / stone terrain strip with torches (Minecraft-style).
+const Blocks = ({ a, b }) => {
+    const S = 48;
+    const blocks = [];
+    const torches = [];
+    for (let i = 0; i * S < 1920; i++) {
+        const h = 2 + Math.round(1 + Math.sin(i * 0.45) + rand(i, 350));
+        for (let k = 0; k < h; k++) {
+            const x = i * S, y = 1080 - (k + 1) * S, top = k === h - 1;
+            const base = top ? a : k < h - 3 ? '#6f6f73' : b;
+            blocks.push(<rect key={`b${i}-${k}`} x={x} y={y} width={S} height={S} fill={base} />);
+            if (top) blocks.push(<rect key={`g${i}`} x={x} y={y + S * 0.6} width={S} height={S * 0.4} fill={b} />);
+            for (let p = 0; p < 4; p++) {
+                const n = i * 31 + k * 7 + p;
+                blocks.push(<rect key={`p${i}-${k}-${p}`} x={x + Math.floor(rand(n, 351) * 6) * 8} y={y + Math.floor(rand(n, 352) * 6) * 8} width={8} height={8} fill="rgba(0,0,0,0.18)" />);
+            }
+            blocks.push(<rect key={`o${i}-${k}`} x={x} y={y} width={S} height={S} fill="none" stroke="rgba(0,0,0,0.25)" strokeWidth="2" />);
+        }
+        if (i % 7 === 3) torches.push({ x: i * S + S / 2, y: 1080 - h * S });
+    }
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            {Array.from({ length: 40 }, (_, i) => (
+                <span key={`s${i}`} style={{ position: 'absolute', left: `${rand(i, 353) * 100}%`, top: `${rand(i, 354) * 55}%`, width: 6, height: 6, background: '#ffffff', animation: `twinkle ${2 + rand(i, 355) * 3}s steps(3) ${-rand(i, 356) * 5}s infinite` }} />
+            ))}
+            <div style={{ position: 'absolute', right: '12%', top: '9%', width: 110, height: 110, background: '#f4f1dc', boxShadow: '0 0 60px rgba(244,241,220,0.4)' }}>
+                <div style={{ position: 'absolute', left: 22, top: 26, width: 22, height: 22, background: 'rgba(0,0,0,0.08)' }} />
+                <div style={{ position: 'absolute', left: 62, top: 60, width: 26, height: 18, background: 'rgba(0,0,0,0.08)' }} />
+            </div>
+            {[[10, 0], [22, 1], [34, 2]].map(([y, k]) => (
+                <div key={`c${k}`} style={{ position: 'absolute', left: 0, top: `${y}%`, width: '100%', animation: `driftAcross ${70 + k * 20}s linear ${-k * 30}s infinite` }}>
+                    <div style={{ position: 'relative', width: 280, height: 40, background: 'rgba(255,255,255,0.16)' }}>
+                        <div style={{ position: 'absolute', left: 60, top: -32, width: 140, height: 32, background: 'rgba(255,255,255,0.16)' }} />
+                    </div>
+                </div>
+            ))}
+            <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} shapeRendering="crispEdges">
+                {blocks}
+                {torches.map(({ x, y }, i) => (
+                    <g key={`t${i}`}>
+                        <rect x={x - 4} y={y - 32} width="8" height="32" fill="#6b4a26" />
+                        <rect x={x - 6} y={y - 44} width="12" height="12" fill="#ffd36b" style={{ transformBox: 'fill-box', transformOrigin: '50% 100%', animation: `flameFlicker ${0.7 + rand(i, 357) * 0.5}s ease-in-out infinite alternate` }} />
+                    </g>
+                ))}
+            </svg>
+            {vignette(0.4)}
+        </div>
+    );
+};
+
+// Sunset over hills and a city skyline, palm silhouettes, a sweeping
+// helicopter searchlight and a wanted-level meter (GTA-style).
+const STAR = 'M12 1.5 L15 8.6 L22.6 9.3 L16.8 14.3 L18.6 21.8 L12 17.8 L5.4 21.8 L7.2 14.3 L1.4 9.3 L9 8.6Z';
+const palm = (x, h, lean, color, k) => (
+    <g key={k} transform={`translate(${x} 1080)`}>
+        <path d={`M0 0 Q${lean * 0.2} ${-h * 0.55} ${lean} ${-h}`} stroke={color} strokeWidth="18" fill="none" strokeLinecap="round" />
+        <g transform={`translate(${lean} ${-h})`}>
+            {[-35, 0, 28].flatMap(deg => [1, -1].map(sx => (
+                <path key={`${deg}${sx}`} transform={`scale(${sx} 1) rotate(${deg})`} d="M0 0 Q70 -44 160 24 Q84 -10 0 8Z" fill={color} />
+            )))}
+            <path transform="rotate(-80)" d="M0 0 Q60 -30 120 10 Q60 -6 0 6Z" fill={color} />
+        </g>
+    </g>
+);
+const Sunset = ({ a, b, panel }) => {
+    const towers = [];
+    for (let i = 0, x = 560; x < 1380; i++) {
+        const w = 40 + rand(i, 360) * 50, h = 80 + rand(i, 361) * (i % 4 === 1 ? 260 : 140);
+        towers.push(<rect key={i} x={x} y={860 - h} width={w - 6} height={h} fill={panel} opacity="0.75" />);
+        x += w;
+    }
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            <div style={{ ...fill, background: `linear-gradient(180deg, transparent 20%, ${rgba(b, 0.28)} 55%, ${rgba(a, 0.55)} 78%, ${rgba(a, 0.2)})` }} />
+            <div style={{ position: 'absolute', left: '50%', bottom: '14%', width: 900, height: 900, marginLeft: -450, marginBottom: -190, borderRadius: '50%', background: `radial-gradient(circle, ${rgba(a, 0.45)}, transparent 60%)` }} />
+            <div style={{
+                position: 'absolute', left: '50%', bottom: '18%', width: 520, height: 520, marginLeft: -260, borderRadius: '50%',
+                background: `linear-gradient(180deg, #ffe39a, ${a} 60%, ${b})`,
+                WebkitMaskImage: 'linear-gradient(180deg, #000 55%, transparent 55% 59%, #000 59% 68%, transparent 68% 72%, #000 72% 80%, transparent 80% 85%, #000 85%)',
+                maskImage: 'linear-gradient(180deg, #000 55%, transparent 55% 59%, #000 59% 68%, transparent 68% 72%, #000 72% 80%, transparent 80% 85%, #000 85%)',
+            }} />
+            <div style={{
+                position: 'absolute', left: '22%', top: '-8%', width: 380, height: 1300, marginLeft: -190,
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.2), transparent 80%)', clipPath: 'polygon(46% 0, 54% 0, 100% 100%, 0 100%)',
+                transformOrigin: '50% 0', animation: 'searchSweep 7s ease-in-out infinite alternate',
+            }} />
+            <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+                <path d="M0 820 Q300 700 560 770 T1100 750 T1600 720 T1920 770 V1080 H0Z" fill={panel} opacity="0.55" />
+                {towers}
+                <rect x="0" y="860" width="1920" height="220" fill={panel} />
+                {palm(120, 460, 60, panel, 0)}
+                {palm(300, 340, -40, panel, 1)}
+                {palm(1640, 420, -70, panel, 2)}
+                {palm(1820, 520, 30, panel, 3)}
+            </svg>
+            <div style={{ position: 'absolute', right: '3%', top: '4%', display: 'flex', gap: 6 }}>
+                {Array.from({ length: 5 }, (_, k) => (
+                    <svg key={k} viewBox="0 0 24 24" style={{ width: 40, height: 40, opacity: k < 3 ? 1 : 0.45, filter: k < 3 ? 'drop-shadow(0 0 6px rgba(255,255,255,0.7))' : 'none', animation: k < 3 ? `bulbBlink 1.4s ease-in-out ${k * 0.15}s infinite` : 'none' }}>
+                        <path d={STAR} fill={k < 3 ? '#ffffff' : 'none'} stroke="#ffffff" strokeWidth="1.5" strokeLinejoin="round" />
+                    </svg>
+                ))}
+            </div>
+            {vignette(0.45)}
+        </div>
+    );
+};
+
+// Counter-rotating gold and teal rune circles, rising motes and gilded rules
+// (League of Legends-style hextech).
+const RuneRing = ({ r, color, ticks, dur, rev, dash }) => (
+    <svg viewBox={`${-r - 10} ${-r - 10} ${2 * r + 20} ${2 * r + 20}`} style={{
+        position: 'absolute', left: '50%', top: '50%', width: 2 * r + 20, height: 2 * r + 20, marginLeft: -r - 10, marginTop: -r - 10,
+        animation: `spinSlow ${dur}s linear infinite${rev ? ' reverse' : ''}`,
+    }}>
+        <circle r={r} fill="none" stroke={color} strokeWidth="2" strokeDasharray={dash} />
+        <circle r={r - 14} fill="none" stroke={color} strokeWidth="1" opacity="0.6" />
+        {Array.from({ length: ticks }, (_, k) => (
+            <rect key={k} x="-4" y={-r - 4} width="8" height="8" fill={color} transform={`rotate(${(k * 360) / ticks}) rotate(45 0 ${-r})`} />
+        ))}
+    </svg>
+);
+const Rule = ({ a, top }) => (
+    <div style={{ position: 'absolute', left: '12%', right: '12%', top, height: 2, background: `linear-gradient(90deg, transparent, ${a}, transparent)` }}>
+        <div style={{ position: 'absolute', left: '50%', top: -6, width: 12, height: 12, marginLeft: -6, border: `2px solid ${a}`, background: '#000', transform: 'rotate(45deg)' }} />
+    </div>
+);
+const Hextech = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, background: `radial-gradient(circle at 50% 50%, ${rgba(b, 0.18)}, transparent 55%)` }} />
+        <div style={{ ...fill, opacity: 0.5 }}>
+            <RuneRing r={470} color={a} ticks={36} dur={120} dash="2 10" />
+            <RuneRing r={380} color={b} ticks={6} dur={80} rev dash="40 12" />
+            <RuneRing r={290} color={a} ticks={12} dur={60} />
+        </div>
+        {Array.from({ length: 30 }, (_, i) => {
+            const c = i % 3 ? b : a, s = 3 + rand(i, 370) * 4;
+            return (
+                <Riser key={i} i={i} salt={371} dur={12 + rand(i, 372) * 10} left={`${rand(i, 373) * 100}%`}>
+                    <div style={{ width: s, height: s, borderRadius: '50%', background: '#ffffff', boxShadow: `0 0 ${s * 3}px ${c}, 0 0 ${s * 6}px ${rgba(c, 0.6)}`, opacity: 0.8 }} />
+                </Riser>
+            );
+        })}
+        <Rule a={a} top="5%" />
+        <Rule a={a} top="95%" />
+        {vignette(0.6)}
+    </div>
+);
+
+// Pastel ocean sunset with a neon-outlined skyline, sun glitter on the water
+// and palms (GTA VI-style Vice City beach).
+const ViceBeach = ({ a, b, panel }) => {
+    const H = 840;   // horizon
+    // Two skyline clusters either side of the sun, kept low so headlines stay clear.
+    const towers = [];
+    for (let i = 0, x = 330; x < 1590; i++) {
+        const w = 44 + rand(i, 380) * 56, h = 50 + rand(i, 381) * (i % 5 === 2 ? 170 : 90);
+        if (x + w < 720 || x > 1200) towers.push(<rect key={i} x={x} y={H - h} width={w - 8} height={h} fill={panel} stroke={i % 3 ? a : b} strokeWidth="2.5" />);
+        x += w;
+    }
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            <div style={{ ...fill, background: `linear-gradient(180deg, transparent 5%, ${rgba(a, 0.3)} 45%, ${rgba('#ffb36b', 0.45)} 77.7%, transparent 77.8%)` }} />
+            <div style={{ position: 'absolute', left: '50%', top: H - 120, width: 420, height: 420, marginLeft: -210, borderRadius: '50%', background: `linear-gradient(180deg, #fff1a8, #ffb36b 45%, ${a})`, boxShadow: `0 0 120px ${rgba(a, 0.6)}` }} />
+            <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+                <g style={{ filter: `drop-shadow(0 0 6px ${a})` }}>{towers}</g>
+                <rect x="0" y={H} width="1920" height={1080 - H} fill={panel} />
+                <rect x="0" y={H} width="1920" height={1080 - H} fill={b} opacity="0.12" />
+                <rect x="0" y={H} width="1920" height="3" fill={a} opacity="0.8" />
+            </svg>
+            {Array.from({ length: 34 }, (_, i) => {
+                const y = H + 12 + rand(i, 382) * 300, spread = 60 + (y - H) * 0.9;
+                return (
+                    <div key={i} style={{
+                        position: 'absolute', left: 960 + (rand(i, 383) - 0.5) * spread * 2 - 30, top: y, width: 40 + rand(i, 384) * 60, height: 4, borderRadius: 2,
+                        background: i % 4 ? '#ffd9a0' : b, animation: `twinkle ${1.5 + rand(i, 385) * 2}s ease-in-out ${-rand(i, 386) * 3}s infinite`,
+                    }} />
+                );
+            })}
+            <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+                {palm(90, 620, 70, panel, 0)}
+                {palm(260, 480, -50, panel, 1)}
+                {palm(1700, 560, -80, panel, 2)}
+            </svg>
+            {vignette(0.4)}
+        </div>
+    );
+};
+
+// Netherrack ceiling and floor, a glowing lava sea, falling ash and rising
+// sparks (Minecraft Nether-style).
+const Nether = ({ a, b }) => {
+    const S = 48, cells = [];
+    for (let i = 0; i * S < 1920; i++) {
+        const lava = Math.sin(i * 0.3 + 1) > 0.35;
+        const floor = lava ? 0 : 1 + Math.round(1 + Math.sin(i * 0.5) + rand(i, 390));
+        const ceil = 1 + Math.round(rand(i, 391) * 2 + (i % 6 === 0 ? 1 : 0));
+        const block = (x, y, key) => {
+            cells.push(<rect key={key} x={x} y={y} width={S} height={S} fill={b} />);
+            for (let p = 0; p < 4; p++) {
+                cells.push(<rect key={`${key}-${p}`} x={x + Math.floor(rand(i * 13 + p, y) * 6) * 8} y={y + Math.floor(rand(i * 17 + p, y + 1) * 6) * 8} width={8} height={8} fill={p % 2 ? 'rgba(0,0,0,0.25)' : 'rgba(255,120,80,0.18)'} />);
+            }
+            cells.push(<rect key={`${key}-o`} x={x} y={y} width={S} height={S} fill="none" stroke="rgba(0,0,0,0.3)" strokeWidth="2" />);
+        };
+        for (let k = 0; k < floor; k++) block(i * S, 1080 - (k + 1) * S, `f${i}-${k}`);
+        for (let k = 0; k < ceil; k++) block(i * S, k * S, `c${i}-${k}`);
+    }
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            <div style={{ ...fill, background: `linear-gradient(180deg, ${rgba(b, 0.35)}, transparent 40%, ${rgba(a, 0.35)})` }} />
+            <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: S, background: `repeating-linear-gradient(90deg, ${a} 0 24px, #ffb347 24px 32px, ${a} 32px 48px)`, boxShadow: `0 0 80px 30px ${rgba(a, 0.5)}`, animation: 'glowFlicker 3s ease-in-out infinite' }} />
+            <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} shapeRendering="crispEdges">
+                {cells}
+            </svg>
+            {Array.from({ length: 40 }, (_, i) => (
+                <Faller key={`a${i}`} i={i + 392} left={`${rand(i, 393) * 100}%`} dur={10 + rand(i, 394) * 8}>
+                    <div style={{ animation: `petalSway ${4 + rand(i, 395) * 3}s ease-in-out infinite` }}>
+                        <div style={{ width: 6, height: 6, background: 'rgba(200,190,190,0.5)' }} />
+                    </div>
+                </Faller>
+            ))}
+            {Array.from({ length: 24 }, (_, i) => (
+                <Riser key={`s${i}`} i={i} salt={396} dur={6 + rand(i, 397) * 5} left={`${rand(i, 398) * 100}%`}>
+                    <div style={{ width: 6, height: 6, background: '#ffd36b', boxShadow: `0 0 10px ${a}` }} />
+                </Riser>
+            ))}
+            {vignette(0.5)}
+        </div>
+    );
+};
+
+// Looking down an 8x scope: dark lens edge, swaying mil-dot reticle with
+// range marks, lens glare and red-zone flashes beyond (PUBG / BGMI sniper).
+const Scope = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        {[[16, 20], [80, 26], [70, 78], [24, 74], [50, 12]].map(([x, y], i) => (
+            <div key={i} style={{ position: 'absolute', left: `${x}%`, top: `${y}%`, width: 260, height: 260, margin: -130, borderRadius: '50%', background: `radial-gradient(circle, ${rgba(a, 0.6)}, transparent 65%)`, animation: `fwFlash ${3 + rand(i, 400) * 2}s ease-out ${-rand(i, 401) * 4}s infinite` }} />
+        ))}
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 900, height: 900, margin: -450, borderRadius: '50%', boxShadow: '0 0 0 1400px rgba(0,0,0,0.62), inset 0 0 90px 30px rgba(0,0,0,0.8)', border: '10px solid #050505' }} />
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 900, height: 900, margin: -450, borderRadius: '50%', background: `radial-gradient(circle at 32% 28%, ${rgba(b, 0.16)}, transparent 30%)` }} />
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 0, height: 0, animation: 'scopeSway 8s ease-in-out infinite' }}>
+            <svg viewBox="-450 -450 900 900" style={{ position: 'absolute', left: -450, top: -450, width: 900, height: 900, overflow: 'visible' }}>
+                <path d="M-440 0 H-60 M60 0 H440 M0 -440 V-60 M0 60 V440" stroke="rgba(0,0,0,0.85)" strokeWidth="3" />
+                <path d="M-440 0 H-200 M200 0 H440 M0 200 V440" stroke="rgba(0,0,0,0.85)" strokeWidth="9" />
+                {[-160, -120, -80, 80, 120, 160].map(d => <circle key={`h${d}`} cx={d} cy="0" r="4" fill="rgba(0,0,0,0.85)" />)}
+                {[80, 120, 160].map((d, k) => (
+                    <g key={`v${d}`}>
+                        <path d={`M-${24 - k * 4} ${d} H${24 - k * 4}`} stroke="rgba(0,0,0,0.85)" strokeWidth="3" />
+                        <text x={30 - k * 4} y={d + 5} fontSize="14" fontFamily="monospace" fill="rgba(0,0,0,0.75)">{(k + 1) * 100}</text>
+                    </g>
+                ))}
+                <path d="M-10 0 L0 -14 L10 0" fill="none" stroke={a} strokeWidth="3" style={{ filter: `drop-shadow(0 0 4px ${a})` }} />
+            </svg>
+        </div>
+    </div>
+);
+
+// Sun-baked desert site: adobe walls with an archway, stacked crates, drifting
+// smoke grenades, sand haze and tracer fire (Counter-Strike 2-style).
+const crate = (x, y, s, k) => (
+    <g key={k} transform={`translate(${x} ${y})`}>
+        <rect width={s} height={s} fill="#8a6236" stroke="#4a3219" strokeWidth="4" />
+        <path d={`M6 6 L${s - 6} ${s - 6} M${s - 6} 6 L6 ${s - 6}`} stroke="#5e4223" strokeWidth="8" />
+        <rect x="6" y="6" width={s - 12} height={s - 12} fill="none" stroke="#5e4223" strokeWidth="4" />
+    </g>
+);
+const Dust = ({ a, b, panel }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, background: `linear-gradient(180deg, ${rgba(b, 0.22)}, transparent 40%, ${rgba(a, 0.3)} 75%, ${rgba(a, 0.12)})` }} />
+        <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+            <path d="M0 1080 V700 H260 V640 H520 V720 H1340 V600 H1500 V560 H1580 V600 H1920 V1080Z" fill={a} opacity="0.22" />
+            <path d="M0 1080 V780 H380 V740 H700 V1080Z M1240 1080 V760 H1620 V700 H1920 V1080Z" fill={panel} opacity="0.85" />
+            <path d="M460 1080 V880 Q540 790 620 880 V1080Z M1380 1080 V870 Q1450 790 1520 870 V1080Z" fill="#000" opacity="0.5" />
+            <rect x="0" y="960" width="1920" height="120" fill={panel} />
+            {crate(80, 840, 120, 0)}{crate(200, 880, 80, 1)}{crate(110, 740, 100, 2)}
+            {crate(1700, 860, 100, 3)}{crate(1780, 780, 80, 4)}
+        </svg>
+        {Array.from({ length: 5 }, (_, i) => (
+            <div key={`m${i}`} style={{
+                position: 'absolute', left: `${10 + i * 20 + rand(i, 410) * 6}%`, top: `${45 + rand(i, 411) * 30}%`, width: 520, height: 520, margin: -260, borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(220,220,215,0.22), rgba(220,220,215,0.08) 45%, transparent 68%)', animation: `bokehFloat ${18 + rand(i, 412) * 8}s ease-in-out ${-rand(i, 413) * 20}s infinite`,
+            }} />
+        ))}
+        {Array.from({ length: 5 }, (_, i) => (
+            <div key={`t${i}`} style={{ position: 'absolute', left: 0, top: `${30 + i * 11}%`, width: '100%', animation: `tracer ${3 + rand(i, 414) * 3}s linear ${-rand(i, 415) * 5}s infinite` }}>
+                <div style={{ width: 180, height: 3, borderRadius: 2, background: 'linear-gradient(90deg, transparent, #fff2b0)', boxShadow: '0 0 8px #ffcf5a', transform: `rotate(${(rand(i, 416) - 0.5) * 6}deg)` }} />
+            </div>
+        ))}
+        {Array.from({ length: 40 }, (_, i) => (
+            <div key={`d${i}`} style={{ position: 'absolute', left: 0, top: `${rand(i, 417) * 100}%`, width: '100%', animation: `driftAcross ${20 + rand(i, 418) * 20}s linear ${-rand(i, 419) * 40}s infinite` }}>
+                <div style={{ width: 4, height: 4, borderRadius: '50%', background: rgba(a, 0.6) }} />
+            </div>
+        ))}
+        {vignette(0.55)}
+    </div>
+);
+
+// A wall of flickering flames along the bottom, heat glow and rising embers
+// (Free Fire-style).
+const Blaze = ({ a, b }) => (
+    <div style={{ ...fill, overflow: 'hidden' }}>
+        <div style={{ ...fill, background: `radial-gradient(ellipse 100% 55% at 50% 105%, ${rgba(b, 0.6)}, ${rgba(a, 0.15)} 60%, transparent 80%)` }} />
+        <div style={{ ...fill, background: `repeating-linear-gradient(115deg, transparent 0 80px, ${rgba(a, 0.04)} 80px 84px)` }} />
+        {Array.from({ length: 26 }, (_, i) => {
+            const h = 160 + rand(i, 420) * 220, w = h * 0.55;
+            return (
+                <svg key={i} viewBox="0 0 24 40" style={{
+                    position: 'absolute', left: `${(i / 26) * 104 - 4}%`, bottom: -20, width: w, height: h, transformOrigin: '50% 100%', opacity: 0.85,
+                    animation: `flameFlicker ${0.6 + rand(i, 421) * 0.6}s ease-in-out ${-rand(i, 422)}s infinite alternate`,
+                }}>
+                    <path d="M12 0 C20 14 22 26 12 40 C2 26 4 14 12 0Z" fill={b} />
+                    <path d="M12 10 C17 19 18 28 12 40 C6 28 7 19 12 10Z" fill={a} />
+                    <path d="M12 22 C15 28 15 34 12 40 C9 34 9 28 12 22Z" fill="#fff4b0" />
+                </svg>
+            );
+        })}
+        {Array.from({ length: 40 }, (_, i) => {
+            const s = 3 + rand(i, 423) * 4;
+            return (
+                <Riser key={`e${i}`} i={i} salt={424} dur={4 + rand(i, 425) * 5} left={`${rand(i, 426) * 100}%`}>
+                    <div style={{ animation: `petalSway ${2 + rand(i, 427) * 2}s ease-in-out infinite` }}>
+                        <div style={{ width: s, height: s, borderRadius: '50%', background: '#fff1c4', boxShadow: `0 0 ${s * 3}px ${i % 3 ? a : b}` }} />
+                    </div>
+                </Riser>
+            );
+        })}
+        {vignette(0.5)}
+    </div>
+);
+
+// Bobbing isometric stud platforms, a checkpoint flag and a stud-grid floor
+// (Roblox-style obby).
+const Plat = ({ c, w }) => (
+    <svg viewBox="0 0 120 84" style={{ width: w, overflow: 'visible' }}>
+        <polygon points="60,0 120,24 60,48 0,24" fill={c} />
+        <polygon points="0,24 60,48 60,84 0,60" fill={c} />
+        <polygon points="0,24 60,48 60,84 0,60" fill="rgba(0,0,0,0.25)" />
+        <polygon points="60,48 120,24 120,60 60,84" fill={c} />
+        <polygon points="60,48 120,24 120,60 60,84" fill="rgba(0,0,0,0.42)" />
+        {[[40, 16], [60, 24], [80, 16], [60, 8], [40, 32], [80, 32], [20, 24], [100, 24]].map(([x, y], k) => (
+            <ellipse key={k} cx={x} cy={y} rx="6" ry="3" fill="rgba(255,255,255,0.3)" />
+        ))}
+    </svg>
+);
+const PLATS = [[6, 22, 180], [24, 62, 140], [40, 14, 110], [70, 18, 150], [86, 52, 190], [58, 72, 120], [12, 80, 130], [92, 12, 100]];
+const Obby = ({ a, b }) => {
+    const cols = [a, b, '#ff4d4d', '#4cd964', '#b388ff'];
+    return (
+        <div style={{ ...fill, overflow: 'hidden' }}>
+            <div style={{ ...fill, backgroundImage: `radial-gradient(${rgba(a, 0.14)} 5px, transparent 5.5px)`, backgroundSize: '40px 40px', WebkitMaskImage: 'linear-gradient(180deg, transparent 40%, #000)', maskImage: 'linear-gradient(180deg, transparent 40%, #000)' }} />
+            <div style={{ ...fill, background: `radial-gradient(ellipse at 50% 0%, ${rgba(a, 0.22)}, transparent 60%)` }} />
+            {PLATS.map(([x, y, w], i) => (
+                <div key={i} style={{ position: 'absolute', left: `${x}%`, top: `${y}%`, marginLeft: -w / 2, animation: `ghostBob ${4 + rand(i, 430) * 3}s ease-in-out ${-rand(i, 431) * 5}s infinite` }}>
+                    {i === 3 && (
+                        <svg viewBox="0 0 40 80" style={{ position: 'absolute', left: w / 2 - 6, top: -70, width: 40, height: 80 }}>
+                            <rect x="4" y="0" width="4" height="80" fill="#ddd" />
+                            <path d="M8 2 H38 L30 14 L38 26 H8Z" fill={b} />
+                        </svg>
+                    )}
+                    <Plat c={cols[i % cols.length]} w={w} />
+                </div>
+            ))}
+            {Array.from({ length: 30 }, (_, i) => (
+                <span key={`s${i}`} style={{ position: 'absolute', left: `${rand(i, 432) * 100}%`, top: `${rand(i, 433) * 70}%`, width: 6, height: 6, borderRadius: '50%', background: '#fff', animation: `twinkle ${2 + rand(i, 434) * 3}s ease-in-out ${-rand(i, 435) * 5}s infinite` }} />
+            ))}
+            {vignette(0.45)}
+        </div>
+    );
+};
+
 const BACKDROP_MAP = {
     hudgrid: HudGrid, synthgrid: SynthGrid, scanlines: Scanlines, blobs: Blobs, starfield: Starfield,
     bokeh: Bokeh, rain: Rain, code: CodeRain, petals: Petals, waves: Waves, paper: Paper,
@@ -928,6 +1460,9 @@ const BACKDROP_MAP = {
     spooky: Spooky, paws: Paws, seigaiha: Seigaiha, steam: Steam,
     diyas: Diyas, fireworks: Fireworks, snowfall: Snowfall, pumpkins: Pumpkins, holi: Holi,
     lanterns: Lanterns, crescent: Crescent, hearts: Hearts, leaves: Leaves, balloons: Balloons,
+    shards: Shards, airdrop: Airdrop, storm: Storm, radar: Radar, ring: Ring, blocks: Blocks,
+    sunset: Sunset, hextech: Hextech, vicebeach: ViceBeach, nether: Nether, scope: Scope, dust: Dust,
+    blaze: Blaze, obby: Obby,
 };
 
 // `holes` + `box` cut the backdrop away over cameras (see holeMask below).

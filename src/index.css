@@ -93,6 +93,13 @@
 @keyframes lanternSwing{ 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
 @keyframes leafSpin    { from { transform: translateY(-100%) rotate(0deg); } to { transform: translateY(-100%) rotate(360deg); } }
 @keyframes drift       { 0%, 100% { transform: translateX(0) rotate(-5deg); } 50% { transform: translateX(30px) rotate(5deg); } }
+@keyframes zoneShrink  { from { transform: scale(1.12); } to { transform: scale(0.82); } }
+@keyframes stormFlash  { 0%, 90%, 100% { opacity: 0; } 91% { opacity: 1; } 93% { opacity: 0.2; } 95% { opacity: 0.9; } 97% { opacity: 0; } }
+@keyframes driftAcross { from { transform: translateX(-20%); } to { transform: translateX(110%); } }
+@keyframes searchSweep { from { transform: rotate(-28deg); } to { transform: rotate(28deg); } }
+@keyframes ping        { 0% { transform: scale(0.4); opacity: 0.9; } 100% { transform: scale(2.6); opacity: 0; } }
+@keyframes scopeSway   { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(14px, -8px); } 50% { transform: translate(-6px, 10px); } 75% { transform: translate(-12px, -4px); } }
+@keyframes tracer      { 0% { transform: translateX(-10%); opacity: 0; } 3% { opacity: 1; } 16% { transform: translateX(110%); opacity: 0; } 100% { transform: translateX(110%); opacity: 0; } }
 @keyframes recBlink   { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 
 @theme {

@@ -22,8 +22,29 @@ function getRedis() {
     return _redis;
 }
 
-const keyFor = (room) =>
-    `layout:${String(room || 'default').slice(0, 64).replace(/[^\w.-]/g, '_')}`;
+const roomOf = (room) => String(room || 'default').slice(0, 64).replace(/[^\w.-]/g, '_');
+// Three keys per room, so polls stay cheap (Upstash bills bandwidth per byte):
+//   layout:<room>     — the live design (everything except the saved library)
+//   layoutlib:<room>  — the saved layouts/scenes library (`layouts`), often
+//                       hundreds of KB; only the editor needs it, never OBS
+//   layoutver:<room>  — a tiny version tag, bumped on every write
+const keysFor = (room) => {
+    const r = roomOf(room);
+    return { key: `layout:${r}`, libKey: `layoutlib:${r}`, verKey: `layoutver:${r}` };
+};
+const newVer = () => `v${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+
+// Older rooms stored `layouts` inside the main blob. Move it to its own key the
+// first time we touch the room; returns the main blob without it.
+async function splitLegacy(redis, keys, main) {
+    if (!main || !('layouts' in main)) return main;
+    const { layouts, ...rest } = main;
+    const p = redis.pipeline();
+    p.set(keys.libKey, layouts ?? []);
+    p.set(keys.key, rest);
+    await p.exec();
+    return rest;
+}
 
 export default async function handler(req, res) {
     // The overlay and editor are same-origin in production, but keep CORS open
@@ -31,32 +52,65 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Cache-Control', 'no-store');
 
     if (req.method === 'OPTIONS') {
         res.status(204).end();
         return;
     }
 
-    const key = keyFor(req.query.room);
+    const keys = keysFor(req.query.room);
 
     try {
         const redis = getRedis();
 
         if (req.method === 'GET') {
-            const data = await redis.get(key); // @upstash/redis returns parsed JSON
-            res.status(200).json(data || {});
+            // ?v=<version> — the client already has this version: answer with an
+            // empty 204 after reading only the tiny version key.
+            let ver = await redis.get(keys.verKey);
+            if (ver == null) {
+                ver = newVer();
+                await redis.set(keys.verKey, ver);
+            }
+            ver = String(ver);
+            if (req.query.v && String(req.query.v) === ver) {
+                res.status(204).end();
+                return;
+            }
+
+            // ?lite=1 (OBS overlays) skips the saved-layouts library entirely.
+            const lite = req.query.lite !== undefined;
+            const main = await splitLegacy(redis, keys, await redis.get(keys.key)); // parsed JSON
+            const out = { ...(main || {}) };
+            if (!lite) {
+                const layouts = await redis.get(keys.libKey);
+                if (layouts != null) out.layouts = layouts;
+            }
+            out._v = ver;
+            res.status(200).json(out);
             return;
         }
 
         if (req.method === 'POST') {
             const body =
                 typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
-            // `_clientId` was only used to de-dupe WebSocket echoes; drop it.
-            const { _clientId, ...patch } = body;
-            const existing = (await redis.get(key)) || {};
-            const merged = { ...existing, ...patch };
-            await redis.set(key, merged);
-            res.status(200).json({ ok: true });
+            // `_clientId` was only used to de-dupe WebSocket echoes; `_v` is the
+            // version a client got back — neither belongs in the stored design.
+            const { _clientId, _v, layouts, ...patch } = body;
+            const p = redis.pipeline();
+            const existing = (await redis.get(keys.key)) || {};
+            const hasLegacy = 'layouts' in existing;
+            if (Object.keys(patch).length || hasLegacy) {
+                const { layouts: legacyLayouts, ...rest } = existing;
+                // Migrate a legacy inline library unless this write replaces it.
+                if (hasLegacy && layouts === undefined) p.set(keys.libKey, legacyLayouts ?? []);
+                p.set(keys.key, { ...rest, ...patch });
+            }
+            if (layouts !== undefined) p.set(keys.libKey, layouts);
+            const ver = newVer();
+            p.set(keys.verKey, ver);
+            await p.exec();
+            res.status(200).json({ ok: true, _v: ver });
             return;
         }
 

@@ -768,6 +768,7 @@ const OverlayLayout = () => {
         let isMounted = true;
         let timer;
         let lastSig = null;   // signature of the last applied payload
+        let lastVer = null;   // server version tag of the last payload (api/layout.js `_v`)
         let misses = 0;       // consecutive unchanged polls
 
         const applyData = (data) => {
@@ -800,9 +801,19 @@ const OverlayLayout = () => {
             const skip = !force && (editModeRef.current || document.hidden);
             if (!skip) {
                 try {
-                    const res = await fetch(layoutUrl());
-                    if (res.ok) {
-                        const data = await res.json();
+                    // Send the version we already have: the server answers 204
+                    // (no body) when nothing changed, so idle polls cost bytes,
+                    // not the whole design. OBS (?obs) also skips the saved
+                    // layouts library, which only the editor uses.
+                    let url = layoutUrl();
+                    if (lastVer) url += `&v=${encodeURIComponent(lastVer)}`;
+                    if (CLEAN_MODE) url += '&lite=1';
+                    const res = await fetch(url, { cache: 'no-store' });
+                    if (res.status === 204) {
+                        misses++;
+                    } else if (res.ok) {
+                        const { _v, ...data } = await res.json();
+                        lastVer = _v ?? null;
                         const sig = JSON.stringify(data);
                         if (sig !== lastSig) {
                             lastSig = sig;

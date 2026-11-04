@@ -3,6 +3,15 @@ import { Check, ChevronUp, Circle, Film, GripHorizontal, HelpCircle, Home, Layer
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getRoom, isDefaultRoom, layoutUrl, newRoomId, setRoomInUrl, shareLinks } from '../config.js';
 import { track } from '../analytics';
+
+// Saved-layouts library for the shared `default` room, kept per browser.
+const LOCAL_LIB_KEY = 'overlay:default-layouts';
+function loadLocalLibrary() {
+    try { return JSON.parse(localStorage.getItem(LOCAL_LIB_KEY)) || []; } catch { return []; }
+}
+function saveLocalLibrary(layouts) {
+    try { localStorage.setItem(LOCAL_LIB_KEY, JSON.stringify(layouts)); } catch { /* quota / private mode */ }
+}
 import { useOBS } from '../context/OBSContext';
 import AICompanion from './AICompanion';
 import BackgroundPanel, { bgToStyle } from './BackgroundPanel';
@@ -412,8 +421,19 @@ const OverlayLayout = () => {
     const activeLayout = layouts.find(l => l.id === activeLayoutId) ?? null;
     const activeScene = activeLayout?.scenes.find(s => s.id === activeLayout.activeSceneId) ?? activeLayout?.scenes[0] ?? null;
 
-    const writeLayouts = useCallback((nextLayouts, extra) =>
-        updateLayout({ layouts: nextLayouts, ...(extra || {}) }), [updateLayout]);
+    // The shared `default` room is used by every anonymous visitor, so its saved
+    // library lives in this browser only (the server ignores it there) — that
+    // keeps strangers' layouts out of each other's downloads. Go Live seeds the
+    // private room with the full layoutSettings, so the library moves with it.
+    const writeLayouts = useCallback((nextLayouts, extra) => {
+        if (isDefaultRoom()) {
+            saveLocalLibrary(nextLayouts);
+            setLayoutSettings(s => ({ ...s, layouts: nextLayouts }));
+            if (extra) updateLayout(extra);
+            return;
+        }
+        updateLayout({ layouts: nextLayouts, ...(extra || {}) });
+    }, [updateLayout]);
 
     // ── Layout (container) ops ──
     const createLayout = useCallback((name) => {
@@ -770,6 +790,7 @@ const OverlayLayout = () => {
         let lastSig = null;   // signature of the last applied payload
         let lastVer = null;   // server version tag of the last payload (api/layout.js `_v`)
         let misses = 0;       // consecutive unchanged polls
+        let libLoaded = false; // saved-layouts library fetched once already
 
         const applyData = (data) => {
             if (!isMounted || !data || typeof data !== 'object') return;
@@ -805,15 +826,21 @@ const OverlayLayout = () => {
                     // (no body) when nothing changed, so idle polls cost bytes,
                     // not the whole design. OBS (?obs) also skips the saved
                     // layouts library, which only the editor uses.
+                    // The editor only needs the library once (it's the one
+                    // writing it); later polls skip it too.
                     let url = layoutUrl();
                     if (lastVer) url += `&v=${encodeURIComponent(lastVer)}`;
-                    if (CLEAN_MODE) url += '&lite=1';
+                    if (CLEAN_MODE || libLoaded || isDefaultRoom()) url += '&lite=1';
                     const res = await fetch(url, { cache: 'no-store' });
                     if (res.status === 204) {
                         misses++;
                     } else if (res.ok) {
                         const { _v, ...data } = await res.json();
                         lastVer = _v ?? null;
+                        if (!libLoaded) {
+                            libLoaded = true;
+                            if (isDefaultRoom()) data.layouts = loadLocalLibrary();
+                        }
                         const sig = JSON.stringify(data);
                         if (sig !== lastSig) {
                             lastSig = sig;

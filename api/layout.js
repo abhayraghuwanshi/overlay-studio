@@ -60,6 +60,9 @@ export default async function handler(req, res) {
     }
 
     const keys = keysFor(req.query.room);
+    // Every anonymous visitor lands on `default`; its library had grown to
+    // 200+ strangers' layouts (~1 MB per editor load), so it isn't stored there.
+    const isShared = roomOf(req.query.room) === 'default';
 
     try {
         const redis = getRedis();
@@ -79,7 +82,8 @@ export default async function handler(req, res) {
             }
 
             // ?lite=1 (OBS overlays) skips the saved-layouts library entirely.
-            const lite = req.query.lite !== undefined;
+            // The shared default room never serves one (it's per-browser there).
+            const lite = req.query.lite !== undefined || isShared;
             const main = await splitLegacy(redis, keys, await redis.get(keys.key)); // parsed JSON
             const out = { ...(main || {}) };
             if (!lite) {
@@ -96,7 +100,8 @@ export default async function handler(req, res) {
                 typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
             // `_clientId` was only used to de-dupe WebSocket echoes; `_v` is the
             // version a client got back — neither belongs in the stored design.
-            const { _clientId, _v, layouts, ...patch } = body;
+            const { _clientId, _v, layouts: sentLayouts, ...patch } = body;
+            const layouts = isShared ? undefined : sentLayouts;
             const p = redis.pipeline();
             const existing = (await redis.get(keys.key)) || {};
             const hasLegacy = 'layouts' in existing;

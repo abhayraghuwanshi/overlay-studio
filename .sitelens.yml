@@ -1,0 +1,84 @@
+# What SiteLens Studio measures for streamoverlay.kazekit.com.
+# Spec: https://github.com/abhayraghuwanshi/sitelens/blob/main/docs/sitelens-yml.md
+# Keywords mirror seo.config.js; when you add or retire a landing page there,
+# update the matching topic here.
+version: 1
+site: streamoverlay.kazekit.com
+kind: saas
+
+goals:
+  # OverlayLayout.jsx goLive(): first "Go Live" mints a private room and copies the OBS link
+  - { event: go_live, label: Went live, alert: { when: drop, pct: 60, min: 2 } }
+  # Same button on a room that already exists: a streamer coming back
+  - { event: obs_link_copied, label: Came back to stream }
+  # LandingPage.jsx footer / help panel mailto
+  - { event: custom_email_click, label: Asked for a custom overlay }
+  - { page: /templates/, label: Browsed templates, role: step }
+  - { page: /guides/, label: Read a guide, role: step }
+  - { event: github_star_click, label: Clicked Star on GitHub, role: step }
+
+search:
+  brand: [overlay studio, kazekit]
+  competitors: [streamelements, streamlabs, own3d, nerd or die, placeit]
+  # Topics are matched in order and the first match wins, so the specific ones
+  # (games, seasons) come before the catch-all overlay maker topic.
+  topics:
+    - name: Game overlays
+      page: /templates/
+      match: gta|fortnite|cs2|counter.?strike|faceit|valorant|league of legends|\blol\b|minecraft|warzone|call of duty|\bcod\b|apex|pubg|bgmi|free ?fire|roblox
+      targets:
+        - gta 6 stream overlay
+        - fortnite stream overlay
+        - faceit obs overlay
+        - cs2 stream overlay
+        - league of legends stream overlay
+        - valorant stream overlay
+        - gta rp stream overlay
+        - minecraft stream overlay
+        - warzone stream overlay
+        - apex legends stream overlay
+        - pubg stream overlay
+        - free fire stream overlay
+        - roblox stream overlay
+      ask_ai:
+        - What's a free GTA 6 stream overlay I can use in OBS?
+        - Where can I get a free Fortnite overlay for Twitch?
+    - name: Seasonal overlays
+      page: /templates/christmas-stream-overlay/
+      match: christmas|holiday|winter|new ?year|countdown overlay|halloween|spooky|diwali|valentine|lunar
+      targets: [christmas stream overlay, new year countdown overlay, holiday stream overlay obs]
+      ask_ai:
+        - Is there a free Christmas stream overlay for OBS?
+    - name: Scenes & screens
+      page: /templates/starting-soon-screen/
+      match: starting soon|\bbrb\b|be right back|ending screen|just chatting|lo-?fi|cozy|scoreboard|esports|tournament
+      targets: [starting soon screen obs, just chatting overlay, esports scoreboard overlay]
+      ask_ai:
+        - How do I make a starting soon screen with a countdown in OBS?
+    - name: OBS setup how-to
+      page: /guides/add-overlay-to-obs/
+      match: how to|browser source|add .*overlay|overlay .*(setup|set up)
+      targets: [how to add overlay to obs, obs browser source overlay, how to add overlay to streamlabs]
+      ask_ai:
+        - How do I add a browser source overlay to OBS Studio?
+    - name: StreamKit alternative
+      page: /guides/discord-streamkit-alternative/
+      match: stream ?kit
+      targets: [discord streamkit overlay alternative, streamkit overlay]
+      ask_ai:
+        - What can I use instead of Discord StreamKit for a full stream overlay?
+    - name: Overlay maker
+      page: /
+      match: overlay|obs|stream editor
+      targets:
+        - free stream overlay maker
+        - obs overlay maker
+        - obs studio stream overlay
+        - online stream overlay editor
+        - twitch overlay maker
+        - kick stream overlay
+      ask_ai:
+        - What's the best free stream overlay maker that runs in the browser?
+        - Is there an open-source alternative to StreamElements overlays?
+  ask_ai:
+    - How can I design a stream overlay without Photoshop or downloads?

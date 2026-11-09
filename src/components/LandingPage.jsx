@@ -192,6 +192,7 @@ export default function LandingPage() {
             <div style={{ ...wrap, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
                 <span style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16, letterSpacing: -0.2 }}>Overlay Studio</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+                    <a href="/templates/" style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>Templates</a>
                     <a href={REPO_URL} target="_blank" rel="noreferrer" aria-label="Star Overlay Studio on GitHub"
                         onClick={() => track('github_star_click', { location: 'header' })}
                         style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none', border: `1px solid ${C.line}`, borderRadius: 6, padding: '5px 10px' }}>
@@ -333,6 +334,8 @@ export default function LandingPage() {
                     <span style={{ fontFamily: BODY, fontSize: 12, color: C.faint }}>Overlay Studio — free, browser-based, runs as an OBS browser source.</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
                         <a href="/?studio" style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>Studio</a>
+                        <a href="/templates/" style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>Templates</a>
+                        <a href="/guides/add-overlay-to-obs/" style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>OBS guide</a>
                         <a href={`mailto:${CONTACT_EMAIL}?subject=Custom%20stream%20overlay`}
                             onClick={() => track('custom_email_click', { location: 'footer' })}
                             style={{ fontFamily: DISPLAY, fontSize: 13, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>

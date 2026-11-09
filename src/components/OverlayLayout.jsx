@@ -784,6 +784,9 @@ const OverlayLayout = () => {
     const POLL_FAST = 3000;   // ms — recently changed / just became visible
     const POLL_SLOW = 20000;  // ms — settled, nothing changing
     const POLL_MISSES_TO_SLOW = 3;
+    // Flips once the first load has brought in the saved-layouts library, so
+    // anything that appends to it (e.g. ?kit=) doesn't overwrite it.
+    const [libReady, setLibReady] = useState(false);
     useEffect(() => {
         let isMounted = true;
         let timer;
@@ -837,6 +840,7 @@ const OverlayLayout = () => {
                     } else if (res.ok) {
                         const { _v, ...data } = await res.json();
                         lastVer = _v ?? null;
+                        const firstLoad = !libLoaded;
                         if (!libLoaded) {
                             libLoaded = true;
                             if (isDefaultRoom()) data.layouts = loadLocalLibrary();
@@ -849,6 +853,7 @@ const OverlayLayout = () => {
                         } else {
                             misses++;
                         }
+                        if (firstLoad && isMounted) setLibReady(true);
                     }
                 } catch { /* offline / transient — try again next tick */ }
             }
@@ -874,6 +879,22 @@ const OverlayLayout = () => {
             document.removeEventListener('visibilitychange', onVisible);
         };
     }, []);
+
+    // ?kit=<starter id> — sent by the /templates/* landing pages. Installs that
+    // starter once the library has loaded, then drops the param so a reload
+    // doesn't add it again.
+    const kitHandled = useRef(false);
+    useEffect(() => {
+        if (!libReady || kitHandled.current || CLEAN_MODE) return;
+        kitHandled.current = true;
+        const url = new URL(window.location.href);
+        const kitId = url.searchParams.get('kit');
+        if (!kitId) return;
+        const starter = STARTER_LAYOUTS.find(s => s.id === kitId);
+        if (starter) addStarterLayout(starter);
+        url.searchParams.delete('kit');
+        window.history.replaceState(null, '', url);
+    }, [libReady, addStarterLayout]);
 
     // ── Derived state ────────────────────────────────────────────────────────
     const {

@@ -1,12 +1,17 @@
 # Overlay Studio
 
+[![License: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
+[![Official site](https://img.shields.io/badge/official%20site-streamoverlay.kazekit.com-7c3aed.svg)](https://streamoverlay.kazekit.com)
+
 **A free, browser-based stream overlay editor for OBS.** Design your overlay on a live canvas, then add it to OBS with one link. Nothing to install.
 
 **[▶ Open the studio](https://streamoverlay.kazekit.com/?studio)** · [Website](https://streamoverlay.kazekit.com) · [Request a component](https://github.com/abhayraghuwanshi/overlay-studio/issues/new?template=component_request.yml) · [Report a bug](https://github.com/abhayraghuwanshi/overlay-studio/issues/new?template=bug_report.yml)
 
 **Works with** YouTube, Twitch, Kick, Facebook Live, X, TikTok LIVE (with a stream key) and any RTMP platform, from OBS Studio, Streamlabs Desktop, XSplit, Meld Studio or any app with a browser source. Multistreaming works too.
 
-If it's useful to you, a ⭐ helps other streamers find it.
+If it's useful to you, a ⭐ helps other streamers find it. Built live on stream: [watch the build](https://www.youtube.com/watch?v=EYx6zFFJDyE).
+
+> **This is the official Overlay Studio repository**, and [streamoverlay.kazekit.com](https://streamoverlay.kazekit.com) is the only official hosted version. Forks run under their own names.
 
 <!-- TODO: add a current screenshot or GIF of the studio here -->
 
@@ -81,7 +86,7 @@ npm run dev        # studio at http://localhost:3377
 
 Ports are set in `ports.config.js`. On Windows, `start_overlay.bat` starts the dev server and the local backend together.
 
-To deploy your own copy to Vercel with Upstash Redis for layout storage, see **[DEPLOY.md](DEPLOY.md)**.
+To deploy your own copy to Vercel with Upstash Redis for layout storage, see **[DEPLOY.md](DEPLOY.md)**. If you're publishing or hosting it for other people, read [Running your own version](#running-your-own-version) first.
 
 ### Promo videos (template showcase)
 
@@ -99,6 +104,25 @@ The script (`scripts/record-showcase.mjs`) opens the `?showcase` player in your 
 
 The `backend/` server runs a small LLM on your own machine via [`node-llama-cpp`](https://github.com/withcatai/node-llama-cpp). No API keys are needed. It powers a chat widget that comments on your stream. Start it with `cd backend && node server.js`, then download and load a model (e.g. Llama 3.2 1B or Qwen2.5) from the overlay's **Settings** panel. Models are stored in `~/.cooldesk/models`.
 
+## Running your own version
+
+You're welcome to fork Overlay Studio and host your own version, commercial or not. Two conditions apply:
+
+1. **Publish your source code.** Under the [AGPL-3.0](LICENSE), anyone who uses your hosted version must be able to get its full source code, including your changes, under the same license. A public fork on GitHub plus a link to it in your app is enough.
+2. **Use your own name and branding.** The "Overlay Studio" and "KazeKit" names, logos and domain aren't covered by the license ([TRADEMARKS.md](TRADEMARKS.md)). Before you publish, replace them in:
+
+| File | What to change |
+| --- | --- |
+| `index.html` | Page title, meta description, social preview tags |
+| `public/favicon.svg`, `public/brand/` | Favicon and logo |
+| `seo.config.js` | Site URL, brand name, GitHub link |
+| `src/components/LandingPage.jsx`, `src/components/Showcase.jsx` | Product name and links |
+| `src/analytics.js` | Set `VITE_GA_ID` to your own Google Analytics ID, or to an empty value to turn analytics off. Otherwise your traffic is reported to the official site's analytics. |
+| `public/robots.txt`, `.github/ISSUE_TEMPLATE/config.yml` | Links to the official site |
+| `.sitelens.yml` | Delete it (it's for the official site's analytics) |
+
+Saying your project is "based on Overlay Studio" with a link back here is fine, and appreciated.
+
 ## Contributing
 
 Issues and pull requests are welcome. For anything big, open an issue first so we can talk it through.
@@ -109,8 +133,6 @@ By submitting a pull request, you agree that your contribution is licensed under
 
 Copyright (c) 2026 Abhay Raghuwanshi.
 
-The code is licensed under the [GNU Affero General Public License v3.0](LICENSE). You can fork it, change it and run your own version, including a commercial one, but if you distribute it or host it for others you must publish your full source code under the same license.
+The code is licensed under the [GNU Affero General Public License v3.0](LICENSE). The "Overlay Studio" and "KazeKit" names and logos are not licensed; see [TRADEMARKS.md](TRADEMARKS.md).
 
-The "Overlay Studio" and "KazeKit" names and logos aren't covered by the license, so a public fork has to use its own name and branding. See [TRADEMARKS.md](TRADEMARKS.md). The official site is [streamoverlay.kazekit.com](https://streamoverlay.kazekit.com).
-
-Built live on stream: [watch the build](https://www.youtube.com/watch?v=EYx6zFFJDyE).
+For a commercial license without the AGPL terms, or a custom overlay for your channel, email [raghuwanshi.abhay405@gmail.com](mailto:raghuwanshi.abhay405@gmail.com).

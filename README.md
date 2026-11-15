@@ -103,4 +103,14 @@ The `backend/` server runs a small LLM on your own machine via [`node-llama-cpp`
 
 Issues and pull requests are welcome. For anything big, open an issue first so we can talk it through.
 
+By submitting a pull request, you agree that your contribution is licensed under the AGPL-3.0 and that the project owner may also license it under other terms (for example, a commercial license).
+
+## License
+
+Copyright (c) 2026 Abhay Raghuwanshi.
+
+The code is licensed under the [GNU Affero General Public License v3.0](LICENSE). You can fork it, change it and run your own version, including a commercial one, but if you distribute it or host it for others you must publish your full source code under the same license.
+
+The "Overlay Studio" and "KazeKit" names and logos aren't covered by the license, so a public fork has to use its own name and branding. See [TRADEMARKS.md](TRADEMARKS.md). The official site is [streamoverlay.kazekit.com](https://streamoverlay.kazekit.com).
+
 Built live on stream: [watch the build](https://www.youtube.com/watch?v=EYx6zFFJDyE).

@@ -1,31 +1,27 @@
-# Name and branding policy
+# Name and branding
 
-The code in this repository is open source under the
-[GNU AGPL-3.0](LICENSE). You're free to fork it, change it, and run your own
-version, including a commercial one, as long as you follow the license
-(including publishing your source code if you host it for others).
+The **code** is open source under the [AGPL-3.0](LICENSE). You can fork it, change
+it and host it, even commercially, as long as you publish your source code.
 
-The **names, logos and domain are not covered by that license.** "Overlay
-Studio", "KazeKit", the KazeKit logo and favicon, and `streamoverlay.kazekit.com`
-identify the official project.
+The **names and branding are not part of that license**: "Overlay Studio",
+"KazeKit", the favicon/logo, and `streamoverlay.kazekit.com`. They identify the
+official project. (AGPL-3.0 section 7(e) allows this.)
 
-## If you run your own version
+## If you host your own version
 
-You must rebrand it:
+- Give it **your own name**: not "Overlay Studio", "KazeKit", or anything easily confused with them.
+- Replace the **favicon/logo** (`public/favicon.svg`).
+- Don't present **`streamoverlay.kazekit.com`** as your site, and use your own Google Analytics ID (or none).
+- Don't suggest your version is **official or endorsed** by KazeKit.
 
-- Use your own name. Don't call it "Overlay Studio" or "KazeKit", or anything
-  close enough that people would confuse the two.
-- Replace the logo, favicon and other files in `public/brand/` with your own.
-- Don't link to or present `streamoverlay.kazekit.com` as your site, and remove
-  the official Google Analytics ID.
-- Don't imply that your version is official or endorsed by KazeKit.
+The full list of files to change is in the README under
+[Running your own version](README.md#running-your-own-version).
 
-## What's fine without asking
+## Fine without asking
 
-- Keeping the copyright and license notices (that's required).
-- Saying your project is "based on" or "a fork of Overlay Studio" with a link
-  back to this repository.
-- Using the names in a private or local copy that you don't publish or host.
+- Saying "based on" or "a fork of Overlay Studio", with a link back here.
+- Keeping the copyright and license notices (required anyway).
+- Using the names in a private copy you don't publish or host.
 - Forking on GitHub to send pull requests.
 
-Questions or permission requests: open an issue.
+Questions? [Open an issue](https://github.com/abhayraghuwanshi/overlay-studio/issues).

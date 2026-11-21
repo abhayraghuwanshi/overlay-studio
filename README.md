@@ -3,139 +3,99 @@
 [![License: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 [![Official site](https://img.shields.io/badge/official%20site-streamoverlay.kazekit.com-7c3aed.svg)](https://streamoverlay.kazekit.com)
 
-**A free, browser-based stream overlay editor for OBS.** Design your overlay on a live canvas, then add it to OBS with one link. Nothing to install.
+**A free stream overlay editor for OBS that runs in your browser.** Design your overlay on a live canvas, then add it to OBS with one link. Nothing to install, no sign-up.
 
-**[▶ Open the studio](https://streamoverlay.kazekit.com/?studio)** · [Website](https://streamoverlay.kazekit.com) · [Request a component](https://github.com/abhayraghuwanshi/overlay-studio/issues/new?template=component_request.yml) · [Report a bug](https://github.com/abhayraghuwanshi/overlay-studio/issues/new?template=bug_report.yml)
+**[▶ Open the studio](https://streamoverlay.kazekit.com/?studio)** · [Website](https://streamoverlay.kazekit.com) · [Request a component](https://github.com/abhayraghuwanshi/overlay-studio/issues/new/choose) · [Report a bug](https://github.com/abhayraghuwanshi/overlay-studio/issues/new?template=bug_report.yml)
 
-**Works with** YouTube, Twitch, Kick, Facebook Live, X, TikTok LIVE (with a stream key) and any RTMP platform, from OBS Studio, Streamlabs Desktop, XSplit, Meld Studio or any app with a browser source. Multistreaming works too.
+![The studio: toolbox on the left, a scene on the canvas, layers below](public/screens/editor.jpg)
 
-If it's useful to you, a ⭐ helps other streamers find it. Built live on stream: [watch the build](https://www.youtube.com/watch?v=EYx6zFFJDyE).
+Works with OBS Studio, Streamlabs Desktop, XSplit, Meld Studio or any app with a browser source. Stream to Twitch, YouTube, Kick, or anywhere else.
 
-> **This is the official Overlay Studio repository**, and [streamoverlay.kazekit.com](https://streamoverlay.kazekit.com) is the only official hosted version. Forks run under their own names.
+If it's useful, a ⭐ helps other streamers find it. Built live on stream: [watch the build](https://www.youtube.com/watch?v=EYx6zFFJDyE).
 
-<!-- TODO: add a current screenshot or GIF of the studio here -->
+> This is the official repository. [streamoverlay.kazekit.com](https://streamoverlay.kazekit.com) is the only official hosted version.
 
 ## Features
 
-- **Drag-and-drop editor:** place cameras, text and widgets on a 16:9 canvas. No code.
-- **One-link OBS setup:** hit **Go Live**, paste the link into an OBS Browser Source, and your edits sync to OBS as you make them.
-- **Twitch alerts and event list:** pop-up alerts (with a chime) for subs, re-subs, gift subs, gift bombs, raids and cheers, plus a recent-events list. Test alerts from the editor and they play in OBS too. Read-only, no login needed.
-- **Live Twitch chat on stream:** type your channel name and your chat appears in the overlay, styled to match your theme. It shows subs, gift subs and raids, removes deleted messages, and hides bots and !commands. Read-only, no login needed.
-- **Live match scoreboard:** search a fixture and the score updates itself on stream.
-- **Widgets:** follower and sub goals, countdowns, clock, pomodoro, tickers, lower thirds, socials, sticky notes, a spin wheel and shapes.
-- **Pets and mood ring:** little mascots that roam the canvas and react to the mood of the room.
-- **Layouts and scenes:** group scenes (Intro, Gameplay, BRB, Outro) into a layout and switch between them.
-- **Themes and style kits:** re-skin the whole overlay in one click. Style-kit themes (Cyber HUD, Synthwave, Lo-fi, Sketchbook, Brutalist, Pixel, Y2K, Lava Lamp, Sakura, Nouveau, VHS, Rewild) also swap the graphics: animated backdrops, headline effects, lower-third plates and cam frames.
-- **Template library:** 64 ready-made shows, filterable by Gaming, Cozy, Retro, Creative, Talk, Festive and By game. Game packs are fan-made looks for Valorant, PUBG / BGMI (zone map and sniper scope), Fortnite, Call of Duty: Warzone, Apex Legends, Minecraft (overworld and Nether), GTA RP, GTA VI, League of Legends, Counter-Strike 2, Free Fire and Roblox (original graphics, not affiliated with or endorsed by the game publishers). Festive packs cover Diwali, New Year, Christmas, Halloween, Holi, Lunar New Year, Eid, Valentine’s Day, autumn / Thanksgiving and birthdays, each with its own animated backdrop. Style-kit packs ship 8–9 scenes: Starting Soon, Gameplay, three Just Chatting layouts (cam + chat, centred cam, game + cam), an optional Duo for co-hosts, BRB, Ending and Offline. Some packs use hexagon, circle or diamond webcams.
-- **Camera cut-outs:** scene backgrounds and backdrops leave a transparent hole where each visible camera (or a game-capture frame) sits, so the OBS sources underneath show through.
-- **Recording:** record the stream right in the browser.
-- **Camera auto-placement (optional):** with OBS WebSocket turned on, your real camera snaps into the overlay's camera frame on every scene switch.
+- **Drag-and-drop editor:** cameras, text and widgets on a 16:9 canvas, no code.
+- **One link for OBS:** edits show up in OBS within seconds.
+- **64 templates:** Gaming, Cozy, Retro, Creative, Talk, Festive and game-inspired packs, each with Starting Soon, Gameplay, BRB, Ending and more. [See them on YouTube](https://www.youtube.com/watch?v=q4j-2mfvl9E&list=PLU64EFJph6SA).
+- **Themes:** re-skin everything in one click, including animated backdrops, text effects and cam frames.
+- **Twitch alerts, event list and chat:** subs, gifts, raids and cheers, no login needed.
+- **Widgets:** goals, countdowns, clock, pomodoro, ticker, lower thirds, socials, sticky notes, spin wheel, live match scoreboard, pets and more.
+- **Camera cut-outs:** backgrounds leave a see-through hole where your OBS camera sits.
+- **Camera auto-placement (optional):** with OBS WebSocket on, your webcam snaps into the overlay's frame on every scene switch.
 
-## Quick start (no install)
+![Template gallery](public/screens/templates.jpg)
 
-1. Open **[the studio](https://streamoverlay.kazekit.com/?studio)** and design your overlay.
-2. Click **Go Live**. This creates a private room and copies your OBS link.
-3. In OBS: **Sources → + → Browser**, then set:
-   - **URL:** paste the link
-   - **Width / Height:** `1920` × `1080`
-   - **Custom CSS:** leave it empty
-4. Click **OK**. Keep editing in the browser and OBS picks up your changes within a couple of seconds.
+▶ **[Watch the templates in action](https://www.youtube.com/watch?v=q4j-2mfvl9E&list=PLU64EFJph6SA)** (YouTube playlist)
+
+## Quick start
+
+1. Open **[the studio](https://streamoverlay.kazekit.com/?studio)** and pick a template or start blank.
+2. Click **Go Live** to copy your OBS link.
+3. In OBS: **Sources → + → Browser**, paste the link, and set **1920 × 1080**.
+4. Keep editing in the browser. OBS updates by itself.
 
 ![OBS Browser Source settings](image.png)
 
-> Your room link is private but not password-protected: anyone with the exact link can view or edit that overlay. Don't share it publicly.
+> **Keep your link private.** Anyone with it can view and edit that overlay.
+>
+> Webcams and screen captures go in OBS as normal sources (Video Capture Device / Display Capture), behind the overlay.
 
-> Webcams and screen captures can't render inside an OBS browser source. Add them as normal OBS sources (Video Capture Device / Display Capture) behind the overlay. Camera auto-placement, below, can position them for you.
+### Camera auto-placement
 
-### Camera auto-placement (OBS WebSocket)
+In OBS, open **Tools → WebSocket Server Settings**, turn on **Enable WebSocket server** (port **4455**) and turn off authentication. The studio's camera panel shows **OBS connected**. With several cameras, put `face`, `hand` or `room` in their OBS source names.
 
-1. In OBS, open **Tools → WebSocket Server Settings**.
-2. Check **Enable WebSocket server**, keep port **4455**, and uncheck **Enable Authentication**.
-3. Click **OK**. The camera panel in the studio shows a green **OBS connected** badge within a few seconds.
+## Run it locally
 
-Your webcam must be a **Video Capture Device** source in the same OBS scene as the overlay. With several cameras, put `face`, `hand` or `room` in their OBS source names to choose which frame each one fills.
-
-## Request a component
-
-Missing a widget, theme or layout? [Open a request](https://github.com/abhayraghuwanshi/overlay-studio/issues/new/choose). There's a short form for each:
-
-- 🧩 **Component:** a new widget or element (a poll, chat box, now-playing card…)
-- 🎨 **Theme or layout:** a look, starter layout or scene pack
-- ✨ **Feature:** anything else in the studio
-- 🐞 **Bug:** something broke
-
-You can also click **Missing something? Request a component** in the studio's **Add Layer** panel.
-
-Want a custom overlay, theme or scene pack made for your channel? Email [raghuwanshi.abhay405@gmail.com](mailto:raghuwanshi.abhay405@gmail.com).
-
-## Running it locally
-
-**Prerequisites:** [Node.js](https://nodejs.org/) 20+ and [OBS Studio](https://obsproject.com/).
+Needs [Node.js](https://nodejs.org/) 20+.
 
 ```bash
 npm install
-npm run dev        # studio at http://localhost:3377
+npm run dev        # http://localhost:3377
 ```
 
-| Path | What it is |
+| Folder | What's in it |
 | --- | --- |
-| `src/` | React + Vite app: landing page, studio and the overlay OBS renders |
-| `api/` | Vercel serverless functions: `layout.js` (room storage), `scores.js` (match feed), `usage.js` (stats) |
-| `backend/` | Optional local Node server for the local AI companion (port `3388`) |
-| `extension/` | Optional browser extension that sends highlighted text to the AI companion |
+| `src/` | The React + Vite app: home page, studio, and the overlay OBS shows |
+| `api/` | Serverless functions: room storage, match feed, stats |
+| `backend/` | Optional local AI chat companion (`cd backend && node server.js`) |
+| `scripts/` | SEO pages and promo-video recording (`npm run promo`) |
+| `docs/` | Contributor guides |
 
-Ports are set in `ports.config.js`. On Windows, `start_overlay.bat` starts the dev server and the local backend together.
-
-To deploy your own copy to Vercel with Upstash Redis for layout storage, see **[DEPLOY.md](DEPLOY.md)**. If you're publishing or hosting it for other people, read [Running your own version](#running-your-own-version) first.
-
-### Promo videos (template showcase)
-
-Template showcase videos are generated automatically from the app itself:
-
-```bash
-npm run dev                 # keep this running
-npm run promo               # every preset, 16:9 + 9:16
-npm run promo -- montage    # just one preset
-```
-
-The script (`scripts/record-showcase.mjs`) opens the `?showcase` player in your installed Google Chrome, records it at 30 fps and encodes MP4s with ffmpeg (`brew install ffmpeg`) into `promo-videos/`. The soundtrack is generated by `scripts/music.mjs`: an original lo-fi loop plus alert chimes and scene-change whooshes timed to the video. It's royalty-free because it's ours; pass `--no-music` for silent videos. Presets live at the top of the script. You can also open `/?showcase&packs=kit-samurai&autostart` in a browser to preview a video before recording it.
-
-### Local AI companion (optional)
-
-The `backend/` server runs a small LLM on your own machine via [`node-llama-cpp`](https://github.com/withcatai/node-llama-cpp). No API keys are needed. It powers a chat widget that comments on your stream. Start it with `cd backend && node server.js`, then download and load a model (e.g. Llama 3.2 1B or Qwen2.5) from the overlay's **Settings** panel. Models are stored in `~/.cooldesk/models`.
+To deploy your own copy, see **[DEPLOY.md](DEPLOY.md)**.
 
 ## Running your own version
 
-You're welcome to fork Overlay Studio and host your own version, commercial or not. Two conditions apply:
+You can host your own version, commercial or not, if you:
 
-1. **Publish your source code.** Under the [AGPL-3.0](LICENSE), anyone who uses your hosted version must be able to get its full source code, including your changes, under the same license. A public fork on GitHub plus a link to it in your app is enough.
-2. **Use your own name and branding.** The "Overlay Studio" and "KazeKit" names, logos and domain aren't covered by the license ([TRADEMARKS.md](TRADEMARKS.md)). Before you publish, replace them in:
+1. **Publish your source code** under the [AGPL-3.0](LICENSE), including your changes. A public fork linked from your app is enough.
+2. **Use your own name and branding.** See [TRADEMARKS.md](TRADEMARKS.md). Change these files:
 
-| File | What to change |
+| File | Change |
 | --- | --- |
-| `index.html` | Page title, meta description, social preview tags |
-| `public/favicon.svg`, `public/brand/` | Favicon and logo |
+| `index.html` | Title, description, social preview tags |
+| `public/favicon.svg` | Favicon / logo |
 | `seo.config.js` | Site URL, brand name, GitHub link |
 | `src/components/LandingPage.jsx`, `src/components/Showcase.jsx` | Product name and links |
-| `src/analytics.js` | Set `VITE_GA_ID` to your own Google Analytics ID, or to an empty value to turn analytics off. Otherwise your traffic is reported to the official site's analytics. |
+| `src/analytics.js` | Set `VITE_GA_ID` to your own ID, or empty to turn analytics off |
 | `public/robots.txt`, `.github/ISSUE_TEMPLATE/config.yml` | Links to the official site |
-| `.sitelens.yml` | Delete it (it's for the official site's analytics) |
+| `.sitelens.yml` | Delete it |
 
-Saying your project is "based on Overlay Studio" with a link back here is fine, and appreciated.
+"Based on Overlay Studio" with a link back here is welcome.
 
 ## Contributing
 
-Issues and pull requests are welcome. For anything big, open an issue first so we can talk it through.
+Issues and pull requests are welcome. For anything big, open an issue first.
 
-Guides:
+- [Request a component, theme or feature](https://github.com/abhayraghuwanshi/overlay-studio/issues/new/choose) (also in the studio's Help panel)
 - [Creating a new backdrop](docs/creating-a-backdrop.md)
 
-By submitting a pull request, you agree that your contribution is licensed under the AGPL-3.0 and that the project owner may also license it under other terms (for example, a commercial license).
+By sending a pull request, you agree your contribution is licensed under the AGPL-3.0 and that the project owner may also license it under other terms (for example, a commercial license).
 
 ## License
 
-Copyright (c) 2026 Abhay Raghuwanshi.
+Copyright (c) 2026 Abhay Raghuwanshi. Code under the [GNU AGPL-3.0](LICENSE). The names and logo are not licensed; see [TRADEMARKS.md](TRADEMARKS.md).
 
-The code is licensed under the [GNU Affero General Public License v3.0](LICENSE). The "Overlay Studio" and "KazeKit" names and logos are not licensed; see [TRADEMARKS.md](TRADEMARKS.md).
-
-For a commercial license without the AGPL terms, or a custom overlay for your channel, email [raghuwanshi.abhay405@gmail.com](mailto:raghuwanshi.abhay405@gmail.com).
+For a commercial license or a custom overlay for your channel, email [raghuwanshi.abhay405@gmail.com](mailto:raghuwanshi.abhay405@gmail.com).

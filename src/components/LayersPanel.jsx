@@ -3,6 +3,7 @@ import { ChevronDown, Layers, Plus, RotateCw, X } from 'lucide-react';
 import { useState } from 'react';
 import { track } from '../analytics';
 import { ADD_SECTIONS, BUILTIN_LAYERS, ELEMENT_TYPE_MAP, SHAPE_ELEMENTS } from './elementCatalog';
+import { UI_BODY, UI_DISPLAY } from '../theme/uiFonts';
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -100,17 +101,45 @@ const ScenesDropdown = ({ layoutName, scenes = [], activeSceneId, onSwitchScene,
         <div style={{ padding: '0 2px' }}>
             {/* Header: section label + layout (show) switcher */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 8px 3px' }}>
-                <span style={{ fontSize: 9, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 2, color: 'rgba(255,255,255,0.28)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 2, color: 'rgba(255,255,255,0.28)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {layoutName ? `Scenes · ${layoutName}` : 'Scenes'}
                 </span>
                 <button
                     onClick={onOpenLayouts}
                     title="Switch / manage layouts"
-                    style={{ display: 'flex', alignItems: 'center', gap: 3, background: 'none', border: 'none', cursor: 'pointer', color: '#a5b4fc', fontSize: 8.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 0.5, flexShrink: 0 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 3, background: 'none', border: 'none', cursor: 'pointer', color: '#a5b4fc', fontSize: 9.5, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 0.5, flexShrink: 0 }}
                 >
                     <Layers size={10} /> Layouts
                 </button>
             </div>
+
+            {/* Scene timeline — the ordered show: Starting Soon → Live → BRB → Ending.
+                Click a scene to switch; the active one is highlighted. */}
+            {scenes.length > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, overflowX: 'auto', padding: '2px 2px 8px' }}>
+                    {scenes.map(s => {
+                        const isActive = s.id === activeSceneId;
+                        return (
+                            <button
+                                key={s.id}
+                                onClick={() => { onSwitchScene?.(s.id); }}
+                                title={`Switch to ${s.name}`}
+                                style={{
+                                    flexShrink: 0, display: 'flex', alignItems: 'center', gap: 5, padding: '4px 8px 4px 4px',
+                                    borderRadius: 999, cursor: 'pointer',
+                                    background: isActive ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.03)',
+                                    border: `1px solid ${isActive ? 'rgba(165,180,252,0.55)' : 'rgba(255,255,255,0.09)'}`,
+                                }}
+                            >
+                                <SceneDot color={isActive ? '#818cf8' : '#64748b'} />
+                                <span style={{ fontSize: 10, fontFamily: UI_DISPLAY, color: isActive ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.6)', maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {s.name}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
 
             {/* Trigger */}
             <button
@@ -120,7 +149,7 @@ const ScenesDropdown = ({ layoutName, scenes = [], activeSceneId, onSwitchScene,
                     padding: '6px 9px', borderRadius: 7,
                     background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
                     color: 'rgba(255,255,255,0.78)', cursor: 'pointer',
-                    fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1,
+                    fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1,
                 }}
             >
                 {active ? <SceneDot color="#818cf8" /> : <span style={{ width: 6, height: 6, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.25)', flexShrink: 0 }} />}
@@ -144,7 +173,7 @@ const ScenesDropdown = ({ layoutName, scenes = [], activeSceneId, onSwitchScene,
                             display: 'flex', flexDirection: 'column', gap: 1,
                         }}>
                             {scenes.length === 0 && (
-                                <div style={{ fontSize: 9, fontFamily: 'monospace', color: 'rgba(255,255,255,0.3)', padding: '6px 7px', lineHeight: 1.5 }}>
+                                <div style={{ fontSize: 10, fontFamily: UI_BODY, color: 'rgba(255,255,255,0.3)', padding: '6px 7px', lineHeight: 1.5 }}>
                                     No scenes here yet — hit Save Scene in the top bar.
                                 </div>
                             )}
@@ -235,7 +264,7 @@ const LayersPanel = ({
                 borderBottom: '1px solid rgba(255,255,255,0.06)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
             }}>
-                <span style={{ fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 2.5, color: 'rgba(255,255,255,0.45)' }}>
+                <span style={{ fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 2.5, color: 'rgba(255,255,255,0.45)' }}>
                     Add to scene
                 </span>
             </div>
@@ -362,7 +391,7 @@ const LayersPanel = ({
                     style={{
                         flex: 1, padding: '5px 0', borderRadius: 7,
                         background: 'rgba(99,102,241,0.14)', border: '1px solid rgba(99,102,241,0.3)',
-                        color: '#a5b4fc', fontSize: 9, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1,
+                        color: '#a5b4fc', fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1,
                         cursor: 'pointer', transition: 'all 0.12s',
                     }}
                 >
@@ -373,7 +402,7 @@ const LayersPanel = ({
                     style={{
                         flex: 1, padding: '5px 0', borderRadius: 7,
                         background: 'rgba(14,165,233,0.12)', border: '1px solid rgba(14,165,233,0.25)',
-                        color: '#7dd3fc', fontSize: 9, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1,
+                        color: '#7dd3fc', fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1,
                         cursor: 'pointer', transition: 'all 0.12s',
                     }}
                 >
@@ -384,7 +413,7 @@ const LayersPanel = ({
                     style={{
                         flex: 1, padding: '5px 0', borderRadius: 7,
                         background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-                        color: 'rgba(255,255,255,0.35)', fontSize: 9, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1,
+                        color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1,
                         cursor: 'pointer', transition: 'all 0.12s',
                     }}
                     onMouseEnter={e => { e.currentTarget.style.color = '#f87171'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; }}

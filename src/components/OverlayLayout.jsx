@@ -31,6 +31,7 @@ import { DEFAULT_THEME, getTheme } from '../theme/themes';
 import { MOODS } from '../theme/moods';
 import { packSnapshot } from '../scenes/packs';
 import { STARTER_LAYOUTS, buildStarterLayout } from '../scenes/starterLayouts';
+import { UI_DISPLAY } from '../theme/uiFonts';
 
 const DEFAULT_BOXES = {
     faceCam: { x: 80, y: 0, w: 20, h: 20 },
@@ -953,7 +954,7 @@ const OverlayLayout = () => {
                     border: showLabel ? '1px dashed rgba(255,255,255,0.18)' : 'none',
                 }}>
                     {showLabel && (
-                        <div style={{ textAlign: 'center', pointerEvents: 'none', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <div style={{ textAlign: 'center', pointerEvents: 'none', fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1 }}>
                             <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>{label}</div>
                             <div style={{ fontSize: 8, marginTop: 3, color: 'rgba(255,255,255,0.4)' }}>OBS source</div>
                         </div>
@@ -1051,7 +1052,7 @@ const OverlayLayout = () => {
                                     height: 26, padding: '0 9px', flexShrink: 0, cursor: 'pointer',
                                     borderRadius: 6, border: '1px solid rgba(99,102,241,0.4)',
                                     background: drawerOpen ? 'rgba(79,70,229,0.4)' : 'rgba(99,102,241,0.16)',
-                                    color: '#c7d2fe', fontSize: 9, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1,
+                                    color: '#c7d2fe', fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1,
                                 }}
                             >
                                 <Layers size={13} />Layers
@@ -1064,7 +1065,7 @@ const OverlayLayout = () => {
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#a5b4fc',
                             }}><Circle size={8} fill="#a5b4fc" strokeWidth={0} /></div>
                             {!isNarrow && (
-                                <span style={{ fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 3, color: 'rgba(255,255,255,0.45)' }}>
+                                <span style={{ fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 3, color: 'rgba(255,255,255,0.45)' }}>
                                     Overlay Studio
                                 </span>
                             )}
@@ -1086,7 +1087,7 @@ const OverlayLayout = () => {
                                     style={{
                                         width: 130, height: 22, padding: '0 8px', borderRadius: 5,
                                         border: '1px solid rgba(99,102,241,0.45)', background: 'rgba(99,102,241,0.12)',
-                                        color: '#e0e7ff', fontSize: 10, fontFamily: 'monospace', outline: 'none',
+                                        color: '#e0e7ff', fontSize: 10, fontFamily: UI_DISPLAY, outline: 'none',
                                     }}
                                 />
                                 <HdrBtn active onClick={() => { saveScene(sceneNameDraft); setNamingScene(false); }}>
@@ -1102,7 +1103,7 @@ const OverlayLayout = () => {
                         <HdrSep />
                         <button
                             onClick={() => { setEditMode(false); setSelectedBox(null); setSelectedElementId(null); setShowBgPanel(false); }}
-                            style={{ padding: '3px 12px', borderRadius: 5, fontSize: 9, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1, border: '1px solid rgba(99,102,241,0.45)', background: 'rgba(79,70,229,0.4)', color: '#fff', cursor: 'pointer' }}
+                            style={{ padding: '3px 12px', borderRadius: 5, fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1, border: '1px solid rgba(99,102,241,0.45)', background: 'rgba(79,70,229,0.4)', color: '#fff', cursor: 'pointer' }}
                         ><Check size={11} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} />Done</button>
                     </div>
                 </div>
@@ -1319,7 +1320,7 @@ const OverlayLayout = () => {
                             <div style={{
                                 position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', pointerEvents: 'none',
                                 background: 'rgba(10,10,20,0.9)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 8,
-                                padding: '5px 12px', fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1,
+                                padding: '5px 12px', fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1,
                                 color: '#a5b4fc', whiteSpace: 'nowrap',
                             }}>
                                 Click or drag to place {placingType} · Esc to cancel
@@ -1418,7 +1419,7 @@ const OverlayLayout = () => {
                                                         style={{
                                                             display: 'flex', alignItems: 'center', gap: 7, padding: '6px 9px', borderRadius: 6,
                                                             background: isActive ? 'rgba(99,102,241,0.2)' : 'transparent', border: 'none', cursor: 'pointer',
-                                                            color: 'rgba(255,255,255,0.85)', fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase',
+                                                            color: 'rgba(255,255,255,0.85)', fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase',
                                                             letterSpacing: 1, textAlign: 'left', whiteSpace: 'nowrap',
                                                         }}
                                                         onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
@@ -1448,7 +1449,7 @@ const OverlayLayout = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 12 }}
                         transition={{ duration: 0.18 }}
-                        style={{ position: 'absolute', bottom: 64, left: '50%', transform: 'translateX(-50%)', zIndex: 400, maxWidth: 380, background: 'rgba(6,6,16,0.96)', backdropFilter: 'blur(24px)', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 12, padding: '12px 16px', boxShadow: '0 8px 40px rgba(0,0,0,0.72)', color: 'rgba(255,255,255,0.9)', fontFamily: 'monospace' }}
+                        style={{ position: 'absolute', bottom: 64, left: '50%', transform: 'translateX(-50%)', zIndex: 400, maxWidth: 380, background: 'rgba(6,6,16,0.96)', backdropFilter: 'blur(24px)', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 12, padding: '12px 16px', boxShadow: '0 8px 40px rgba(0,0,0,0.72)', color: 'rgba(255,255,255,0.9)', fontFamily: UI_DISPLAY }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', color: '#a5b4fc' }}>
                             <Check size={13} />{liveToast.fresh ? 'Room created' : 'Live'} · {liveToast.room}
@@ -1484,7 +1485,7 @@ const OverlayLayout = () => {
 };
 
 const HdrBtn = ({ children, active, icon, onClick }) => (
-    <button onClick={onClick} style={{ padding: icon ? '3px 6px' : '3px 9px', borderRadius: 5, fontSize: 9, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1, border: '1px solid', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'all 0.1s', ...(active ? { background: 'rgba(99,102,241,0.2)', borderColor: 'rgba(99,102,241,0.4)', color: '#a5b4fc' } : { background: 'transparent', borderColor: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.38)' }) }}>
+    <button onClick={onClick} style={{ padding: icon ? '3px 6px' : '3px 9px', borderRadius: 5, fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1, border: '1px solid', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'all 0.1s', ...(active ? { background: 'rgba(99,102,241,0.2)', borderColor: 'rgba(99,102,241,0.4)', color: '#a5b4fc' } : { background: 'transparent', borderColor: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.38)' }) }}>
         {children}
     </button>
 );
@@ -1501,7 +1502,7 @@ const DockBtn = ({ children, active, icon, disabled, onClick, title }) => (
             padding: icon ? '4px 7px' : '4px 10px',
             borderRadius: 8,
             fontSize: 9,
-            fontFamily: 'monospace',
+            fontFamily: UI_DISPLAY,
             textTransform: 'uppercase',
             letterSpacing: 1,
             border: '1px solid',

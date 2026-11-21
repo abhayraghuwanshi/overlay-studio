@@ -159,3 +159,135 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
 }
+/* ── Element editor: chips + selects ─────────────────────────────────────
+   Lives here (not inline) so hover / focus states work. */
+.ed-chip {
+  height: 28px;
+  min-width: 28px;
+  padding: 0 11px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font: 500 12px/1 'Space Grotesk', Inter, system-ui, sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.12s, border-color 0.12s, color 0.12s, box-shadow 0.12s;
+}
+.ed-chip.is-icon { padding: 0 8px; }
+.ed-chip:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.ed-chip[aria-pressed="true"] {
+  font-weight: 600;
+  color: #e0e7ff;
+  background: rgba(99, 102, 241, 0.22);
+  border-color: rgba(129, 140, 248, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(129, 140, 248, 0.15);
+}
+.ed-chip[aria-pressed="true"]:hover { background: rgba(99, 102, 241, 0.3); }
+.ed-chip:active { transform: translateY(0.5px); }
+.ed-chip:focus-visible,
+.ed-select:focus-visible {
+  outline: none;
+  border-color: rgba(129, 140, 248, 0.8);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+.ed-chip:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.ed-select {
+  width: 100%;
+  height: 28px;
+  padding: 0 28px 0 10px;
+  border-radius: 7px;
+  font: 500 12px/1 Inter, system-ui, sans-serif;
+  color: #fff;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: rgba(255, 255, 255, 0.05);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  transition: background-color 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+.ed-select:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.ed-select option { background: #12121f; color: #fff; }
+
+/* ── Layout gallery: tab switcher + category chips ──────────────────────── */
+.gal-tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.gal-tab {
+  height: 30px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font: 600 11px/1 'Space Grotesk', Inter, system-ui, sans-serif;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.gal-tab:hover { color: rgba(255, 255, 255, 0.85); background: rgba(255, 255, 255, 0.05); }
+.gal-tab[aria-selected="true"] {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.gal-tab:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35); }
+
+.gal-cats {
+  display: flex;
+  gap: 6px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.gal-cats::-webkit-scrollbar { display: none; }
+.gal-cat { flex-shrink: 0; padding: 0 5px 0 12px; gap: 7px; }
+
+/* Small count badge inside a tab / chip */
+.chip-count {
+  min-width: 20px;
+  height: 18px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font: 600 10.5px/1 'Space Grotesk', Inter, system-ui, sans-serif;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.07);
+}
+[aria-pressed="true"] > .chip-count,
+[aria-selected="true"] > .chip-count {
+  color: #fff;
+  background: rgba(99, 102, 241, 0.55);
+}

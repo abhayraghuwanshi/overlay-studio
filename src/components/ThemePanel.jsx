@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { THEMES } from '../theme/themes';
 import { THEME_PACKS, packGradient } from '../scenes/packs';
 import { BACKDROPS, FRAME_STYLES, LOWER_THIRDS, TEXT_FX } from './graphics';
+import { UI_DISPLAY } from '../theme/uiFonts';
 
 // ── Font choices ──────────────────────────────────────────────────────────
 const FONTS = [
@@ -54,12 +55,12 @@ const DISPLAY_FONTS = [
 
 const selectStyle = {
     width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 5,
-    color: 'rgba(255,255,255,0.75)', fontSize: 10, fontFamily: 'monospace', padding: '4px 6px', outline: 'none', cursor: 'pointer',
+    color: 'rgba(255,255,255,0.75)', fontSize: 10, fontFamily: UI_DISPLAY, padding: '4px 6px', outline: 'none', cursor: 'pointer',
 };
 
 const StyleSelect = ({ caption, value, options, onChange }) => (
     <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ width: 64, flexShrink: 0, fontSize: 8.5, color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 0.5 }}>{caption}</span>
+        <span style={{ width: 64, flexShrink: 0, fontSize: 9.5, color: 'rgba(255,255,255,0.35)', fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 0.5 }}>{caption}</span>
         <select value={value ?? ''} onChange={e => onChange(e.target.value)} style={selectStyle}>
             {options.map(o => <option key={o.id ?? o.value} value={o.id ?? o.value} style={{ background: '#0d0d1a' }}>{o.label}</option>)}
         </select>
@@ -72,7 +73,7 @@ const swatch = (theme) => ({
     position: 'relative',
 });
 
-const labelStyle = { fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 };
+const labelStyle = { fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 };
 
 const ColorPick = ({ value, onChange, caption }) => (
     <label style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
@@ -80,13 +81,13 @@ const ColorPick = ({ value, onChange, caption }) => (
             <input type="color" value={value || '#000000'} onChange={e => onChange(e.target.value)}
                 style={{ opacity: 0, width: '100%', height: '100%', cursor: 'pointer', border: 'none', padding: 0 }} />
         </div>
-        <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' }}>{caption}</span>
+        <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.3)', fontFamily: UI_DISPLAY }}>{caption}</span>
     </label>
 );
 
 const tabStyle = (active) => ({
     flex: 1, padding: '5px 4px', textAlign: 'center', fontSize: 10,
-    fontFamily: 'monospace', textTransform: 'capitalize', borderRadius: 5, cursor: 'pointer',
+    fontFamily: UI_DISPLAY, textTransform: 'capitalize', borderRadius: 5, cursor: 'pointer',
     background: active ? 'rgba(99,102,241,0.25)' : 'rgba(255,255,255,0.05)',
     border: active ? '1px solid rgba(99,102,241,0.5)' : '1px solid rgba(255,255,255,0.08)',
     color: active ? '#a5b4fc' : 'rgba(255,255,255,0.5)',
@@ -117,7 +118,7 @@ const ThemePanel = ({ theme, onApply, onChange, onInstallPack, onClose }) => {
                 padding: '10px 14px 8px',
                 borderBottom: '1px solid rgba(255,255,255,0.06)',
             }}>
-                <span style={{ fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 2, color: 'rgba(255,255,255,0.5)' }}>
+                <span style={{ fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 2, color: 'rgba(255,255,255,0.5)' }}>
                     Theme
                 </span>
                 <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', padding: 0, display: 'flex' }}><X size={14} /></button>
@@ -147,7 +148,7 @@ const ThemePanel = ({ theme, onApply, onChange, onInstallPack, onClose }) => {
                                     <span style={{ width: 28, height: 28, borderRadius: 6, flexShrink: 0, background: packGradient(pack) }} />
                                     <span style={{ display: 'flex', flexDirection: 'column', gap: 1, minWidth: 0 }}>
                                         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', fontFamily: 'inter, system-ui' }}>{pack.name}</span>
-                                        <span style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pack.tagline}</span>
+                                        <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.35)', fontFamily: UI_DISPLAY, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pack.tagline}</span>
                                     </span>
                                 </button>
                             ))}
@@ -208,7 +209,7 @@ const ThemePanel = ({ theme, onApply, onChange, onInstallPack, onClose }) => {
                             onChange={e => set({ cornerRadius: Number(e.target.value) })}
                             style={{ flex: 1, accentColor: '#6366f1', cursor: 'pointer' }}
                         />
-                        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace', minWidth: 32, textAlign: 'right' }}>
+                        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: UI_DISPLAY, minWidth: 32, textAlign: 'right' }}>
                             {t.cornerRadius ?? 8}px
                         </span>
                     </div>

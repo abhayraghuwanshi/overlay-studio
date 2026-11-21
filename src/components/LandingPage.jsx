@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { CONTACT_EMAIL, scoresUrl, usageUrl } from '../config';
 import { track } from '../analytics';
+import LayoutGallery from './LayoutGallery';
+import { STARTER_LAYOUTS } from '../scenes/starterLayouts';
 
 const REPO = 'abhayraghuwanshi/overlay-studio';
 const REPO_URL = `https://github.com/${REPO}`;
@@ -65,6 +67,13 @@ const FEATURES = [
     { title: 'Pets & mood ring', desc: 'Little mascots that roam the canvas and shift with the mood of the room.' },
     { title: 'Goals, timers & widgets', desc: 'Follower and sub goals, countdowns, a pomodoro, tickers, sticky notes, a spin wheel.' },
     { title: 'Themes & recording', desc: 'Re-skin the whole overlay in a click, and record the stream right in the browser.' },
+];
+
+const FAQS = [
+    { q: 'Is Overlay Studio free?', a: 'Yes — free and open source, with no sign-up, no paid tier and nothing to install. Open the studio in your browser, pick a template or start from a blank layout, and design on a real 16:9 canvas.' },
+    { q: 'Does it work with Twitch, YouTube and Kick?', a: 'Yes. The overlay runs in OBS Studio, Streamlabs Desktop, XSplit or Meld Studio as a browser source, so it works with whatever platform you stream to.' },
+    { q: 'Can I change the colours and text?', a: 'Yes. Every scene is fully editable: move layers around, change the text, swap the theme or add widgets like goals, timers, chat and scoreboards.' },
+    { q: 'Do I need to install anything?', a: "No. It's browser-based — design in the studio, then drop the generated link into OBS as a browser source." },
 ];
 
 // The live-scores strip is tournament-branded (FIFA World Cup) — flip this
@@ -160,6 +169,8 @@ export default function LandingPage() {
     const [matches, setMatches] = useState(null);
     const [stats, setStats] = useState(null);
     const [stars, setStars] = useState(null);
+    const [showTemplates, setShowTemplates] = useState(false);
+    const [openFaq, setOpenFaq] = useState(0);
 
     useEffect(() => {
         document.title = 'Overlay Studio — free stream overlay editor for OBS';
@@ -174,12 +185,23 @@ export default function LandingPage() {
         return () => { alive = false; document.body.style.overflow = prev; };
     }, []);
 
+    // Template picker modal — lock scroll + close on Escape while it's open.
+    useEffect(() => {
+        if (!showTemplates) return;
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        const onKey = (e) => { if (e.key === 'Escape') setShowTemplates(false); };
+        window.addEventListener('keydown', onKey);
+        return () => { document.body.style.overflow = prev; window.removeEventListener('keydown', onKey); };
+    }, [showTemplates]);
+
     const topMatches = (matches || []).slice().sort(sortMatches).slice(0, 6);
     const num = (n) => n == null ? '—' : Intl.NumberFormat().format(n);
 
     const wrap = { maxWidth: 940, margin: '0 auto', padding: '0 28px', boxSizing: 'border-box' };
     const chip = { display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: DISPLAY, fontSize: 14, fontWeight: 500, color: C.ink, padding: '8px 14px', borderRadius: 999, border: `1px solid ${C.line}`, background: 'rgba(241,239,233,0.03)' };
     const btn = { fontFamily: DISPLAY, fontSize: 15, fontWeight: 600, color: C.bg, background: C.ink, padding: '12px 22px', borderRadius: 6, textDecoration: 'none', display: 'inline-block' };
+    const btnGhost = { fontFamily: DISPLAY, fontSize: 15, fontWeight: 600, color: C.ink, background: 'rgba(8,8,12,0.92)', padding: '12px 22px', borderRadius: 6, border: '1px solid rgba(241,239,233,0.2)', textDecoration: 'none', display: 'inline-block', cursor: 'pointer' };
     const STATS = [
         { v: num(stats?.rooms), l: 'overlays created' },
         { v: num(stats?.today?.uniques), l: 'visitors today' },
@@ -215,6 +237,7 @@ export default function LandingPage() {
                 </p>
                 <div style={{ display: 'flex', gap: 22, alignItems: 'center', flexWrap: 'wrap', marginTop: 34 }}>
                     <a href="/?studio" style={btn}>Open the studio →</a>
+                    <button onClick={() => { setShowTemplates(true); track('template_browse_click', { location: 'hero' }); }} style={btnGhost}>Browse templates →</button>
                     <a href="#how" style={{ fontFamily: DISPLAY, fontSize: 15, fontWeight: 500, color: C.dim, textDecoration: 'none' }}>See how it works ↓</a>
                 </div>
             </div>
@@ -230,7 +253,7 @@ export default function LandingPage() {
                             <div style={{ fontFamily: DISPLAY, fontSize: 40, fontWeight: 700, lineHeight: 1, letterSpacing: -1 }}>{s.v}</div>
                             <div style={{ fontFamily: BODY, fontSize: 12, color: C.faint, letterSpacing: 0.5, marginTop: 8 }}>{s.l}</div>
                         </div>
-                    ))}
+                    ))}ch
                 </div>
             </div>
 
@@ -267,11 +290,11 @@ export default function LandingPage() {
                 <div style={{ ...kicker, marginBottom: 18 }}>How it works</div>
 
                 <Step n="01" title="Pick a template" desc="Open the studio, hit Layouts and browse the Templates tab. Click one to preview it, then hit Use template. Each one comes with scenes: Starting soon, Just chatting, BRB and Ending. Or start from a blank layout.">
-                    <Shot src="/screens/templates.jpg" alt="Templates gallery: a grid of starter layouts with a large preview of the selected one and its scenes" w={1318} h={896} />
+                    <Shot src="/screens/templates.png" alt="Templates gallery: a grid of starter layouts with a large preview of the selected one and its scenes" w={1318} h={896} />
                 </Step>
 
                 <Step n="02" wide title="Edit the layout" desc={<>Click <b style={{ color: C.ink, fontWeight: 600 }}>Edit layout</b>. Pick anything from the toolbox on the left (text, lower thirds, clocks, countdowns, goals, socials, pets, a spin wheel, scoreboards, shapes), then click or drag on the canvas to place it. Drag and resize to arrange. Every layer in the scene is listed under the canvas, where you can hide, reorder or remove it.</>}>
-                    <Shot src="/screens/editor.jpg" alt="Studio in edit mode: the toolbox on the left, a gameplay scene on the canvas, and the scene's layers listed under it" w={1384} h={868} />
+                    <Shot src="/screens/editor.png" alt="Studio in edit mode: the toolbox on the left, a gameplay scene on the canvas, and the scene's layers listed under it" w={1384} h={868} />
                 </Step>
 
                 <Step n="03" title="Add it to OBS" desc={
@@ -322,6 +345,32 @@ export default function LandingPage() {
                 </p>
             </div>
 
+            {/* faq — quick answers before the final CTA */}
+            <div id="faq" style={{ ...wrap, paddingTop: 'clamp(48px, 8vw, 80px)', paddingBottom: 'clamp(56px, 9vw, 96px)' }}>
+                <div style={{ ...kicker, marginBottom: 18 }}>FAQ</div>
+                <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 'clamp(26px, 4.5vw, 40px)', letterSpacing: -1, lineHeight: 1.1, margin: 0, maxWidth: 560 }}>
+                    Questions, answered.
+                </h2>
+                <div style={{ marginTop: 26, maxWidth: 720 }}>
+                    {FAQS.map((f, i) => (
+                        <div key={f.q} style={{ borderTop: `1px solid ${C.line}` }}>
+                            <button
+                                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, width: '100%', padding: '18px 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                            >
+                                <span style={{ fontFamily: DISPLAY, fontSize: 17, fontWeight: 600, letterSpacing: -0.2, color: C.ink }}>{f.q}</span>
+                                <span style={{ color: C.accent, fontSize: 14, flexShrink: 0, transform: openFaq === i ? 'rotate(180deg)' : 'none', transition: 'transform 0.18s ease' }}>▾</span>
+                            </button>
+                            {openFaq === i && (
+                                <div style={{ padding: '0 0 20px', fontFamily: BODY, fontSize: 14, color: C.dim, lineHeight: 1.7, maxWidth: 620 }}>
+                                    {f.a}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             {/* close */}
             <div style={{ ...wrap, paddingTop: 'clamp(40px, 7vw, 72px)', paddingBottom: 'clamp(56px, 9vw, 96px)', borderTop: `1px solid ${C.line}` }}>
                 <h2 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 'clamp(26px, 4.5vw, 40px)', letterSpacing: -1, lineHeight: 1.1, margin: 0, maxWidth: 520 }}>
@@ -354,6 +403,19 @@ export default function LandingPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Template picker — the home-screen "select a template" modal */}
+            {showTemplates && (
+                <LayoutGallery
+                    starters={STARTER_LAYOUTS}
+                    layouts={[]}
+                    onUseStarter={(starter) => {
+                        setShowTemplates(false);
+                        window.location.href = `/?studio&kit=${encodeURIComponent(starter.id)}`;
+                    }}
+                    onClose={() => setShowTemplates(false)}
+                />
+            )}
         </div>
     );
 }

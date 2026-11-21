@@ -4,9 +4,10 @@
 
 import { useOBS } from '../context/OBSContext';
 import { CAMERA_FRAMES } from './CameraFrame';
+import { UI_BODY, UI_DISPLAY } from '../theme/uiFonts';
 
 const Label = ({ children }) => (
-    <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 4 }}>
+    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 4 }}>
         {children}
     </span>
 );
@@ -49,7 +50,7 @@ const CameraEditor = ({ slot, camStyle = {}, onChangeCamStyle }) => {
             <div>
                 <Label>Camera</Label>
                 <div style={{
-                    fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1,
+                    fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1,
                     color: '#a5b4fc', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)',
                     borderRadius: 5, padding: '3px 8px', display: 'inline-flex', alignItems: 'center', gap: 6,
                 }}>
@@ -62,7 +63,7 @@ const CameraEditor = ({ slot, camStyle = {}, onChangeCamStyle }) => {
                 into the frame; otherwise tell the user how to enable it. */}
             {isConnected ? (
                 <div style={{
-                    fontSize: 9, fontFamily: 'monospace', lineHeight: 1.5, color: 'rgba(134,239,172,0.8)',
+                    fontSize: 10, fontFamily: UI_BODY, lineHeight: 1.5, color: 'rgba(134,239,172,0.8)',
                     background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)',
                     borderRadius: 6, padding: '7px 9px',
                 }}>
@@ -75,7 +76,7 @@ const CameraEditor = ({ slot, camStyle = {}, onChangeCamStyle }) => {
                 </div>
             ) : (
                 <div style={{
-                    fontSize: 9, fontFamily: 'monospace', lineHeight: 1.5, color: 'rgba(253,224,71,0.75)',
+                    fontSize: 10, fontFamily: UI_BODY, lineHeight: 1.5, color: 'rgba(253,224,71,0.75)',
                     background: 'rgba(234,179,8,0.07)', border: '1px solid rgba(234,179,8,0.25)',
                     borderRadius: 6, padding: '7px 9px',
                 }}>
@@ -112,7 +113,7 @@ const CameraEditor = ({ slot, camStyle = {}, onChangeCamStyle }) => {
                                 <span style={{ height: 20, display: 'flex', alignItems: 'center' }}>
                                     <FramePreview id={f.id} accent={accent} />
                                 </span>
-                                <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 0.5, color: selected ? '#c7d2fe' : 'rgba(255,255,255,0.4)' }}>
+                                <span style={{ fontSize: 9.5, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 0.5, color: selected ? '#c7d2fe' : 'rgba(255,255,255,0.4)' }}>
                                     {f.label}
                                 </span>
                             </button>
@@ -157,7 +158,7 @@ const CameraEditor = ({ slot, camStyle = {}, onChangeCamStyle }) => {
                 </div>
             )}
 
-            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', fontFamily: 'monospace', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', fontFamily: UI_BODY, lineHeight: 1.5 }}>
                 Position, resize, and z-order this cam from the canvas or the Layers list.
             </div>
         </div>

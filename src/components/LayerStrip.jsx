@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronUp, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { BUILTIN_LAYERS, ELEMENT_TYPE_MAP } from './elementCatalog';
+import { UI_DISPLAY } from '../theme/uiFonts';
 
 // Every layer in the current scene, as a grid of cards under the editor canvas
 // (where the 16:9 canvas leaves free space). Front-most first, like the canvas
@@ -95,8 +96,8 @@ const LayerStrip = ({
         <div style={{ marginTop: narrow ? 10 : 16, fontFamily: 'inter, system-ui, sans-serif' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, marginBottom: 8, padding: '0 2px' }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                    <span style={{ fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 2.5, color: 'rgba(255,255,255,0.5)' }}>Layers in this scene</span>
-                    <span style={{ fontSize: 10, fontFamily: 'monospace', color: 'rgba(255,255,255,0.28)' }}>{visible}/{total} visible</span>
+                    <span style={{ fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 2.5, color: 'rgba(255,255,255,0.5)' }}>Layers in this scene</span>
+                    <span style={{ fontSize: 10, fontFamily: UI_DISPLAY, color: 'rgba(255,255,255,0.28)' }}>{visible}/{total} visible</span>
                 </div>
                 {total > 1 && <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)' }}>Front → back</span>}
             </div>

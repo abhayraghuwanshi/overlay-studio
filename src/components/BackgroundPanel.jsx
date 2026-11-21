@@ -1,5 +1,6 @@
 import { RefreshCw, Upload, X } from 'lucide-react';
 import { useRef } from 'react';
+import { UI_BODY, UI_DISPLAY, UI_MONO } from '../theme/uiFonts';
 
 // Load an image file, downscale it so its longest side is <= maxDim, and return
 // a compressed JPEG data URL. Keeps the synced layout small enough to persist
@@ -182,7 +183,7 @@ const BackgroundPanel = ({ bg, onChange, onClose }) => {
                 padding: '10px 14px 8px',
                 borderBottom: '1px solid rgba(255,255,255,0.06)',
             }}>
-                <span style={{ fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 2, color: 'rgba(255,255,255,0.5)' }}>
+                <span style={{ fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 2, color: 'rgba(255,255,255,0.5)' }}>
                     Background
                 </span>
                 <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', padding: 0, display: 'flex' }}><X size={14} /></button>
@@ -192,7 +193,7 @@ const BackgroundPanel = ({ bg, onChange, onClose }) => {
 
                 {/* ── Preset tiles ── */}
                 <div>
-                    <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Presets</div>
+                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Presets</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                         {PRESETS.map((p, i) => (
                             <PresetTile
@@ -245,7 +246,7 @@ const BackgroundPanel = ({ bg, onChange, onClose }) => {
                                 <input type="color" value={current.color ?? '#000000'} onChange={e => set({ color: e.target.value })}
                                     style={{ opacity: 0, width: '100%', height: '100%', cursor: 'pointer', border: 'none', padding: 0 }} />
                             </div>
-                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace' }}>{current.color?.toUpperCase()}</span>
+                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: UI_MONO }}>{current.color?.toUpperCase()}</span>
                         </label>
                     </div>
                 )}
@@ -260,7 +261,7 @@ const BackgroundPanel = ({ bg, onChange, onClose }) => {
                                     <input type="color" value={current.from ?? '#000000'} onChange={e => set({ from: e.target.value })}
                                         style={{ opacity: 0, width: '100%', height: '100%', cursor: 'pointer', border: 'none', padding: 0 }} />
                                 </div>
-                                <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' }}>FROM</span>
+                                <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.3)', fontFamily: UI_DISPLAY }}>FROM</span>
                             </label>
 
                             {/* Live gradient preview */}
@@ -275,13 +276,13 @@ const BackgroundPanel = ({ bg, onChange, onClose }) => {
                                     <input type="color" value={current.to ?? '#1a0830'} onChange={e => set({ to: e.target.value })}
                                         style={{ opacity: 0, width: '100%', height: '100%', cursor: 'pointer', border: 'none', padding: 0 }} />
                                 </div>
-                                <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' }}>TO</span>
+                                <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.3)', fontFamily: UI_DISPLAY }}>TO</span>
                             </label>
                         </div>
 
                         {/* Direction */}
                         <div>
-                            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Direction</div>
+                            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Direction</div>
                             <div style={{ display: 'flex', gap: 5 }}>
                                 {DIRS.map(d => (
                                     <button
@@ -339,7 +340,7 @@ const BackgroundPanel = ({ bg, onChange, onClose }) => {
 
                         {/* Size */}
                         <div>
-                            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Fit</div>
+                            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Fit</div>
                             <div style={{ display: 'flex', gap: 5 }}>
                                 {['cover', 'contain', 'repeat'].map(s => (
                                     <button key={s} onClick={() => set({ size: s })} style={{
@@ -357,7 +358,7 @@ const BackgroundPanel = ({ bg, onChange, onClose }) => {
                         {/* Dark overlay */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1 }}>Dark overlay</span>
+                                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1 }}>Dark overlay</span>
                                 <button
                                     onClick={() => set({ overlay: !current.overlay })}
                                     style={{
@@ -380,7 +381,7 @@ const BackgroundPanel = ({ bg, onChange, onClose }) => {
                                         onChange={e => set({ overlayOpacity: Number(e.target.value) })}
                                         style={{ flex: 1, accentColor: '#6366f1' }}
                                     />
-                                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace', minWidth: 30 }}>
+                                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: UI_DISPLAY, minWidth: 30 }}>
                                         {Math.round((current.overlayOpacity ?? 0.3) * 100)}%
                                     </span>
                                 </div>
@@ -391,7 +392,7 @@ const BackgroundPanel = ({ bg, onChange, onClose }) => {
 
                 {/* Transparent hint */}
                 {current.type === 'transparent' && (
-                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', fontFamily: 'monospace', lineHeight: 1.5 }}>
+                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', fontFamily: UI_BODY, lineHeight: 1.5 }}>
                         OBS will see through to whatever is behind the browser source. Use chroma key or scene layers as needed.
                     </div>
                 )}

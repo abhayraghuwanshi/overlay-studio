@@ -238,7 +238,7 @@ export const defaultElement = (type, theme = DEFAULT_THEME) => {
 };
 
 // ── Clock sub-component (self-updating) ────────────────────────────────────
-const ClockElement = ({ element }) => {
+const ClockElement = ({ element, T }) => {
     const [now, setNow] = useState(new Date());
     useEffect(() => {
         const t = setInterval(() => setNow(new Date()), 1000);
@@ -281,7 +281,7 @@ const ClockElement = ({ element }) => {
                 fontSize: element.fontSize,
                 color: element.fontColor,
                 fontWeight: element.bold ? 'bold' : 'normal',
-                fontFamily: 'monospace',
+                fontFamily: T.fontFamily,
                 textShadow: '0 2px 8px rgba(0,0,0,0.6)',
                 letterSpacing: 2,
                 whiteSpace: 'nowrap',
@@ -307,7 +307,7 @@ const fmtCountdown = (s) => {
     return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
 };
 
-const CountdownElement = ({ element }) => {
+const CountdownElement = ({ element, T }) => {
     const total = element.durationSec ?? 300;
     const [remaining, setRemaining] = useState(total);
 
@@ -322,7 +322,7 @@ const CountdownElement = ({ element }) => {
             fontSize: element.fontSize,
             color: element.fontColor,
             fontWeight: element.bold ? 'bold' : 'normal',
-            fontFamily: element.fontFamily || 'monospace',
+            fontFamily: element.fontFamily || T.fontFamily,
             fontVariantNumeric: 'tabular-nums',
             textShadow: element.glow ? `0 0 18px ${element.fontColor}, 0 2px 8px rgba(0,0,0,0.6)` : '0 2px 8px rgba(0,0,0,0.6)',
             letterSpacing: 2,
@@ -335,7 +335,7 @@ const CountdownElement = ({ element }) => {
 // ── Pomodoro sub-component (self-cycling) ──────────────────────────────────
 // Runs work → break → work… from mount, counting completed focus sessions.
 // On an OBS browser source it begins when the scene/page loads.
-const PomodoroElement = ({ element }) => {
+const PomodoroElement = ({ element, T }) => {
     const work = Math.max(1, element.workMin ?? 25) * 60;
     const brk  = Math.max(1, element.breakMin ?? 5) * 60;
     const [phase, setPhase] = useState('work');
@@ -369,7 +369,7 @@ const PomodoroElement = ({ element }) => {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <span style={{
                 fontSize: Math.max(9, (element.fontSize ?? 40) * 0.28),
-                fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 2, fontWeight: 'bold',
+                fontFamily: T.fontFamily, textTransform: 'uppercase', letterSpacing: 2, fontWeight: 'bold',
                 color: isWork ? '#f87171' : '#34d399',
             }}>
                 {isWork ? '● Focus' : '○ Break'}
@@ -378,7 +378,7 @@ const PomodoroElement = ({ element }) => {
                 fontSize: element.fontSize,
                 color: element.fontColor,
                 fontWeight: element.bold ? 'bold' : 'normal',
-                fontFamily: 'monospace', letterSpacing: 2,
+                fontFamily: element.fontFamily || T.fontFamily, letterSpacing: 2,
                 textShadow: '0 2px 8px rgba(0,0,0,0.6)', lineHeight: 1,
             }}>
                 {`${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`}
@@ -747,13 +747,13 @@ const MatchElement = ({ element, T }) => {
                 {team(teamA, flagA, true, element.scorersHome)}
                 {/* Score + status */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, minWidth: fontSize * 2.4 }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: fontSize * 0.18, fontFamily: 'monospace', fontVariantNumeric: 'tabular-nums' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: fontSize * 0.18, fontFamily: T.fontFamily, fontVariantNumeric: 'tabular-nums' }}>
                         <span style={{ fontSize, fontWeight: 900, color: score, lineHeight: 1, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>{scoreA}</span>
                         <span style={{ fontSize: fontSize * 0.6, color: names, opacity: 0.5 }}>–</span>
                         <span style={{ fontSize, fontWeight: 900, color: score, lineHeight: 1, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>{scoreB}</span>
                     </div>
                     <span style={{
-                        fontSize: Math.max(8, fontSize * 0.26), fontFamily: 'monospace', letterSpacing: 1, marginTop: 2,
+                        fontSize: Math.max(8, fontSize * 0.26), fontFamily: T.fontFamily, letterSpacing: 1, marginTop: 2,
                         color: isLive ? '#ff5a5a' : 'rgba(255,255,255,0.55)', fontWeight: isLive ? 700 : 400,
                         display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap',
                     }}>
@@ -958,7 +958,7 @@ const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, pre
                 >
                     {editMode && <>
                         <span style={{ fontSize: 20, opacity: 0.3 }}>⌼</span>
-                        <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontFamily: T.fontFamily, textTransform: 'uppercase', letterSpacing: 1 }}>
                             Click to upload
                         </span>
                     </>}
@@ -980,7 +980,7 @@ const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, pre
     if (type === 'clock') {
         return (
             <div style={{ ...outerStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ClockElement element={resolved} />
+                <ClockElement element={resolved} T={T} />
             </div>
         );
     }
@@ -989,7 +989,7 @@ const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, pre
     if (type === 'countdown') {
         return (
             <div style={{ ...outerStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <CountdownElement element={resolved} />
+                <CountdownElement element={resolved} T={T} />
             </div>
         );
     }
@@ -1138,7 +1138,7 @@ const ElementRenderer = ({ element, onUploadLogo, onElementUpdate, editMode, pre
     if (type === 'pomodoro') {
         return (
             <div style={{ ...outerStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <PomodoroElement element={resolved} />
+                <PomodoroElement element={resolved} T={T} />
             </div>
         );
     }

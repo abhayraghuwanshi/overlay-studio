@@ -6,6 +6,7 @@ import { PETS, DEFAULT_PET, PetMascot } from './pets';
 import { BACKDROPS, FRAME_STYLES, LOWER_THIRDS, TEXT_FX, isGraphicFrame } from './graphics';
 import { normalizeChannel } from '../live/twitchChat';
 import { ADD_SECTIONS, ELEMENT_TYPE_MAP } from './elementCatalog';
+import { UI_BODY, UI_DISPLAY, UI_MONO } from '../theme/uiFonts';
 
 // "Theme" entries store the token, so the element follows theme switches.
 const withThemeOption = (list, token) => [{ value: token, label: 'Theme default' }, ...list.map(o => ({ value: o.id, label: o.label }))];
@@ -103,7 +104,7 @@ const ColorInput = ({ value, onChange, label }) => {
                     style={{ position: 'absolute', inset: 0, opacity: 0, width: '100%', height: '100%', cursor: 'pointer', padding: 0, border: 'none' }}
                 />
             </label>
-            <span style={{ fontSize: 11, color: token ? C.accent : C.dim, fontFamily: token ? 'inter, system-ui' : 'ui-monospace, monospace' }}>
+            <span style={{ fontSize: 11, color: token ? C.accent : C.dim, fontFamily: token ? 'inter, system-ui' : UI_MONO }}>
                 {token ? 'Theme colour' : (value?.toUpperCase() || '#FFFFFF')}
             </span>
         </span>
@@ -128,37 +129,35 @@ const Slider = ({ value, onChange, min = 0, max = 1, step = 0.01, label, display
     return label ? <Group label={label}>{control}</Group> : control;
 };
 
-const ToggleBtn = ({ active, onClick, children, title }) => (
-    <button
-        onClick={onClick}
-        title={title}
-        style={{
-            height: 26, padding: '0 10px', borderRadius: 7, cursor: 'pointer', lineHeight: 1,
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-            fontSize: 11.5, fontWeight: 600, fontFamily: 'inter, system-ui',
-            background: active ? C.accentBg : C.field,
-            border: `1px solid ${active ? 'rgba(129,140,248,0.65)' : C.line}`,
-            color: active ? '#c7d2fe' : C.dim,
-            transition: 'background 0.12s, border-color 0.12s, color 0.12s',
-        }}
-    >
-        {children}
-    </button>
-);
+// Pill chip for toggles / one-of-n choices. Visuals live in index.css
+// (.ed-chip) so hover and focus states work. `active` = undefined renders a
+// plain action chip (no pressed state).
+const ToggleBtn = ({ active, onClick, children, title, disabled }) => {
+    const iconOnly = typeof children === 'string' ? children.length <= 1 : !Array.isArray(children);
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            title={title}
+            disabled={disabled}
+            aria-pressed={active === undefined ? undefined : !!active}
+            className={`ed-chip${iconOnly ? ' is-icon' : ''}`}
+        >
+            {children}
+        </button>
+    );
+};
 
-const CHEVRON = `url("data:image/svg+xml,${encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>")}")`;
+const CHEVRON = `url("data:image/svg+xml,${encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>")}")`;
 const SelectInput = ({ value, onChange, options }) => (
     <select
         value={value}
         onChange={e => onChange(e.target.value)}
-        style={{
-            ...FIELD, width: '100%', padding: '0 26px 0 9px', cursor: 'pointer',
-            appearance: 'none', WebkitAppearance: 'none',
-            backgroundImage: CHEVRON, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 9px center',
-        }}
+        className="ed-select"
+        style={{ backgroundImage: CHEVRON }}
     >
         {options.map(o => (
-            <option key={o.value} value={o.value} style={{ background: '#0d0d1a' }}>{o.label}</option>
+            <option key={o.value} value={o.value}>{o.label}</option>
         ))}
     </select>
 );
@@ -190,7 +189,7 @@ const Section = ({ title, children }) => {
             <button onClick={toggle} style={{
                 width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '11px 14px', background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: 10.5, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color: C.dim, fontFamily: 'inter, system-ui',
+                fontSize: 10.5, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color: C.dim, fontFamily: UI_DISPLAY,
             }}>
                 {title}
                 <ChevronDown size={14} style={{ transform: open ? 'none' : 'rotate(-90deg)', transition: 'transform 0.15s', color: C.faint }} />
@@ -331,7 +330,7 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
     };
 
     return (
-        <div style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(7,7,16,0.94)', display: 'flex', flexDirection: 'column', overflowX: 'hidden', fontFamily: 'inter, system-ui' }}>
+        <div style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(7,7,16,0.94)', display: 'flex', flexDirection: 'column', overflowX: 'hidden', fontFamily: UI_BODY }}>
             {/* ── Header: what is selected + quick actions ── */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 12px' }}>
                 <span style={{
@@ -394,7 +393,7 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                     <>
                         <Group label="Day">
                             <NumberInput value={element.day ?? 1} onChange={v => set('day', Math.max(0, v))} min={0} max={99999} style={{ width: 64 }} />
-                            <ToggleBtn active={false} onClick={() => set('day', Math.max(0, (element.day ?? 1) + 1))} title="Bump to the next day">+1 day</ToggleBtn>
+                            <ToggleBtn onClick={() => set('day', Math.max(0, (element.day ?? 1) + 1))} title="Bump to the next day">+1 day</ToggleBtn>
                         </Group>
                         <Group label="Label">
                             <TextInput value={element.prefix ?? 'DAY'} onChange={v => set('prefix', v)} placeholder="DAY" style={{ width: 80 }} />
@@ -507,7 +506,7 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                                             <div style={{ width: 34, height: 34, pointerEvents: 'none' }}>
                                                 <PetMascot species={p.id} mood={DEFAULT_MOOD} animate={false} />
                                             </div>
-                                            <span style={{ fontSize: 8, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 0.5, color: active ? '#a5b4fc' : 'rgba(255,255,255,0.45)' }}>
+                                            <span style={{ fontSize: 9.5, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 0.5, color: active ? '#a5b4fc' : 'rgba(255,255,255,0.45)' }}>
                                                 {p.label}
                                             </span>
                                         </button>
@@ -566,23 +565,24 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                                             placeholder={`Option ${i + 1}`}
                                             style={{ width: 130 }}
                                         />
-                                        <button
+                                        <ToggleBtn
                                             onClick={() => set('options', (element.options ?? []).filter((_, j) => j !== i))}
                                             disabled={(element.options ?? []).length <= 2}
                                             title="Remove"
-                                            style={{ background: 'none', border: '1px solid rgba(255,100,100,0.3)', borderRadius: 5, color: 'rgba(255,100,100,0.7)', fontSize: 11, padding: '3px 6px', display: 'flex', alignItems: 'center', cursor: (element.options ?? []).length <= 2 ? 'not-allowed' : 'pointer', opacity: (element.options ?? []).length <= 2 ? 0.4 : 1 }}
                                         >
                                             <X size={12} />
-                                        </button>
+                                        </ToggleBtn>
                                     </div>
                                 ))}
-                                <button
-                                    onClick={() => set('options', [...(element.options ?? []), `Option ${(element.options ?? []).length + 1}`])}
-                                    disabled={(element.options ?? []).length >= 8}
-                                    style={{ alignSelf: 'flex-start', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 5, color: '#a5b4fc', fontSize: 11, padding: '4px 10px', fontFamily: 'inter, system-ui', cursor: (element.options ?? []).length >= 8 ? 'not-allowed' : 'pointer', opacity: (element.options ?? []).length >= 8 ? 0.4 : 1 }}
-                                >
-                                    + Add option
-                                </button>
+                                <div>
+                                    <ToggleBtn
+                                        onClick={() => set('options', [...(element.options ?? []), `Option ${(element.options ?? []).length + 1}`])}
+                                        disabled={(element.options ?? []).length >= 8}
+                                        title="Add an option"
+                                    >
+                                        + Add option
+                                    </ToggleBtn>
+                                </div>
                             </div>
                         </Group>
                         <Group label="Spin time">
@@ -682,7 +682,7 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                         </Group>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%', maxHeight: 156, overflowY: 'auto' }}>
                             {!matchFeed && (
-                                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace', padding: '2px 0' }}>Loading matches…</div>
+                                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: UI_BODY, padding: '2px 0' }}>Loading matches…</div>
                             )}
                             {matchFeed && (matchFeed.matches || [])
                                 .slice()
@@ -709,26 +709,26 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                                             border: `1px solid ${sel ? 'rgba(34,197,94,0.6)' : 'rgba(255,255,255,0.1)'}`,
                                             background: sel ? 'rgba(34,197,94,0.14)' : 'rgba(255,255,255,0.04)',
                                         }}>
-                                            <span style={{ flex: 1, fontSize: 11, color: '#fff', fontWeight: 600, fontFamily: 'monospace', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            <span style={{ flex: 1, fontSize: 11, color: '#fff', fontWeight: 600, fontFamily: UI_DISPLAY, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {m.home.name} {m.score.home}–{m.score.away} {m.away.name}
                                             </span>
                                             <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, lineHeight: 1.25 }}>
-                                                <span style={{ fontSize: 9, fontFamily: 'monospace', color: 'rgba(255,255,255,0.5)' }}>{fmtDay(m.utcDate)}</span>
-                                                <span style={{ fontSize: 9, fontFamily: 'monospace', color: live ? '#ff7a7a' : 'rgba(255,255,255,0.45)' }}>{right}</span>
+                                                <span style={{ fontSize: 10, fontFamily: UI_DISPLAY, color: 'rgba(255,255,255,0.5)' }}>{fmtDay(m.utcDate)}</span>
+                                                <span style={{ fontSize: 10, fontFamily: UI_DISPLAY, color: live ? '#ff7a7a' : 'rgba(255,255,255,0.45)' }}>{right}</span>
                                             </span>
                                         </button>
                                     );
                                 })}
                             {matchFeed && (matchFeed.matches || []).length === 0 && (
-                                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace', padding: '2px 0' }}>
+                                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: UI_BODY, padding: '2px 0' }}>
                                     {matchFeed.error ? `Feed error: ${matchFeed.error}` : 'No matches available.'}
                                 </div>
                             )}
                         </div>
                         {element.matchId && (
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <span style={{ fontSize: 9, color: '#4ade80', fontFamily: 'monospace' }}>● Live-linked · auto-updates</span>
-                                <ToggleBtn active={false} onClick={() => onChange({ matchId: null })} title="Unlink and edit by hand">Detach</ToggleBtn>
+                                <span style={{ fontSize: 10, color: '#4ade80', fontFamily: UI_DISPLAY }}>● Live-linked · auto-updates</span>
+                                <ToggleBtn onClick={() => onChange({ matchId: null })} title="Unlink and edit by hand">Detach</ToggleBtn>
                             </div>
                         )}
                         {/* Match + team info for the linked match (free feed fields) */}
@@ -748,13 +748,13 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                                         <span style={{ color: 'rgba(255,255,255,0.35)' }}>vs</span>
                                         <span>{sel.away.full || sel.away.name}</span><Flag f={sel.away.flag} />
                                     </div>
-                                    {meta && <div style={{ fontSize: 9, fontFamily: 'monospace', color: 'rgba(255,255,255,0.45)', letterSpacing: 0.5 }}>{meta}</div>}
-                                    {sel.referee && <div style={{ fontSize: 9, fontFamily: 'monospace', color: 'rgba(255,255,255,0.45)' }}>Referee: {sel.referee.name}{sel.referee.nationality ? ` · ${sel.referee.nationality}` : ''}</div>}
+                                    {meta && <div style={{ fontSize: 10, fontFamily: UI_DISPLAY, color: 'rgba(255,255,255,0.45)', letterSpacing: 0.5 }}>{meta}</div>}
+                                    {sel.referee && <div style={{ fontSize: 10, fontFamily: UI_DISPLAY, color: 'rgba(255,255,255,0.45)' }}>Referee: {sel.referee.name}{sel.referee.nationality ? ` · ${sel.referee.nationality}` : ''}</div>}
                                 </div>
                             );
                         })()}
                         {matchFeed && matchFeed.configured === false && (
-                            <div style={{ fontSize: 9, color: 'rgba(250,204,21,0.85)', fontFamily: 'monospace', lineHeight: 1.4 }}>
+                            <div style={{ fontSize: 10, color: 'rgba(250,204,21,0.85)', fontFamily: UI_BODY, lineHeight: 1.4 }}>
                                 Sample data. Set FOOTBALL_DATA_TOKEN for live World Cup matches.
                             </div>
                         )}
@@ -775,9 +775,9 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                         </Group>
                         <Group label="Score">
                             <NumberInput value={element.scoreA ?? 0} onChange={v => set('scoreA', Math.max(0, v))} min={0} max={99} style={{ width: 46 }} />
-                            <ToggleBtn active={false} onClick={() => set('scoreA', Math.max(0, (element.scoreA ?? 0) + 1))} title="Home +1">+</ToggleBtn>
+                            <ToggleBtn onClick={() => set('scoreA', Math.max(0, (element.scoreA ?? 0) + 1))} title="Home +1">+</ToggleBtn>
                             <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>–</span>
-                            <ToggleBtn active={false} onClick={() => set('scoreB', Math.max(0, (element.scoreB ?? 0) + 1))} title="Away +1">+</ToggleBtn>
+                            <ToggleBtn onClick={() => set('scoreB', Math.max(0, (element.scoreB ?? 0) + 1))} title="Away +1">+</ToggleBtn>
                             <NumberInput value={element.scoreB ?? 0} onChange={v => set('scoreB', Math.max(0, v))} min={0} max={99} style={{ width: 46 }} />
                         </Group>
                         <Group label="Status">
@@ -814,7 +814,7 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                             if (gh !== sh) miss.push(`${element.teamA || 'Home'} ${gh}/${sh}`);
                             if (ga !== sa) miss.push(`${element.teamB || 'Away'} ${ga}/${sa}`);
                             return miss.length ? (
-                                <div style={{ fontSize: 9.5, color: '#fbbf24', fontFamily: 'monospace', lineHeight: 1.4, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 5, padding: '5px 8px' }}>
+                                <div style={{ fontSize: 9.5, color: '#fbbf24', fontFamily: UI_BODY, lineHeight: 1.4, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 5, padding: '5px 8px' }}>
                                     ⚠ Scorers don't match the score — {miss.join(', ')} goals listed. Add the rest, or they came from the live feed.
                                 </div>
                             ) : null;
@@ -848,27 +848,15 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                 {type === 'logo' && (
                     <>
                         <Group label="Image">
-                            <button
-                                onClick={() => fileRef.current?.click()}
-                                style={{
-                                    background: 'rgba(99,102,241,0.15)',
-                                    border: '1px solid rgba(99,102,241,0.3)',
-                                    borderRadius: 5, color: '#a5b4fc',
-                                    fontSize: 11, padding: '4px 10px',
-                                    cursor: 'pointer',
-                                    fontFamily: 'inter, system-ui',
-                                }}
-                            >
-                                {element.src ? <><RefreshCw size={11} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />Replace</> : <><Upload size={11} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />Upload</>}
-                            </button>
+                            <ToggleBtn onClick={() => fileRef.current?.click()} title={element.src ? 'Replace image' : 'Upload image'}>
+                                {element.src ? <RefreshCw size={12} /> : <Upload size={12} />}
+                                <span>{element.src ? 'Replace' : 'Upload'}</span>
+                            </ToggleBtn>
                             <input ref={fileRef} type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} />
                             {element.src && (
-                                <button
-                                    onClick={() => onChange({ src: null })}
-                                    style={{ background: 'none', border: '1px solid rgba(255,100,100,0.3)', borderRadius: 5, color: 'rgba(255,100,100,0.7)', fontSize: 11, padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                                >
+                                <ToggleBtn onClick={() => onChange({ src: null })} title="Remove image">
                                     <X size={12} />
-                                </button>
+                                </ToggleBtn>
                             )}
                         </Group>
 
@@ -937,12 +925,12 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                             <NumberInput value={element.fadeSec} onChange={v => set('fadeSec', v)} min={0} max={600} style={{ width: 52 }} />
                         </Group>
                         <Group label="Filter">
-                            <ToggleBtn active={element.hideCommands !== false} onClick={() => set('hideCommands', element.hideCommands === false)} title="Hide !commands">!cmds</ToggleBtn>
-                            <ToggleBtn active={element.hideBots !== false} onClick={() => set('hideBots', element.hideBots === false)} title="Hide Nightbot, StreamElements and other bots">bots</ToggleBtn>
+                            <ToggleBtn active={element.hideCommands !== false} onClick={() => set('hideCommands', element.hideCommands === false)} title="Hide !commands">Commands</ToggleBtn>
+                            <ToggleBtn active={element.hideBots !== false} onClick={() => set('hideBots', element.hideBots === false)} title="Hide Nightbot, StreamElements and other bots">Bots</ToggleBtn>
                         </Group>
                         <Group label="Show">
-                            <ToggleBtn active={element.showBadges !== false} onClick={() => set('showBadges', element.showBadges === false)} title="Mod / VIP / sub badges">badges</ToggleBtn>
-                            <ToggleBtn active={element.showEvents !== false} onClick={() => set('showEvents', element.showEvents === false)} title="Subs, gift subs and raids">subs & raids</ToggleBtn>
+                            <ToggleBtn active={element.showBadges !== false} onClick={() => set('showBadges', element.showBadges === false)} title="Mod / VIP / sub badges">Badges</ToggleBtn>
+                            <ToggleBtn active={element.showEvents !== false} onClick={() => set('showEvents', element.showEvents === false)} title="Subs, gift subs and raids">Subs & raids</ToggleBtn>
                         </Group>
                         <Hint>
                             Read-only, no login needed. The channel applies to every chat box in this layout. Fade 0 = keep messages.
@@ -971,8 +959,8 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                                     <NumberInput value={element.durationSec} onChange={v => set('durationSec', v)} min={2} max={30} style={{ width: 52 }} />
                                 </Group>
                                 <Group label="Sound">
-                                    <ToggleBtn active={element.sound !== false} onClick={() => set('sound', element.sound === false)} title="Play a chime in OBS">chime</ToggleBtn>
-                                    <ToggleBtn active={element.showMessage !== false} onClick={() => set('showMessage', element.showMessage === false)} title="Show the viewer's message">message</ToggleBtn>
+                                    <ToggleBtn active={element.sound !== false} onClick={() => set('sound', element.sound === false)} title="Play a chime in OBS">Chime</ToggleBtn>
+                                    <ToggleBtn active={element.showMessage !== false} onClick={() => set('showMessage', element.showMessage === false)} title="Show the viewer's message">Message</ToggleBtn>
                                 </Group>
                             </>
                         )}
@@ -987,8 +975,8 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                             </>
                         )}
                         <Group label="Events">
-                            {[['showSubs', 'subs'], ['showGifts', 'gifts'], ['showRaids', 'raids'], ['showCheers', 'cheers']].map(([k, label]) => (
-                                <ToggleBtn key={k} active={element[k] !== false} onClick={() => set(k, element[k] === false)} title={`Show ${label}`}>{label}</ToggleBtn>
+                            {[['showSubs', 'Subs'], ['showGifts', 'Gifts'], ['showRaids', 'Raids'], ['showCheers', 'Cheers']].map(([k, label]) => (
+                                <ToggleBtn key={k} active={element[k] !== false} onClick={() => set(k, element[k] === false)} title={`Show ${label.toLowerCase()}`}>{label}</ToggleBtn>
                             ))}
                         </Group>
                         <Group label="Min bits">
@@ -997,7 +985,7 @@ const ElementEditor = ({ element, onChange, onDelete, onDuplicate, twitchChannel
                         {type === 'alerts' && (
                             <Group label="Test">
                                 {[['sub', 'Sub'], ['resub', 'Resub'], ['giftbomb', 'Gifts'], ['raid', 'Raid'], ['cheer', 'Cheer']].map(([t, label]) => (
-                                    <ToggleBtn key={t} active={false} onClick={() => onChange({ test: { type: t, at: Date.now() } })} title={`Play a test ${label.toLowerCase()} alert (also shows in OBS)`}>{label}</ToggleBtn>
+                                    <ToggleBtn key={t} onClick={() => onChange({ test: { type: t, at: Date.now() } })} title={`Play a test ${label.toLowerCase()} alert (also shows in OBS)`}>{label}</ToggleBtn>
                                 ))}
                             </Group>
                         )}

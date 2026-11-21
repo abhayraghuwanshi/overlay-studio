@@ -8,6 +8,7 @@ import { sceneHoles } from './graphics';
 import { bgToStyle } from './BackgroundPanel';
 import CameraFrame, { DEFAULT_CAM_STYLE } from './CameraFrame';
 import ElementRenderer from './ElementRenderer';
+import { UI_BODY, UI_DISPLAY } from '../theme/uiFonts';
 
 // Layouts gallery — each card is a LAYOUT (a "show": a named container of
 // scenes). Switching a layout makes it active and loads its active scene.
@@ -66,7 +67,7 @@ const Thumb = ({ snapshot = {}, fallbackTheme }) => {
                                 <CameraFrame frame={cs.frame} radius={cs.radius} accent={cs.accent ?? theme.accent} accent2={cs.accent2 ?? theme.accent2}>
                                     {/* stand-in for the webcam OBS shows through the frame */}
                                     <div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <span style={{ fontFamily: 'monospace', fontSize: 40, letterSpacing: 6, color: 'rgba(255,255,255,0.28)' }}>{CAM_LABELS[id]}</span>
+                                        <span style={{ fontFamily: UI_DISPLAY, fontSize: 40, letterSpacing: 6, color: 'rgba(255,255,255,0.28)' }}>{CAM_LABELS[id]}</span>
                                     </div>
                                 </CameraFrame>
                             </div>
@@ -83,7 +84,7 @@ const Thumb = ({ snapshot = {}, fallbackTheme }) => {
                 </div>
             )}
             {cams.length === 0 && shown.length === 0 && (
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)', fontSize: 9, fontFamily: 'monospace' }}>empty</div>
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)', fontSize: 10, fontFamily: UI_DISPLAY }}>empty</div>
             )}
         </div>
     );
@@ -127,13 +128,13 @@ const ScenePreview = ({ scenes = [], startIndex = 0, theme, onOpen, openTitle, c
                 background: 'linear-gradient(transparent, rgba(0,0,0,0.78))',
                 borderRadius: '0 0 8px 8px',
             }}>
-                <span style={{ fontSize: 8, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 0.5, color: 'rgba(255,255,255,0.8)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 9.5, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 0.5, color: 'rgba(255,255,255,0.8)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {scene?.name ?? '—'}
                 </span>
                 {n > 1 && (
                     <span style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
                         <PagerBtn onClick={() => step(-1)} title="Previous scene"><ChevronLeft size={11} /></PagerBtn>
-                        <span style={{ fontSize: 8, fontFamily: 'monospace', color: 'rgba(255,255,255,0.55)', minWidth: 20, textAlign: 'center' }}>{i + 1}/{n}</span>
+                        <span style={{ fontSize: 9.5, fontFamily: UI_DISPLAY, color: 'rgba(255,255,255,0.55)', minWidth: 20, textAlign: 'center' }}>{i + 1}/{n}</span>
                         <PagerBtn onClick={() => step(1)} title="Next scene"><ChevronRight size={11} /></PagerBtn>
                     </span>
                 )}
@@ -166,7 +167,7 @@ const Card = ({ active, selected, onSelect, children }) => {
 };
 
 const ActiveBadge = () => (
-    <span style={{ position: 'absolute', top: 5, right: 5, display: 'flex', alignItems: 'center', gap: 3, background: 'rgba(79,70,229,0.85)', borderRadius: 5, padding: '2px 6px', fontSize: 8, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 0.5, color: '#fff' }}>
+    <span style={{ position: 'absolute', top: 5, right: 5, display: 'flex', alignItems: 'center', gap: 3, background: 'rgba(79,70,229,0.85)', borderRadius: 5, padding: '2px 6px', fontSize: 9.5, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 0.5, color: '#fff' }}>
         <Check size={9} /> Active
     </span>
 );
@@ -226,7 +227,7 @@ const LayoutCard = ({ layout, active, selected, onSelect, onRename, onDelete }) 
                 )}
                 {confirmDel ? (
                     <button onClick={() => onDelete(layout.id)} onMouseLeave={() => setConfirmDel(false)} title="Click to confirm delete"
-                        style={{ flexShrink: 0, padding: '2px 7px', borderRadius: 5, background: 'rgba(239,68,68,0.2)', border: '1px solid rgba(239,68,68,0.5)', color: '#fca5a5', fontSize: 9, fontFamily: 'monospace', textTransform: 'uppercase', cursor: 'pointer' }}>
+                        style={{ flexShrink: 0, padding: '2px 7px', borderRadius: 5, background: 'rgba(239,68,68,0.2)', border: '1px solid rgba(239,68,68,0.5)', color: '#fca5a5', fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', cursor: 'pointer' }}>
                         Delete?
                     </button>
                 ) : (
@@ -246,14 +247,14 @@ const StarterCard = ({ starter, selected, onSelect }) => (
     <Card selected={selected} onSelect={onSelect}>{() => (<>
         <ScenePreview scenes={starter.scenes} startIndex={startSceneOf('templates', starter)} theme={starter.themeId}>
             {starter.isNew && (
-                <span style={{ position: 'absolute', top: 5, left: 5, background: 'rgba(250,204,21,0.92)', color: '#1a1405', borderRadius: 5, padding: '2px 6px', fontSize: 8, fontFamily: 'monospace', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>New</span>
+                <span style={{ position: 'absolute', top: 5, left: 5, background: 'rgba(250,204,21,0.92)', color: '#1a1405', borderRadius: 5, padding: '2px 6px', fontSize: 9.5, fontFamily: UI_DISPLAY, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>New</span>
             )}
         </ScenePreview>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 2px 2px' }}>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.88)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {starter.name}
             </span>
-            <span title={starter.tagline} style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span title={starter.tagline} style={{ fontSize: 11, color: 'rgba(255,255,255,0.42)', fontFamily: UI_BODY, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {starter.tagline}
             </span>
         </div>
@@ -278,22 +279,35 @@ const DetailPanel = ({ kind, item, active, onPrimary }) => {
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
                 <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
-                    <div style={{ fontSize: 10, fontFamily: 'monospace', color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>
+                    <div style={{ fontSize: 10, fontFamily: UI_DISPLAY, color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>
                         {scenes.length} {scenes.length === 1 ? 'scene' : 'scenes'}{item.tagline ? ` · ${item.tagline}` : ''}
                     </div>
                 </div>
-                <button onClick={onPrimary} style={{
-                    flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, cursor: 'pointer',
-                    background: '#f1f1f5', border: 'none', color: '#0b0b12',
-                    fontSize: 10, fontFamily: 'monospace', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1,
-                }}>
-                    {kind === 'templates' ? <><Plus size={12} /> Use template</> : <><Check size={12} /> {active ? 'Reload' : 'Open'}</>}
-                </button>
+                {kind === 'templates' ? (
+                    // A real link, not a button: it carries the template deep link
+                    // (?studio&kit=…) that opens the studio straight into that
+                    // template's preloader (Starting Soon) on its theme.
+                    <a href={`/?studio&kit=${item.id}`} style={{
+                        flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, cursor: 'pointer',
+                        background: '#f1f1f5', border: 'none', color: '#0b0b12', textDecoration: 'none',
+                        fontSize: 10, fontFamily: UI_DISPLAY, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1,
+                    }}>
+                        <Plus size={12} /> Use template
+                    </a>
+                ) : (
+                    <button onClick={onPrimary} style={{
+                        flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, cursor: 'pointer',
+                        background: '#f1f1f5', border: 'none', color: '#0b0b12',
+                        fontSize: 10, fontFamily: UI_DISPLAY, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1,
+                    }}>
+                        <Check size={12} /> {active ? 'Reload' : 'Open'}
+                    </button>
+                )}
             </div>
 
             {scenes.length > 1 && (
                 <>
-                    <div style={{ fontSize: 9, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1.5, color: 'rgba(255,255,255,0.35)' }}>Scenes</div>
+                    <div style={{ fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1.5, color: 'rgba(255,255,255,0.35)' }}>Scenes</div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
                         {scenes.map((sc, j) => (
                             <button key={sc.id ?? j} onClick={() => setIdx(j)} style={{
@@ -302,7 +316,7 @@ const DetailPanel = ({ kind, item, active, onPrimary }) => {
                                 border: `1px solid ${j === i ? 'rgba(165,180,252,0.7)' : 'rgba(255,255,255,0.07)'}`,
                             }}>
                                 <Thumb snapshot={sc.snapshot} fallbackTheme={theme} />
-                                <span style={{ fontSize: 9, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 0.5, color: j === i ? '#fff' : 'rgba(255,255,255,0.55)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0 2px' }}>
+                                <span style={{ fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 0.5, color: j === i ? '#fff' : 'rgba(255,255,255,0.55)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0 2px' }}>
                                     {sc.name ?? `Scene ${j + 1}`}
                                 </span>
                             </button>
@@ -314,24 +328,19 @@ const DetailPanel = ({ kind, item, active, onPrimary }) => {
     );
 };
 
+// One segment of the Your layouts / Templates switcher (styles: .gal-tab).
 const TabBtn = ({ active, onClick, children, count }) => (
-    <button onClick={onClick} style={{
-        display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 7, cursor: 'pointer',
-        background: active ? 'rgba(255,255,255,0.09)' : 'transparent',
-        border: `1px solid ${active ? 'rgba(255,255,255,0.14)' : 'transparent'}`,
-        color: active ? '#fff' : 'rgba(255,255,255,0.45)',
-        fontSize: 11, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1.2,
-    }}>
+    <button type="button" role="tab" aria-selected={active} onClick={onClick} className="gal-tab">
         {children}
-        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 999, background: active ? 'rgba(99,102,241,0.45)' : 'rgba(255,255,255,0.07)', color: active ? '#fff' : 'rgba(255,255,255,0.45)' }}>{count}</span>
+        <span className="chip-count">{count}</span>
     </button>
 );
 
 const LIST_GRID = { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 };
 
-const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStarter, onClose, onCreate, onSwitch, onRename, onDelete }) => {
+const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStarter, onClose, onCreate, onSwitch, onRename, onDelete, onUseStarter }) => {
     const [newName, setNewName] = useState('');
-    const hasStarters = starters.length > 0 && !!onAddStarter;
+    const hasStarters = starters.length > 0;
     // Land on your own layouts once you have some; first-timers see templates.
     const [tab, setTab] = useState(layouts.length > 0 || !hasStarters ? 'mine' : 'templates');
     const [selectedId, setSelectedId] = useState({ mine: activeLayoutId ?? layouts[0]?.id, templates: starters[0]?.id });
@@ -347,8 +356,13 @@ const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStart
     const select = (id) => setSelectedId(s => ({ ...s, [tab]: id }));
     const primary = () => {
         if (!selected) return;
-        if (tab === 'templates') { onAddStarter(selected); setTab('mine'); }
-        else onSwitch(selected.id);
+        if (tab === 'templates') {
+            // Hosts that aren't the studio (e.g. the home screen picker) can
+            // own this — say "use this template" themselves instead of adding it
+            // to a library.
+            if (onUseStarter) { onUseStarter(selected); return; }
+            onAddStarter?.(selected); setTab('mine');
+        } else onSwitch(selected.id);
     };
 
     return (
@@ -367,7 +381,7 @@ const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStart
                 transition={{ duration: 0.16 }}
                 style={{
                     width: 'min(1120px, 100%)', height: 'min(760px, 90vh)', display: 'flex', flexDirection: 'column',
-                    background: 'rgba(12,12,22,0.98)', border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'rgba(0,0,0,0.96)', border: '1px solid rgba(255,255,255,0.1)',
                     borderRadius: 14, boxShadow: '0 20px 70px rgba(0,0,0,0.7)', overflow: 'hidden',
                 }}
             >
@@ -376,7 +390,7 @@ const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStart
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap',
                     padding: '10px 12px 10px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)',
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <div role="tablist" className="gal-tabs">
                         <TabBtn active={tab === 'mine'} onClick={() => setTab('mine')} count={layouts.length}>Your layouts</TabBtn>
                         {hasStarters && <TabBtn active={tab === 'templates'} onClick={() => setTab('templates')} count={starters.length}>Templates</TabBtn>}
                     </div>
@@ -404,7 +418,7 @@ const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStart
                             style={{
                                 display: 'flex', alignItems: 'center', gap: 5, padding: '0 14px', borderRadius: 7,
                                 background: 'rgba(79,70,229,0.5)', border: '1px solid rgba(99,102,241,0.5)', color: '#fff',
-                                fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1, cursor: 'pointer', whiteSpace: 'nowrap',
+                                fontSize: 10, fontFamily: UI_DISPLAY, textTransform: 'uppercase', letterSpacing: 1, cursor: 'pointer', whiteSpace: 'nowrap',
                             }}
                         >
                             <Plus size={13} /> New layout
@@ -414,18 +428,13 @@ const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStart
 
                 {tab === 'templates' && (
                     /* Category filter — the template library groups by stream type */
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div className="gal-cats">
                         {[{ id: 'all', label: 'All' }, ...(starters.some(st => st.isNew) ? [{ id: 'new', label: 'New' }] : []), ...TEMPLATE_CATEGORIES].map(cat => {
-                            const on = category === cat.id;
                             const n = cat.id === 'all' ? starters.length : cat.id === 'new' ? starters.filter(st => st.isNew).length : starters.filter(st => st.tags?.includes(cat.id)).length;
                             return (
-                                <button key={cat.id} onClick={() => setCategory(cat.id)} style={{
-                                    padding: '4px 10px', borderRadius: 999, cursor: 'pointer',
-                                    background: on ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.04)',
-                                    border: `1px solid ${on ? 'rgba(165,180,252,0.6)' : 'rgba(255,255,255,0.09)'}`,
-                                    color: on ? '#fff' : 'rgba(255,255,255,0.55)', fontSize: 10, fontFamily: 'monospace', letterSpacing: 0.5,
-                                }}>
-                                    {cat.label} <span style={{ opacity: 0.5 }}>{n}</span>
+                                <button key={cat.id} type="button" aria-pressed={category === cat.id} onClick={() => setCategory(cat.id)} className="ed-chip gal-cat">
+                                    {cat.label}
+                                    <span className="chip-count">{n}</span>
                                 </button>
                             );
                         })}
@@ -436,7 +445,7 @@ const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStart
                 <div style={{ flex: 1, minHeight: 0, display: 'flex', flexWrap: 'wrap', overflowY: 'auto' }}>
                     <div style={{ flex: '1 1 380px', minWidth: 0, maxHeight: '100%', overflowY: 'auto', padding: 14, boxSizing: 'border-box' }}>
                         {list.length === 0 ? (
-                            <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: 12, fontFamily: 'monospace', lineHeight: 1.8, padding: '60px 20px' }}>
+                            <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: 12, fontFamily: UI_BODY, lineHeight: 1.8, padding: '60px 20px' }}>
                                 No saved layouts yet.<br />
                                 {hasStarters && <>Pick one from <button onClick={() => setTab('templates')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#6ee7b7', fontFamily: 'inherit', fontSize: 'inherit', textDecoration: 'underline' }}>Templates</button>, or name</>}
                                 {!hasStarters && 'Name'} one above and hit <span style={{ color: '#a5b4fc' }}>New layout</span> to capture the current canvas.
@@ -459,7 +468,7 @@ const LayoutGallery = ({ layouts = [], activeLayoutId, starters = [], onAddStart
                             </div>
                         )}
                         {tab === 'templates' && (
-                            <div style={{ marginTop: 14, padding: '10px 12px', borderRadius: 8, border: '1px dashed rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)', fontSize: 11, fontFamily: 'monospace', lineHeight: 1.6, textAlign: 'center' }}>
+                            <div style={{ marginTop: 14, padding: '10px 12px', borderRadius: 8, border: '1px dashed rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)', fontSize: 11, fontFamily: UI_BODY, lineHeight: 1.6, textAlign: 'center' }}>
                                 Want a custom overlay for your channel?{' '}
                                 <a href={`mailto:${CONTACT_EMAIL}?subject=Custom%20stream%20overlay`} style={{ color: '#a5b4fc', textDecoration: 'none' }}>{CONTACT_EMAIL}</a>
                             </div>

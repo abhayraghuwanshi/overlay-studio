@@ -253,7 +253,7 @@ export default function LandingPage() {
                             <div style={{ fontFamily: DISPLAY, fontSize: 40, fontWeight: 700, lineHeight: 1, letterSpacing: -1 }}>{s.v}</div>
                             <div style={{ fontFamily: BODY, fontSize: 12, color: C.faint, letterSpacing: 0.5, marginTop: 8 }}>{s.l}</div>
                         </div>
-                    ))}ch
+                    ))}
                 </div>
             </div>
 
@@ -290,11 +290,11 @@ export default function LandingPage() {
                 <div style={{ ...kicker, marginBottom: 18 }}>How it works</div>
 
                 <Step n="01" title="Pick a template" desc="Open the studio, hit Layouts and browse the Templates tab. Click one to preview it, then hit Use template. Each one comes with scenes: Starting soon, Just chatting, BRB and Ending. Or start from a blank layout.">
-                    <Shot src="/screens/templates.png" alt="Templates gallery: a grid of starter layouts with a large preview of the selected one and its scenes" w={1318} h={896} />
+                    <Shot src="/screens/templates.jpg" alt="Templates gallery: a grid of starter layouts with a large preview of the selected one and its scenes" w={2000} h={1293} />
                 </Step>
 
                 <Step n="02" wide title="Edit the layout" desc={<>Click <b style={{ color: C.ink, fontWeight: 600 }}>Edit layout</b>. Pick anything from the toolbox on the left (text, lower thirds, clocks, countdowns, goals, socials, pets, a spin wheel, scoreboards, shapes), then click or drag on the canvas to place it. Drag and resize to arrange. Every layer in the scene is listed under the canvas, where you can hide, reorder or remove it.</>}>
-                    <Shot src="/screens/editor.png" alt="Studio in edit mode: the toolbox on the left, a gameplay scene on the canvas, and the scene's layers listed under it" w={1384} h={868} />
+                    <Shot src="/screens/editor.jpg" alt="Studio in edit mode: the toolbox on the left, a gameplay scene on the canvas, and the scene's layers listed under it" w={2000} h={1293} />
                 </Step>
 
                 <Step n="03" title="Add it to OBS" desc={

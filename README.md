@@ -127,6 +127,9 @@ Saying your project is "based on Overlay Studio" with a link back here is fine, 
 
 Issues and pull requests are welcome. For anything big, open an issue first so we can talk it through.
 
+Guides:
+- [Creating a new backdrop](docs/creating-a-backdrop.md)
+
 By submitting a pull request, you agree that your contribution is licensed under the AGPL-3.0 and that the project owner may also license it under other terms (for example, a commercial license).
 
 ## License
